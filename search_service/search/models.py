@@ -3,6 +3,8 @@ import uuid
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.search import SearchVectorField
+from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 from model_utils.models import TimeStampedModel
 
@@ -76,3 +78,10 @@ class PresentationAPIResource(TimeStampedModel):
         default="pgd"
     )
     navdate = models.DateTimeField(blank=True, null=True, verbose_name=_("Navigation date"))
+    search_vect = SearchVectorField(null=True)
+
+    class Meta:
+        indexes = [
+            GinIndex(fields=['search_vect']),
+        ]
+
