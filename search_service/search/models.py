@@ -1,14 +1,14 @@
 import uuid
 
-from django.contrib.auth.models import User
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from django.contrib.contenttypes.models import ContentType
+# from django.contrib.auth.models import User
+# from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+# from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.search import SearchVectorField, SearchVector
 from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 from model_utils.models import TimeStampedModel
 
-from .langbase import INTERNET_LANGUAGES
+# from .langbase import INTERNET_LANGUAGES
 from django.utils.translation import ugettext_lazy as _
 
 
