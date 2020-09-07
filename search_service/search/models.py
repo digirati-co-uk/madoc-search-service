@@ -81,6 +81,9 @@ class PresentationAPIResource(TimeStampedModel):
     search_vect = SearchVectorField(null=True)
 
     def save(self, *args, **kwargs):
+        # To Do: add handling for metadata fields.
+        # eg. recurse through the fields in the model instance associated via a foreign key
+        # and then add that to the search vector.
         self.search_vector = (
                 SearchVector('label', weight='A')
                 + SearchVector('description', weight='C')
