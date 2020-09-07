@@ -1,0 +1,1 @@
+# madoc_search_proto
