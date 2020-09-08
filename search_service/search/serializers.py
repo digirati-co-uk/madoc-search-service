@@ -1,8 +1,10 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework.response import Response
+from rest_framework import status
 from drf_writable_nested.serializers import WritableNestedModelSerializer
-from drf_writable_nested.mixins import UniqueFieldsMixin
 from .models import PresentationAPIResource
+from .serializer_utils import iiif_to_presentationapiresourcemodel
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -20,6 +22,9 @@ class PresentationAPISerializer(WritableNestedModelSerializer):
                   "license", "navdate", "metadata", "search_vect",
                   "m_summary", "within"]
         read_only_fields = ["url", "id", "m_summary", "search_vect"]
+
+
+
 
 
 

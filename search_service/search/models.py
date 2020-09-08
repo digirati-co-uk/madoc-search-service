@@ -72,14 +72,15 @@ class PresentationAPIResource(TimeStampedModel):
                 "html.parser",
             ).text
         super().save(*args, **kwargs)
-        self.search_vect = (
-            SearchVector("label", weight="A")
-            + SearchVector("description", weight="C")
-            + SearchVector("attribution", weight="A")
-            + SearchVector("m_summary", weight="B",
+        if 'update_fields' not in kwargs or 'search_vect' not in kwargs['update_fields']:
+            self.search_vect = (
+                    SearchVector("label", weight="A")
+                    + SearchVector("description", weight="C")
+                    + SearchVector("attribution", weight="A")
+                    + SearchVector("m_summary", weight="B",
+                                   )
             )
-        )
-        super().save(*args, **kwargs)
+            self.save(update_fields=['search_vect'])
 
     class Meta:
         indexes = [GinIndex(fields=["search_vect"])]

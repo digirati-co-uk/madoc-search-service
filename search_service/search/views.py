@@ -12,7 +12,10 @@ from rest_framework.reverse import reverse
 # Local imports
 from .permissions import IsOwnerOrReadOnly
 from .serializers import UserSerializer, PresentationAPISerializer
+from rest_framework.response import Response
+from rest_framework import status
 from .models import PresentationAPIResource
+from .serializer_utils import iiif_to_presentationapiresourcemodel
 
 
 @api_view(["GET"])
@@ -38,6 +41,13 @@ class UserDetail(generics.RetrieveAPIView):
 class PresentationAPIResourceList(generics.ListCreateAPIView):
     queryset = PresentationAPIResource.objects.all()
     serializer_class = PresentationAPISerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=iiif_to_presentationapiresourcemodel(data_dict=request.data))
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class PresentationAPIResourceDetail(generics.RetrieveUpdateDestroyAPIView):
