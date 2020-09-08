@@ -1,10 +1,8 @@
 import uuid
 from bs4 import BeautifulSoup
 
-# from django.contrib.auth.models import User
-# from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-# from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.search import SearchVectorField, SearchVector
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 from model_utils.models import TimeStampedModel
@@ -14,19 +12,6 @@ from django.utils.translation import ugettext_lazy as _
 
 
 # Add Models
-
-
-class MadocContext(TimeStampedModel):
-    """
-    Identifiers/labels/urns for sites, projects, collections, etc that contain resources
-    """
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    label = models.CharField(max_length=512, verbose_name=_("Label"))
-    identifier = models.CharField(
-        max_length=512, verbose_name=_("Identifier (URL/URI/URN)"), unique=True
-    )
-
 
 class PresentationAPIResource(TimeStampedModel):
     """
@@ -60,8 +45,8 @@ class PresentationAPIResource(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     label = models.CharField(max_length=512, verbose_name=_("Label"))
     identifier = models.CharField(max_length=512, verbose_name=_("Identifier (URL/URI/URN)"))
-    contexts = models.ManyToManyField(MadocContext, related_name="iiifresources")
-    contexts_json = models.JSONField(blank=True, null=True, verbose_name=_("Contexts"))
+    within = ArrayField(base_field=models.CharField(max_length=2048), verbose_name=_("Within"),
+                        null=True, blank=True)
     type = models.CharField(max_length=3, choices=IIIFTYPES, verbose_name=_("IIIF Object Type"))
     description = models.TextField(null=True, blank=True, verbose_name=_("Description"))
     attribution = models.CharField(
@@ -78,18 +63,6 @@ class PresentationAPIResource(TimeStampedModel):
     search_vect = SearchVectorField(null=True)
     metadata = models.JSONField(blank=True, null=True, verbose_name=_("IIIF Metadata block"))
     m_summary = models.TextField(blank=True, null=True, verbose_name=_("Metadata summary"))
-    # @property
-    # def
-
-    @property
-    def metadata_summary(self):
-        if self.metadata:
-            return BeautifulSoup(
-                " ".join(
-                    [i.get("value").replace("<br>", " ") for i in self.metadata if i.get("value")]
-                ),
-                "html.parser",
-            ).text
 
     def save(self, *args, **kwargs):
         self.m_summary = BeautifulSoup(

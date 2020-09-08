@@ -11,8 +11,8 @@ from rest_framework.reverse import reverse
 
 # Local imports
 from .permissions import IsOwnerOrReadOnly
-from .serializers import UserSerializer, ContextsSerializer, PresentationAPISerializer
-from .models import MadocContext, PresentationAPIResource
+from .serializers import UserSerializer, PresentationAPISerializer
+from .models import PresentationAPIResource
 
 
 @api_view(["GET"])
@@ -20,7 +20,6 @@ def api_root(request, format=None):
     return Response(
         {
             "users": reverse("user-list", request=request, format=format),
-            "contexts": reverse("madoccontext-list", request=request, format=format),
             "iiif": reverse("presentationapiresource-list", request=request, format=format)
         }
     )
@@ -36,16 +35,6 @@ class UserDetail(generics.RetrieveAPIView):
     serializer_class = UserSerializer
 
 
-class MadocContextList(generics.ListCreateAPIView):
-    queryset = MadocContext.objects.all()
-    serializer_class = ContextsSerializer
-
-
-class MadocContextDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = MadocContext.objects.all()
-    serializer_class = ContextsSerializer
-
-
 class PresentationAPIResourceList(generics.ListCreateAPIView):
     queryset = PresentationAPIResource.objects.all()
     serializer_class = PresentationAPISerializer
@@ -54,5 +43,4 @@ class PresentationAPIResourceList(generics.ListCreateAPIView):
 class PresentationAPIResourceDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = PresentationAPIResource.objects.all()
     serializer_class = PresentationAPISerializer
-
 
