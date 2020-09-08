@@ -54,3 +54,5 @@ class PresentationAPIResourceDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = PresentationAPIResource.objects.all()
     serializer_class = PresentationAPISerializer
 
+
+
