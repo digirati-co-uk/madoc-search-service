@@ -1,3 +1,7 @@
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
+
+
 def iiif_to_presentationapiresourcemodel(data_dict):
     """
     Somewhat hacky transformation of an incoming data object for the serializer
@@ -78,6 +82,12 @@ def iiif_to_presentationapiresourcemodel(data_dict):
                     ][0]
                 else:
                     return_dict[lookup_result["model_key"]] = lookup_result.get("default")
+        if return_dict.get("license"):
+            val = URLValidator()
+            try:
+                val(return_dict["license"])
+            except ValidationError:
+                del(return_dict["license"])
     return return_dict
 
 
@@ -88,5 +98,6 @@ if __name__ == "__main__":
         "http://madoc.dlcs.digirati.io/public/storage/urn:madoc:site:1/AA00000463_00010/public/AA00000463_00010_manifest.json"
     ).json()
     j["viewingDirection"] = "left-to-right"
+    j["license"] = "https://creativecommons.org/licenses/by-nc/4.0/"
     foo = iiif_to_presentationapiresourcemodel(data_dict=j)
     print(foo)
