@@ -1,4 +1,5 @@
 import uuid
+from bs4 import BeautifulSoup
 
 # from django.contrib.auth.models import User
 # from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
@@ -23,7 +24,7 @@ class MadocContext(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     label = models.CharField(max_length=512, verbose_name=_("Label"))
     identifier = models.CharField(
-        max_length=512, verbose_name=_("Identifier (URL/URI/URN)")
+        max_length=512, verbose_name=_("Identifier (URL/URI/URN)"), unique=True
     )
 
 
@@ -58,41 +59,54 @@ class PresentationAPIResource(TimeStampedModel):
     )
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     label = models.CharField(max_length=512, verbose_name=_("Label"))
-    identifier = models.CharField(
-        max_length=512, verbose_name=_("Identifier (URL/URI/URN)")
-    )
+    identifier = models.CharField(max_length=512, verbose_name=_("Identifier (URL/URI/URN)"))
     contexts = models.ManyToManyField(MadocContext, related_name="iiifresources")
-    type = models.CharField(
-        max_length=3, choices=IIIFTYPES, verbose_name=_("IIIF Object Type")
-    )
+    contexts_json = models.JSONField(blank=True, null=True, verbose_name=_("Contexts"))
+    type = models.CharField(max_length=3, choices=IIIFTYPES, verbose_name=_("IIIF Object Type"))
     description = models.TextField(null=True, blank=True, verbose_name=_("Description"))
-    attribution = models.CharField(max_length=512, verbose_name=_("Attribution"),
-                                   blank=True, null=True)
+    attribution = models.CharField(
+        max_length=512, verbose_name=_("Attribution"), blank=True, null=True
+    )
     license = models.URLField(verbose_name=_("License (URL)"), blank=True, null=True)
     viewing_direction = models.CharField(
-        max_length=3, choices=VIEWINGDIRECTION, verbose_name=_("Viewing direction"),
-        default="l2r"
+        max_length=3, choices=VIEWINGDIRECTION, verbose_name=_("Viewing direction"), default="l2r"
     )
     viewing_hint = models.CharField(
-        max_length=3, choices=VIEWINGHINT, verbose_name=_("Viewing hint"),
-        default="pgd"
+        max_length=3, choices=VIEWINGHINT, verbose_name=_("Viewing hint"), default="pgd"
     )
     navdate = models.DateTimeField(blank=True, null=True, verbose_name=_("Navigation date"))
     search_vect = SearchVectorField(null=True)
+    metadata = models.JSONField(blank=True, null=True, verbose_name=_("IIIF Metadata block"))
+    m_summary = models.TextField(blank=True, null=True, verbose_name=_("Metadata summary"))
+    # @property
+    # def
+
+    @property
+    def metadata_summary(self):
+        if self.metadata:
+            return BeautifulSoup(
+                " ".join(
+                    [i.get("value").replace("<br>", " ") for i in self.metadata if i.get("value")]
+                ),
+                "html.parser",
+            ).text
 
     def save(self, *args, **kwargs):
-        # To Do: add handling for metadata fields.
-        # eg. recurse through the fields in the model instance associated via a foreign key
-        # and then add that to the search vector.
-        self.search_vector = (
-                SearchVector('label', weight='A')
-                + SearchVector('description', weight='C')
-                + SearchVector('attribution', weight='A')
+        self.m_summary = BeautifulSoup(
+                " ".join(
+                    [i.get("value").replace("<br>", " ") for i in self.metadata if i.get("value")]
+                ),
+                "html.parser",
+            ).text
+        super().save(*args, **kwargs)
+        self.search_vect = (
+            SearchVector("label", weight="A")
+            + SearchVector("description", weight="C")
+            + SearchVector("attribution", weight="A")
+            + SearchVector("m_summary", weight="B",
+            )
         )
         super().save(*args, **kwargs)
 
     class Meta:
-        indexes = [
-            GinIndex(fields=['search_vect']),
-        ]
-
+        indexes = [GinIndex(fields=["search_vect"])]
