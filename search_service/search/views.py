@@ -1,25 +1,23 @@
 # Stdlib imports
 
-from django.contrib.auth.models import User
-from django.db.models import F, Count, Q, Value
-from django.db.models import TextField, JSONField
 import json
+
+from django.contrib.auth.models import User
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchHeadline
+from django.db.models import F, Value
+from django.db.models import JSONField
+from django_filters.rest_framework import DjangoFilterBackend
 
 # Django Imports
 from rest_framework import generics, filters, status
-from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchHeadline
-from django_filters.rest_framework import DjangoFilterBackend
 
+from .models import Indexables, IIIFResource
 
 # Local imports
 from .serializers import UserSerializer, IndexablesSerializer, IIIFSerializer
-from rest_framework.response import Response
-from .models import Indexables, IIIFResource
-
-# from .serializer_utils import iiif_to_presentationapiresourcemodel
 
 
 @api_view(["GET"])
@@ -42,35 +40,18 @@ class UserDetail(generics.RetrieveAPIView):
     serializer_class = UserSerializer
 
 
-# class PresentationAPIResourceList(generics.ListCreateAPIView):
-#     queryset = PresentationAPIResource.objects.all()
-#     serializer_class = PresentationAPISerializer
-#
-#     def create(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(
-#             data=iiif_to_presentationapiresourcemodel(data_dict=request.data)
-#         )
-#         serializer.is_valid(raise_exception=True)
-#         self.perform_create(serializer)
-#         headers = self.get_success_headers(serializer.data)
-#         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-#
-#
-# class PresentationAPIResourceDetail(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = PresentationAPIResource.objects.all()
-#     serializer_class = PresentationAPISerializer
-
-
 class IIIFDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = IIIFResource.objects.all()
     serializer_class = IIIFSerializer
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
+        partial = kwargs.pop("partial", False)
         instance = self.get_object()
         d = request.data
-        data_dict = {"madoc_id": d.get("id", instance.id),
-                     "madoc_thumbnail": d.get("thumbnail", instance.madoc_thumbnail)}
+        data_dict = {
+            "madoc_id": d.get("id", instance.id),
+            "madoc_thumbnail": d.get("thumbnail", instance.madoc_thumbnail),
+        }
         if d.get("resource"):
             for k in [
                 "id",
@@ -89,7 +70,7 @@ class IIIFDetail(generics.RetrieveUpdateDestroyAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
-        if getattr(instance, '_prefetched_objects_cache', None):
+        if getattr(instance, "_prefetched_objects_cache", None):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
@@ -118,16 +99,11 @@ class IIIFList(generics.ListCreateAPIView):
             "navDate",
         ]:
             data_dict[k] = d["resource"].get(k)
-        print(json.dumps(data_dict, indent=2))
         serializer = self.get_serializer(data=data_dict)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
-
-
 
 
 class IndexablesDetail(generics.RetrieveUpdateDestroyAPIView):
