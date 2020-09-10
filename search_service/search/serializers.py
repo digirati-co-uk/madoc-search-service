@@ -12,6 +12,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
     rank = serializers.FloatField(default=None, read_only=True)
     snippet = serializers.CharField(default=None, read_only=True)
+    facets = serializers.JSONField(default=None, read_only=True)
 
     class Meta:
         model = Indexables
@@ -29,13 +30,12 @@ class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
             "language_pg",
             "rank",
             "snippet",
+            "facets",
         ]
         read_only_fields = ["search_vector", "rank", "snippet"]
 
 
 class IIIFSerializer(serializers.HyperlinkedModelSerializer):
-    requiredStatement = serializers.JSONField(source="required_statement")
-    navDate = serializers.DateTimeField(source="navdate")
 
     class Meta:
         model = IIIFResource
