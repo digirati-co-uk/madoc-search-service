@@ -45,13 +45,19 @@ class IIIFDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = IIIFSerializer
 
     def update(self, request, *args, **kwargs):
+        """
+        Override the update so that we can rewrite the format coming from Madoc in the event of
+        an Update operation.
+        """
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
         d = request.data
+        # Try to populate from the request data, but if it's not there, just use existing
         data_dict = {
             "madoc_id": d.get("id", instance.id),
             "madoc_thumbnail": d.get("thumbnail", instance.madoc_thumbnail),
         }
+        # If we have IIIF stuff as a "resource" in the request.data
         if d.get("resource"):
             for k in [
                 "id",
@@ -134,6 +140,10 @@ class IndexablesList(generics.ListCreateAPIView):
                 .order_by("-rank")
             )
         facet_dict = {}
+        # This should really happen elsewhere, as it won't work when filters are also applied
+        # as the data is annotated before the filters, so the counts are inaccurate
+        # instead, there should probably be something happening on the dataset in aggregate
+        # via some manually invoked filters etc.
         for facet_key in ["type", "language_display"]:
             facet_dict[facet_key] = {}
             for t in queryset.values_list(facet_key).distinct():
