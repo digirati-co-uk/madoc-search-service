@@ -1,5 +1,6 @@
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
+import json
 
 
 def iiif_to_presentationapiresourcemodel(data_dict):
@@ -68,6 +69,9 @@ def iiif_to_presentationapiresourcemodel(data_dict):
         "metadata": {"model_key": "metadata", "default": None, "choices": None},
     }
     return_dict = {}
+    if data_dict.get("metadata"):
+        if isinstance((data_dict["metadata"]), str):
+            data_dict["metadata"] = json.load(data_dict["metadata"])
     for k, v in data_dict.items():
         lookup_result = lookup_dict.get(k)
         if lookup_result:

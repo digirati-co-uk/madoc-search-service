@@ -9,7 +9,9 @@ urlpatterns = [
     path("users/", views.UserList.as_view(), name="user-list"),
     path("users/<int:pk>/", views.UserDetail.as_view(), name="user-detail"),
     path("iiif/", views.PresentationAPIResourceList.as_view(), name="presentationapiresource-list"),
-    path("iiif/<uuid:pk>/", views.PresentationAPIResourceDetail.as_view(), name="presentationapiresource-detail")
+    path("iiif/<uuid:pk>/", views.PresentationAPIResourceDetail.as_view(), name="presentationapiresource-detail"),
+    path("indexables/", views.IndexablesList.as_view(), name="indexables-list"),
+    path("indexables/<int:pk>/", views.IndexablesDetail.as_view(), name="indexables-detail"),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
