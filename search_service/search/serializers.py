@@ -41,11 +41,27 @@ class IIIFSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
+class IIIFSummary(serializers.HyperlinkedModelSerializer):
+    contexts = ContextSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = IIIFResource
+        fields = [
+            "url",
+            "madoc_id",
+            "madoc_thumbnail",
+            "id",
+            "type",
+            "label",
+            "contexts"
+        ]
+
+
 class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
     rank = serializers.FloatField(default=None, read_only=True)
     snippet = serializers.CharField(default=None, read_only=True)
     facets = serializers.JSONField(default=None, read_only=True)
-    iiif = IIIFSerializer(read_only=True)
+    iiif = IIIFSummary(read_only=True)
 
     class Meta:
         model = Indexables
