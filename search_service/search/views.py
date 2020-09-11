@@ -103,8 +103,6 @@ class IIIFDetail(generics.RetrieveUpdateDestroyAPIView):
                         resource_id=instance.madoc_id
                     )
                     indexable_obj.save()
-
-
         serializer = self.get_serializer(instance, data=data_dict, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
@@ -130,34 +128,51 @@ class IIIFList(generics.ListCreateAPIView):
         d = request.data
         data_dict = {"madoc_id": d["id"], "madoc_thumbnail": d["thumbnail"]}
         contexts = d.get("contexts")
-        if d["resource"].get("@context") == "http://iiif.io/api/presentation/2/context.json":
-            iiif3 = upgrader.process_resource(d["resource"], top=True)
-            iiif3["@context"] = "http://iiif.io/api/presentation/3/context.json"
+        if d.get("resource"):
+            if d["resource"].get("@context") == "http://iiif.io/api/presentation/2/context.json":
+                iiif3 = upgrader.process_resource(d["resource"], top=True)
+                iiif3["@context"] = "http://iiif.io/api/presentation/3/context.json"
+            else:
+                iiif3 = d["resource"]
         else:
-            iiif3 = d["resource"]
-        for k in [
-            "id",
-            "type",
-            "label",
-            "thumbnail",
-            "summary",
-            "metadata",
-            "rights",
-            "provider",
-            "requiredStatement",
-            "navDate",
-        ]:
-            data_dict[k] = iiif3.get(k)
+            iiif3 = None
+        if iiif3:
+            for k in [
+                "id",
+                "type",
+                "label",
+                "thumbnail",
+                "summary",
+                "metadata",
+                "rights",
+                "provider",
+                "requiredStatement",
+                "navDate",
+            ]:
+                data_dict[k] = iiif3.get(k)
+
         serializer = self.get_serializer(data=data_dict)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        instance = IIIFResource.objects.get(madoc_id=data_dict["madoc_id"])
         if contexts:
-            instance = IIIFResource.objects.get(madoc_id=data_dict["madoc_id"])
             c_objs = [Context.objects.get_or_create(**context) for context in contexts]
             if instance:
                 c_objs_set = [c_obj for c_obj, _ in c_objs]
                 instance.contexts.set(c_objs_set)
                 instance.save()
+        if iiif3:
+            indexable_list = flatten_iiif_descriptive(
+                iiif=iiif3, default_language=default_lang, lang_base=LANGBASE
+            )
+            if indexable_list:
+                for _indexable in indexable_list:
+                    indexable_obj = Indexables(
+                        **_indexable,
+                        iiif=instance,
+                        resource_id=instance.madoc_id
+                    )
+                    indexable_obj.save()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
