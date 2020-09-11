@@ -147,6 +147,7 @@ class IIIFList(generics.ListCreateAPIView):
 class ContextDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Context.objects.all()
     serializer_class = ContextSerializer
+    lookup_field = "slug"
 
 
 class ContextList(generics.ListCreateAPIView):
