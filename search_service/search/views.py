@@ -72,7 +72,6 @@ class IIIFDetail(generics.RetrieveUpdateDestroyAPIView):
             if d["resource"].get("@context") == "http://iiif.io/api/presentation/2/context.json":
                 iiif3 = upgrader.process_resource(d["resource"], top=True)
                 iiif3["@context"] = "http://iiif.io/api/presentation/3/context.json"
-                print(json.dumps(iiif3, indent=2))
             else:
                 iiif3 = d["resource"]
             for k in [
@@ -91,7 +90,6 @@ class IIIFDetail(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance, data=data_dict, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        print("Instance type", type(instance))
         if contexts:
             c_objs = [Context.objects.get_or_create(**context) for context in contexts]
             c_objs_set = [c_obj for c_obj, _ in c_objs]
@@ -111,14 +109,12 @@ class IIIFList(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
 
     def create(self, request, *args, **kwargs):
-        print("Language", get_language())
         d = request.data
         data_dict = {"madoc_id": d["id"], "madoc_thumbnail": d["thumbnail"]}
         contexts = d.get("contexts")
         if d["resource"].get("@context") == "http://iiif.io/api/presentation/2/context.json":
             iiif3 = upgrader.process_resource(d["resource"], top=True)
             iiif3["@context"] = "http://iiif.io/api/presentation/3/context.json"
-            print(json.dumps(iiif3, indent=2))
         else:
             iiif3 = d["resource"]
         for k in [
