@@ -18,32 +18,6 @@ class ContextSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
-class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
-    rank = serializers.FloatField(default=None, read_only=True)
-    snippet = serializers.CharField(default=None, read_only=True)
-    facets = serializers.JSONField(default=None, read_only=True)
-
-    class Meta:
-        model = Indexables
-        fields = [
-            "url",
-            "resource_id",
-            "content_id",
-            "original_content",
-            "indexable",
-            "search_vector",
-            "type",
-            "language_iso629_2",
-            "language_iso629_1",
-            "language_display",
-            "language_pg",
-            "rank",
-            "snippet",
-            "facets",
-        ]
-        read_only_fields = ["search_vector", "rank", "snippet"]
-
-
 class IIIFSerializer(serializers.HyperlinkedModelSerializer):
     contexts = ContextSerializer(read_only=True, many=True)
 
@@ -65,3 +39,31 @@ class IIIFSerializer(serializers.HyperlinkedModelSerializer):
             "navDate",
             "contexts"
         ]
+
+
+class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
+    rank = serializers.FloatField(default=None, read_only=True)
+    snippet = serializers.CharField(default=None, read_only=True)
+    facets = serializers.JSONField(default=None, read_only=True)
+    iiif = IIIFSerializer(read_only=True)
+
+    class Meta:
+        model = Indexables
+        fields = [
+            "url",
+            "resource_id",
+            "content_id",
+            "original_content",
+            "indexable",
+            "search_vector",
+            "type",
+            "language_iso629_2",
+            "language_iso629_1",
+            "language_display",
+            "language_pg",
+            "rank",
+            "snippet",
+            "facets",
+            "iiif"
+        ]
+        read_only_fields = ["search_vector", "rank", "snippet"]

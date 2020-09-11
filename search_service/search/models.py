@@ -12,6 +12,39 @@ from django.utils.translation import ugettext_lazy as _
 # Add Models
 
 
+class Context(TimeStampedModel):
+    """"
+    Context
+
+    """
+
+    id = models.CharField(
+        max_length=512, primary_key=True, editable=True, verbose_name=_("Identifier (Context)")
+    )
+    type = models.CharField(max_length=30)
+    slug = AutoSlugField(populate_from="id")
+
+
+class IIIFResource(TimeStampedModel):
+    madoc_id = models.CharField(
+        max_length=512, primary_key=True, verbose_name=_("Identifier (Madoc)")
+    )
+    madoc_thumbnail = models.URLField(blank=True, null=True)
+    id = models.URLField(verbose_name=_("IIIF id"))
+    slug = AutoSlugField(populate_from="madoc_id")
+    type = models.CharField(max_length=30)
+    label = models.JSONField(blank=True, null=True)
+    thumbnail = models.JSONField(blank=True, null=True)
+    summary = models.JSONField(blank=True, null=True)
+    metadata = models.JSONField(blank=True, null=True)
+    navDate = models.DateTimeField(blank=True, null=True)
+    rights = models.URLField(blank=True, null=True)
+    requiredStatement = models.JSONField(blank=True, null=True)
+    provider = models.JSONField(blank=True, null=True)
+    items = models.ManyToManyField("self", blank=True, related_name="ispartof")
+    contexts = models.ManyToManyField(Context, blank=True, related_name="associated_iiif")
+
+
 class Indexables(TimeStampedModel):
     """
     Model for storing indexable data per object
@@ -45,6 +78,9 @@ class Indexables(TimeStampedModel):
         blank=True,
         null=True,
     )
+    iiif = models.ForeignKey(
+        IIIFResource, related_name="indexables", blank=True, on_delete=models.CASCADE
+    )
     indexable = models.TextField()
     original_content = models.TextField()
     search_vector = SearchVectorField(blank=True, null=True)
@@ -71,37 +107,3 @@ class Indexables(TimeStampedModel):
             models.Index(fields=["content_id"]),
             models.Index(fields=["language_iso629_2", "language_iso629_1", "language_display"]),
         ]
-
-
-class Context(TimeStampedModel):
-    """"
-    Context
-
-    """
-
-    id = models.CharField(
-        max_length=512, primary_key=True, editable=True, verbose_name=_("Identifier (Context)")
-    )
-    type = models.CharField(max_length=30)
-    slug = AutoSlugField(populate_from="id")
-
-
-class IIIFResource(TimeStampedModel):
-    madoc_id = models.CharField(
-        max_length=512, primary_key=True, verbose_name=_("Identifier (Madoc)")
-    )
-    madoc_thumbnail = models.URLField(blank=True, null=True)
-    id = models.URLField(verbose_name=_("IIIF id"))
-    slug = AutoSlugField(populate_from="madoc_id")
-    type = models.CharField(max_length=30)
-    label = models.JSONField(blank=True, null=True)
-    thumbnail = models.JSONField(blank=True, null=True)
-    summary = models.JSONField(blank=True, null=True)
-    metadata = models.JSONField(blank=True, null=True)
-    navDate = models.DateTimeField(blank=True, null=True)
-    rights = models.URLField(blank=True, null=True)
-    requiredStatement = models.JSONField(blank=True, null=True)
-    provider = models.JSONField(blank=True, null=True)
-    items = models.ManyToManyField("self", blank=True, related_name="ispartof")
-    contexts = models.ManyToManyField(Context, blank=True, related_name="associated_iiif")
-
