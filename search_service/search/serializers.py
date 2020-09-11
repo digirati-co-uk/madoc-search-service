@@ -1,12 +1,21 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Indexables, IIIFResource
+from .models import Indexables, IIIFResource, Context
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ["url", "username", "email"]
+
+
+class ContextSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Context
+        fields = ["url", "id", "type", "slug"]
+        extra_kwargs = {
+            'url': {'lookup_field': 'slug'},
+        }
 
 
 class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
@@ -36,6 +45,7 @@ class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class IIIFSerializer(serializers.HyperlinkedModelSerializer):
+    contexts = ContextSerializer(read_only=True, many=True)
 
     class Meta:
         model = IIIFResource
@@ -53,4 +63,5 @@ class IIIFSerializer(serializers.HyperlinkedModelSerializer):
             "provider",
             "requiredStatement",
             "navDate",
+            "contexts"
         ]

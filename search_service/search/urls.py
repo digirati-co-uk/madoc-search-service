@@ -10,6 +10,8 @@ urlpatterns = [
     path("iiif/<str:pk>/", views.IIIFDetail.as_view(), name="iiifresource-detail"),
     path("indexables/", views.IndexablesList.as_view(), name="indexables-list"),
     path("indexables/<int:pk>/", views.IndexablesDetail.as_view(), name="indexables-detail"),
+    path("contexts/", views.ContextList.as_view(), name="context-list"),
+    path("contexts/<slug:slug>/", views.ContextDetail.as_view(), name="context-detail")
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

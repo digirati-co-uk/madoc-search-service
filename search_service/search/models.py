@@ -73,16 +73,17 @@ class Indexables(TimeStampedModel):
         ]
 
 
-# class MadocResource(TimeStampedModel):
-#     """"
-#     Madoc resource
-#
-#     """
-#
-#     id = models.CharField(
-#         max_length=512, primary_key=True, editable=False, verbose_name=_("Identifier (Madoc)")
-#     )
-#     thumbnail = models.URLField(blank=True, null=True)
+class Context(TimeStampedModel):
+    """"
+    Context
+
+    """
+
+    id = models.CharField(
+        max_length=512, primary_key=True, editable=True, verbose_name=_("Identifier (Context)")
+    )
+    type = models.CharField(max_length=30)
+    slug = AutoSlugField(populate_from="id")
 
 
 class IIIFResource(TimeStampedModel):
@@ -102,4 +103,5 @@ class IIIFResource(TimeStampedModel):
     requiredStatement = models.JSONField(blank=True, null=True)
     provider = models.JSONField(blank=True, null=True)
     items = models.ManyToManyField("self", blank=True, related_name="ispartof")
+    contexts = models.ManyToManyField(Context, blank=True, related_name="associated_iiif")
 

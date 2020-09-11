@@ -14,10 +14,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
-from .models import Indexables, IIIFResource
+from .models import Indexables, IIIFResource, Context
 
 # Local imports
-from .serializers import UserSerializer, IndexablesSerializer, IIIFSerializer
+from .serializers import UserSerializer, IndexablesSerializer, IIIFSerializer, ContextSerializer
 
 
 @api_view(["GET"])
@@ -26,6 +26,7 @@ def api_root(request, format=None):
         {
             "iiif": reverse("iiifresource-list", request=request, format=format),
             "indexable": reverse("indexables-list", request=request, format=format),
+            "contexts": reverse("context-list", request=request, format=format)
         }
     )
 
@@ -57,6 +58,8 @@ class IIIFDetail(generics.RetrieveUpdateDestroyAPIView):
             "madoc_id": d.get("id", instance.id),
             "madoc_thumbnail": d.get("thumbnail", instance.madoc_thumbnail),
         }
+        contexts = d.get("contexts")
+
         # If we have IIIF stuff as a "resource" in the request.data
         if d.get("resource"):
             for k in [
@@ -75,7 +78,12 @@ class IIIFDetail(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance, data=data_dict, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-
+        print("Instance type", type(instance))
+        if contexts:
+            c_objs = [Context.objects.get_or_create(**context) for context in contexts]
+            c_objs_set = [c_obj for c_obj, _ in c_objs]
+            instance.contexts.set(c_objs_set)
+            instance.save()
         if getattr(instance, "_prefetched_objects_cache", None):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
@@ -92,6 +100,7 @@ class IIIFList(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         d = request.data
         data_dict = {"madoc_id": d["id"], "madoc_thumbnail": d["thumbnail"]}
+        contexts = d.get("contexts")
         for k in [
             "id",
             "type",
@@ -108,8 +117,25 @@ class IIIFList(generics.ListCreateAPIView):
         serializer = self.get_serializer(data=data_dict)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        if contexts:
+            instance = IIIFResource.objects.get(madoc_id=data_dict["madoc_id"])
+            c_objs = [Context.objects.get_or_create(**context) for context in contexts]
+            if instance:
+                c_objs_set = [c_obj for c_obj, _ in c_objs]
+                instance.contexts.set(c_objs_set)
+                instance.save()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class ContextDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Context.objects.all()
+    serializer_class = ContextSerializer
+
+
+class ContextList(generics.ListCreateAPIView):
+    queryset = Context.objects.all()
+    serializer_class = ContextSerializer
 
 
 class IndexablesDetail(generics.RetrieveUpdateDestroyAPIView):
