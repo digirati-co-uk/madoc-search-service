@@ -8,7 +8,7 @@ from django.db.models import F, Value
 from django.db.models import JSONField
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.translation import get_language
-
+from django.db import models
 
 # Django Imports
 from rest_framework import generics, filters, status
@@ -19,6 +19,7 @@ from rest_framework import viewsets
 from rest_framework.request import Request
 from rest_framework.pagination import PageNumberPagination
 from django_filters import rest_framework as df_filters
+from rest_framework.mixins import ListModelMixin
 
 
 # Local imports
@@ -275,7 +276,7 @@ class ContextFilterSet(df_filters.FilterSet):
         fields = ["cont"]
 
 
-class IIIFSearch(viewsets.ReadOnlyModelViewSet):
+class IIIFSearch(viewsets.ReadOnlyModelViewSet, ListModelMixin):
     """
     Simple read only view for the IIIF data
     """
@@ -285,6 +286,30 @@ class IIIFSearch(viewsets.ReadOnlyModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["madoc_id", "contexts__id"]
     pagination_class = MadocPagination
+
+    def list(self, request, *args, **kwargs):
+        """
+        Override the LIST method, so we can add some summary data here.
+        """
+        response = super(IIIFSearch, self).list(request, args, kwargs)
+        facet_summary = {"metadata": {}}
+        for t in (
+            self.get_queryset()
+            .filter(indexables__type__iexact="metadata")
+            .values("indexables__subtype")
+            .distinct()
+        ):
+            for k, v in t.items():
+                facet_summary["metadata"][v] = {
+                    x["indexables__indexable"]: x["n"]
+                    for x in self.get_queryset()
+                    .filter(indexables__subtype__iexact=v)
+                    .values("indexables__indexable")
+                    .distinct()
+                    .annotate(n=models.Count("pk"))
+                }
+        response.data["facets"] = facet_summary
+        return response
 
     def get_serializer_context(self):
         context = super(IIIFSearch, self).get_serializer_context()
@@ -306,7 +331,9 @@ class IIIFSearch(viewsets.ReadOnlyModelViewSet):
                 "language_display",
                 "language_pg",
             ]:
-                filter_kwargs[f"indexables__{param}__iexact"] = self.request.query_params.get(param, None)
+                filter_kwargs[f"indexables__{param}__iexact"] = self.request.query_params.get(
+                    param, None
+                )
         if context:
             queryset = IIIFResource.objects.filter(context__id=context)
         else:

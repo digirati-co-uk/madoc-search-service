@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     "reversion",
     "rest_framework",
+    "django_filters",
     "search",
 ]
 
