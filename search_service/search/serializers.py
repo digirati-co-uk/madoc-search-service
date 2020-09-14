@@ -73,6 +73,7 @@ class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
             "indexable",
             "search_vector",
             "type",
+            "subtype",
             "language_iso629_2",
             "language_iso629_1",
             "language_display",

@@ -93,14 +93,14 @@ class IIIFDetail(generics.RetrieveUpdateDestroyAPIView):
                 iiif=iiif3, default_language=default_lang, lang_base=LANGBASE
             )
             if indexable_list:
-                _ = Indexables.objects.filter(iiif__pk=instance.madoc_id).filter(
-                    type__in=["descriptive", "metadata"]
-                ).delete()
+                _ = (
+                    Indexables.objects.filter(iiif__pk=instance.madoc_id)
+                    .filter(type__in=["descriptive", "metadata"])
+                    .delete()
+                )
                 for _indexable in indexable_list:
                     indexable_obj = Indexables(
-                        **_indexable,
-                        iiif=instance,
-                        resource_id=instance.madoc_id
+                        **_indexable, iiif=instance, resource_id=instance.madoc_id
                     )
                     indexable_obj.save()
         serializer = self.get_serializer(instance, data=data_dict, partial=partial)
@@ -168,9 +168,7 @@ class IIIFList(generics.ListCreateAPIView):
             if indexable_list:
                 for _indexable in indexable_list:
                     indexable_obj = Indexables(
-                        **_indexable,
-                        iiif=instance,
-                        resource_id=instance.madoc_id
+                        **_indexable, iiif=instance, resource_id=instance.madoc_id
                     )
                     indexable_obj.save()
         headers = self.get_success_headers(serializer.data)
@@ -195,20 +193,23 @@ class IndexablesDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class IndexablesList(generics.ListCreateAPIView):
     serializer_class = IndexablesSerializer
-    # filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend]
     # search_fields = ["indexable", "original_content", "=resource_id", "=content_id"]
 
     def get_queryset(self):
         search_string = self.request.query_params.get("fulltext", None)
-        language = self.request.query_params.get("search_language", "english")
+        language = self.request.query_params.get("search_language", None)
         search_type = self.request.query_params.get("search_type", "websearch")
-        filter_kwargs = {}
+        filter_kwargs = {"rank__gt": 0.0}
         for param in self.request.query_params:
             if param not in ["fulltext", "search_language", "search_type"]:
                 filter_kwargs[f"{param}__iexact"] = self.request.query_params.get(param, None)
         queryset = Indexables.objects.all()
         if search_string:
-            query = SearchQuery(search_string, config=language, search_type=search_type)
+            if language:
+                query = SearchQuery(search_string, config=language, search_type=search_type)
+            else:
+                query = SearchQuery(search_string, search_type=search_type)
             queryset = (
                 queryset.annotate(
                     rank=SearchRank(F("search_vector"), query, cover_density=True),
@@ -216,7 +217,8 @@ class IndexablesList(generics.ListCreateAPIView):
                         "original_content", query, max_words=50, min_words=25, max_fragments=3
                     ),
                 )
-                .filter(search_vector=query).filter(**filter_kwargs)
+                .filter(search_vector=query)
+                .filter(**filter_kwargs)
                 .order_by("-rank")
             )
         facet_dict = {}
@@ -224,9 +226,9 @@ class IndexablesList(generics.ListCreateAPIView):
         # as the data is annotated before the filters, so the counts are inaccurate
         # instead, there should probably be something happening on the dataset in aggregate
         # via some manually invoked filters etc.
-        for facet_key in ["type", "language_display"]:
+        for facet_key in ["type", "language_display", "type", "subtype"]:
             facet_dict[facet_key] = {}
             for t in queryset.values_list(facet_key).distinct():
-                kwargs = {f"{facet_key}__exact": t[0]}
+                kwargs = {f"{facet_key}__iexact": t[0]}
                 facet_dict[facet_key][t[0]] = queryset.filter(**kwargs).count()
         return queryset.annotate(facets=Value(facet_dict, JSONField()))

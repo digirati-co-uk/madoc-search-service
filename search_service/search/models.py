@@ -88,6 +88,7 @@ class Indexables(TimeStampedModel):
     language_iso629_1 = models.CharField(max_length=2, blank=True, null=True)
     language_display = models.CharField(max_length=64, blank=True, null=True)
     language_pg = models.CharField(max_length=64, blank=True, null=True)
+    selector = models.JSONField(blank=True, null=True)
     type = models.CharField(max_length=64)
     subtype = models.CharField(max_length=256)
 
