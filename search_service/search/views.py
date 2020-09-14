@@ -15,10 +15,20 @@ from rest_framework import generics, filters, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework import viewsets
+from rest_framework.request import Request
+from rest_framework.pagination import PageNumberPagination
+from django_filters import rest_framework as df_filters
 
 
 # Local imports
-from .serializers import UserSerializer, IndexablesSerializer, IIIFSerializer, ContextSerializer
+from .serializers import (
+    UserSerializer,
+    IndexablesSerializer,
+    IIIFSerializer,
+    ContextSerializer,
+    IIIFSearchSummarySerializer,
+)
 from .models import Indexables, IIIFResource, Context
 from .prezi_upgrader import Upgrader
 from .langbase import LANGBASE
@@ -35,6 +45,7 @@ def api_root(request, format=None):
             "iiif": reverse("iiifresource-list", request=request, format=format),
             "indexable": reverse("indexables-list", request=request, format=format),
             "contexts": reverse("context-list", request=request, format=format),
+            "search": reverse("search", request=request, format=format),
         }
     )
 
@@ -232,3 +243,80 @@ class IndexablesList(generics.ListCreateAPIView):
                 kwargs = {f"{facet_key}__iexact": t[0]}
                 facet_dict[facet_key][t[0]] = queryset.filter(**kwargs).count()
         return queryset.annotate(facets=Value(facet_dict, JSONField()))
+
+
+class MadocPagination(PageNumberPagination):
+    """
+     "pagination": {
+    "page": 1,
+    "totalPages": 35,
+    "totalResults": 830
+  }
+    """
+
+    def get_paginated_response(self, data):
+        return Response(
+            {
+                "pagination": {
+                    "page": self.page.number,
+                    "totalPages": self.page.paginator.num_pages,
+                    "totalResults": self.page.paginator.count,
+                },
+                "results": data,
+            }
+        )
+
+
+class ContextFilterSet(df_filters.FilterSet):
+    cont = df_filters.filters.CharFilter(field_name="contexts__id", lookup_expr="iexact")
+
+    class Meta:
+        model = Context
+        fields = ["cont"]
+
+
+class IIIFSearch(viewsets.ReadOnlyModelViewSet):
+    """
+    Simple read only view for the IIIF data
+    """
+
+    queryset = IIIFResource.objects.all()
+    serializer_class = IIIFSearchSummarySerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["madoc_id", "contexts__id"]
+    pagination_class = MadocPagination
+
+    def get_serializer_context(self):
+        context = super(IIIFSearch, self).get_serializer_context()
+        context.update({"request": self.request})
+        return context
+
+    def get_queryset(self):
+        search_string = self.request.query_params.get("fulltext", None)
+        language = self.request.query_params.get("search_language", None)
+        search_type = self.request.query_params.get("search_type", "websearch")
+        context = self.request.query_params.get("cont", None)
+        filter_kwargs = {}
+        for param in self.request.query_params:
+            if param in [
+                "type",
+                "subtype",
+                "language_iso629_2",
+                "language_iso629_1",
+                "language_display",
+                "language_pg",
+            ]:
+                filter_kwargs[f"indexables__{param}__iexact"] = self.request.query_params.get(param, None)
+        if context:
+            queryset = IIIFResource.objects.filter(context__id=context)
+        else:
+            queryset = IIIFResource.objects.all()
+        if search_string:
+            if language:
+                query = SearchQuery(search_string, config=language, search_type=search_type)
+            else:
+                query = SearchQuery(search_string, search_type=search_type)
+            queryset = queryset.filter(indexables__search_vector=query, **filter_kwargs)
+        elif filter_kwargs:
+            queryset = queryset.filter(**filter_kwargs)
+        return queryset

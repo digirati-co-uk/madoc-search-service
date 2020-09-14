@@ -11,7 +11,8 @@ urlpatterns = [
     path("indexables/", views.IndexablesList.as_view(), name="indexables-list"),
     path("indexables/<int:pk>/", views.IndexablesDetail.as_view(), name="indexables-detail"),
     path("contexts/", views.ContextList.as_view(), name="context-list"),
-    path("contexts/<slug:slug>/", views.ContextDetail.as_view(), name="context-detail")
+    path("contexts/<slug:slug>/", views.ContextDetail.as_view(), name="context-detail"),
+    path("search/", views.IIIFSearch.as_view({'get': 'list'}), name="search")
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
