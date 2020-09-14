@@ -108,4 +108,6 @@ class Indexables(TimeStampedModel):
             models.Index(fields=["original_content"]),
             models.Index(fields=["content_id"]),
             models.Index(fields=["language_iso629_2", "language_iso629_1", "language_display"]),
+            models.Index(fields=["type"]),
+            models.Index(fields=["subtype"])
         ]
