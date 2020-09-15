@@ -9,11 +9,11 @@
       "type": "Collection"
     }
   ],
-  "id": "urn:site:baz",
+  "id": "urn:site:1:manifest:6",
   "thumbnail": "https://example.com/bar",
   "resource": {
     "@context": "http://iiif.io/api/presentation/2/context.json",
-    "@id": "http://madoc.dlcs.digirati.io/public/storage/urn:madoc:site:1/AA00000463_00010/public//AA00000463_00010_manifest.json",
+    "@id": "http://madoc.dlcs.digirati.io/public/storage/urn:madoc:site:1/AA00000463_00010/public//AA00000463_00010_manifest_.json",
     "@type": "sc:Manifest",
     "label": "Manilha consultations",
     "description": "Vol. 1 (1762)-v. 10 (1764).<br>Printed from original Ms. housed at the Madras Central Record Office.<br>Funded with resources from SOAS Archives and Special Collections and with the generous support of the Philippine Department of Foreign Affairs and the Office of Senator Loren Legarda.<br>VIAF (name authority) : Draper, William, Sir, 1721-1787 : URI http://viaf.org/viaf/15943280",

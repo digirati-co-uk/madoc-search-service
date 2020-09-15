@@ -135,6 +135,7 @@ class IIIFList(generics.ListCreateAPIView):
     queryset = IIIFResource.objects.all()
     serializer_class = IIIFSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ["madoc_id"]
 
     def create(self, request, *args, **kwargs):
         d = request.data
@@ -168,7 +169,10 @@ class IIIFList(generics.ListCreateAPIView):
         self.perform_create(serializer)
         instance = IIIFResource.objects.get(madoc_id=data_dict["madoc_id"])
         if contexts:
-            c_objs = [Context.objects.get_or_create(**context) for context in contexts]
+            if iiif3:
+                if iiif3.get("type"):
+                    contexts += [{"id": d["id"], "type": iiif3["type"]}]
+            c_objs = [Context.objects.get_or_create(**cont) for cont in contexts]
             if instance:
                 c_objs_set = [c_obj for c_obj, _ in c_objs]
                 instance.contexts.set(c_objs_set)
@@ -206,7 +210,6 @@ class IndexablesDetail(generics.RetrieveUpdateDestroyAPIView):
 class IndexablesList(generics.ListCreateAPIView):
     serializer_class = IndexablesSerializer
     filter_backends = [DjangoFilterBackend]
-    # search_fields = ["indexable", "original_content", "=resource_id", "=content_id"]
 
     def get_queryset(self):
         search_string = self.request.query_params.get("fulltext", None)
@@ -248,11 +251,14 @@ class IndexablesList(generics.ListCreateAPIView):
 
 class MadocPagination(PageNumberPagination):
     """
-     "pagination": {
-    "page": 1,
-    "totalPages": 35,
-    "totalResults": 830
-  }
+
+    Pagination class for Madoc results
+
+    "pagination": {
+        "page": 1,
+        "totalPages": 35,
+        "totalResults": 830
+      }
     """
 
     def get_paginated_response(self, data):
@@ -269,6 +275,10 @@ class MadocPagination(PageNumberPagination):
 
 
 class ContextFilterSet(df_filters.FilterSet):
+    """
+    Currently unused. Test filterset to change the filter field for contexts, e.g. to
+    "cont"
+    """
     cont = df_filters.filters.CharFilter(field_name="contexts__id", lookup_expr="iexact")
 
     class Meta:
@@ -278,7 +288,10 @@ class ContextFilterSet(df_filters.FilterSet):
 
 class IIIFSearch(viewsets.ReadOnlyModelViewSet, ListModelMixin):
     """
-    Simple read only view for the IIIF data
+    Simple read only view for the IIIF data with methods for
+    adding hits and generating facets for return in the results
+
+    Uses a custom paginator to fit the Madoc model.
     """
 
     queryset = IIIFResource.objects.all()
