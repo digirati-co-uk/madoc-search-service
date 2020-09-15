@@ -4,7 +4,21 @@ collections = [
     # "https://iiif.ub.uni-leipzig.de/static/collections/Drucke17/collection.json",
     # "https://iiif.ub.uni-leipzig.de/static/collections/Drucke16/collection.json",
     # "https://iiif.ub.uni-leipzig.de/static/collections/misc/cdvost2018.json",
-    "https://iiif.hab.de/collection/project/mssox.json"
+    # "https://iiif.hab.de/collection/project/mssox.json",
+    # "https://www.e-codices.unifr.ch/metadata/iiif/collection/sl.json",
+    # "https://www.e-codices.unifr.ch/metadata/iiif/collection/saa.json",
+    # "https://www.e-codices.unifr.ch/metadata/iiif/collection/bge.json",
+    # "https://digital.library.villanova.edu/Collection/vudl:294849/IIIF",
+    # "https://digital.library.villanova.edu/Collection/vudl:289364/IIIF",
+    # "https://digital.library.villanova.edu/Collection/vudl:313874/IIIF",
+    # "https://digital.library.villanova.edu/Collection/vudl:293828/IIIF",
+    # "https://digital.library.villanova.edu/Collection/vudl:287996/IIIF",
+    # "https://digital.library.villanova.edu/Collection/vudl:321794/IIIF",
+    # "https://digital.library.villanova.edu/Collection/vudl:289113/IIIF",
+    # "https://iiif.bodleian.ox.ac.uk/iiif/collection/korean-origin",
+    # "https://iiif.bodleian.ox.ac.uk/iiif/collection/japanese-origin",
+    # "https://iiif.bodleian.ox.ac.uk/iiif/collection/southeast-asian-origin",
+    "https://view.nls.uk/collections/7446/74466699.json"
 ]
 
 
@@ -12,11 +26,8 @@ for coll in collections:
     collection = requests.get(
        coll
     ).json()
-    # try:
-    #     manifests = collection.get("manifests")
-    # except TypeError:
-    manifests = collection.get("members")
-    for m in manifests[1:]:
+    manifests = collection.get("members", collection.get("manifests", None))
+    for m in manifests:
         print(m["@id"])
         j = requests.get(m["@id"]).json()
         if j:

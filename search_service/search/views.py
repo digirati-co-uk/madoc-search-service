@@ -149,46 +149,56 @@ class IIIFList(generics.ListCreateAPIView):
                 iiif3 = d["resource"]
         else:
             iiif3 = None
-        if iiif3:
-            for k in [
-                "id",
-                "type",
-                "label",
-                "thumbnail",
-                "summary",
-                "metadata",
-                "rights",
-                "provider",
-                "requiredStatement",
-                "navDate",
-            ]:
-                data_dict[k] = iiif3.get(k)
-
-        serializer = self.get_serializer(data=data_dict)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        instance = IIIFResource.objects.get(madoc_id=data_dict["madoc_id"])
         if contexts:
             if iiif3:
                 if iiif3.get("type"):
                     contexts += [{"id": d["id"], "type": iiif3["type"]}]
-            c_objs = [Context.objects.get_or_create(**cont) for cont in contexts]
-            if instance:
-                c_objs_set = [c_obj for c_obj, _ in c_objs]
-                instance.contexts.set(c_objs_set)
-                instance.save()
-        if iiif3:
-            indexable_list = flatten_iiif_descriptive(
-                iiif=iiif3, default_language=default_lang, lang_base=LANGBASE
-            )
-            if indexable_list:
-                for _indexable in indexable_list:
-                    indexable_obj = Indexables(
-                        **_indexable, iiif=instance, resource_id=instance.madoc_id
-                    )
-                    indexable_obj.save()
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+        def ingest_iiif(iiif3_resource=None, resource_contexts=None):
+            if iiif3_resource:
+                for k in [
+                    "id",
+                    "type",
+                    "label",
+                    "thumbnail",
+                    "summary",
+                    "metadata",
+                    "rights",
+                    "provider",
+                    "requiredStatement",
+                    "navDate",
+                ]:
+                    data_dict[k] = iiif3_resource.get(k)
+            serializer = self.get_serializer(data=data_dict)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            instance = IIIFResource.objects.get(madoc_id=data_dict["madoc_id"])
+            if resource_contexts:
+                if iiif3_resource:
+                    if iiif3_resource.get("type"):
+                        resource_contexts += [{"id": d["id"], "type": iiif3_resource["type"]}]
+                c_objs = [Context.objects.get_or_create(**cont) for cont in resource_contexts]
+                if instance:
+                    c_objs_set = [c_obj for c_obj, _ in c_objs]
+                    instance.contexts.set(c_objs_set)
+                    instance.save()
+            if iiif3_resource:
+                indexable_list = flatten_iiif_descriptive(
+                    iiif=iiif3, default_language=default_lang, lang_base=LANGBASE
+                )
+                if indexable_list:
+                    for _indexable in indexable_list:
+                        indexable_obj = Indexables(
+                            **_indexable, iiif=instance, resource_id=instance.madoc_id
+                        )
+                        indexable_obj.save()
+            return serializer.data, self.get_success_headers(serializer.data)
+        if iiif3.get("items"):
+            print("Got items")
+        manifest_data, manifest_headers = ingest_iiif(
+            iiif3_resource=iiif3, resource_contexts=contexts
+        )
+        return Response(manifest_data, status=status.HTTP_201_CREATED, headers=manifest_headers)
 
 
 class ContextDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -279,6 +289,7 @@ class ContextFilterSet(df_filters.FilterSet):
     Currently unused. Test filterset to change the filter field for contexts, e.g. to
     "cont"
     """
+
     cont = df_filters.filters.CharFilter(field_name="contexts__id", lookup_expr="iexact")
 
     class Meta:
@@ -335,7 +346,7 @@ class IIIFSearch(viewsets.ReadOnlyModelViewSet, ListModelMixin):
                     .values("indexables__indexable")
                     .distinct()
                     .annotate(n=models.Count("pk"))
-                    .order_by("-n")
+                    .order_by("-n")[:10]
                 }
         response.data["facets"] = facet_summary
         return response
@@ -393,15 +404,19 @@ class IIIFSearch(viewsets.ReadOnlyModelViewSet, ListModelMixin):
                     param, None
                 )
             elif param == "facet_value":
-                postfilter_kwargs[f"indexables__indexable__iexact"] = self.request.query_params.get(
-                    param, None
-                )
+                postfilter_kwargs[
+                    f"indexables__indexable__iexact"
+                ] = self.request.query_params.get(param, None)
         if search_string:
             if language:
-                filter_kwargs["indexables__search_vector"] = SearchQuery(search_string, config=language, search_type=search_type)
+                filter_kwargs["indexables__search_vector"] = SearchQuery(
+                    search_string, config=language, search_type=search_type
+                )
             else:
-                filter_kwargs["indexables__search_vector"] = SearchQuery(search_string, search_type=search_type)
+                filter_kwargs["indexables__search_vector"] = SearchQuery(
+                    search_string, search_type=search_type
+                )
         queryset = IIIFResource.objects.all().filter(**filter_kwargs)
         if postfilter_kwargs:
             queryset = queryset.filter(**postfilter_kwargs)
-        return queryset
+        return queryset.distinct()

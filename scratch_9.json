@@ -9,7 +9,7 @@
       "type": "Collection"
     }
   ],
-  "id": "urn:site:1:manifest:6",
+  "id": "urn:site:1:manifest:7",
   "thumbnail": "https://example.com/bar",
   "resource": {
     "@context": "http://iiif.io/api/presentation/2/context.json",
