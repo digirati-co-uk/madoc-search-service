@@ -82,11 +82,12 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
         for param in self.context["request"].query_params:
             if param not in ["fulltext", "search_language", "search_type"]:
                 if param in [
-                    "hit_type",
                     "language_iso629_2",
                     "language_iso629_1",
                     "language_display",
                     "language_pg",
+                    # "type",
+                    # "subtype"
                 ]:
                     filter_kwargs[f"{param}__iexact"] = self.context["request"].query_params.get(
                         param, None

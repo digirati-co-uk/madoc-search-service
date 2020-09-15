@@ -358,6 +358,7 @@ class IIIFSearch(viewsets.ReadOnlyModelViewSet, ListModelMixin):
         language = self.request.query_params.get("search_language", None)
         search_type = self.request.query_params.get("search_type", "websearch")
         filter_kwargs = {}
+        postfilter_kwargs = {}
         for param in self.request.query_params:
             if param in [
                 "type",
@@ -370,13 +371,24 @@ class IIIFSearch(viewsets.ReadOnlyModelViewSet, ListModelMixin):
                 filter_kwargs[f"indexables__{param}__iexact"] = self.request.query_params.get(
                     param, None
                 )
-        queryset = IIIFResource.objects.all()
+            elif param == "facet_type":
+                postfilter_kwargs[f"indexables__type__iexact"] = self.request.query_params.get(
+                    param, None
+                )
+            elif param == "facet_subtype":
+                postfilter_kwargs[f"indexables__subtype__iexact"] = self.request.query_params.get(
+                    param, None
+                )
+            elif param == "facet_value":
+                postfilter_kwargs[f"indexables__indexable__iexact"] = self.request.query_params.get(
+                    param, None
+                )
         if search_string:
             if language:
-                query = SearchQuery(search_string, config=language, search_type=search_type)
+                filter_kwargs["indexables__search_vector"] = SearchQuery(search_string, config=language, search_type=search_type)
             else:
-                query = SearchQuery(search_string, search_type=search_type)
-            queryset = queryset.filter(indexables__search_vector=query, **filter_kwargs)
-        elif filter_kwargs:
-            queryset = queryset.filter(**filter_kwargs)
+                filter_kwargs["indexables__search_vector"] = SearchQuery(search_string, search_type=search_type)
+        queryset = IIIFResource.objects.all().filter(**filter_kwargs)
+        if postfilter_kwargs:
+            queryset = queryset.filter(**postfilter_kwargs)
         return queryset
