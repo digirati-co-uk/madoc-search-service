@@ -39,3 +39,9 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=SOME PASSWORD # change me
 DATABASE_URL=postgres://postgres:SOME PASSWORD@postgres:5432/postgres  # change me
 ```
+
+
+## Testing
+
+You can run `search_service/search/tests.py` in any Python3 environment with `requests` installed and it'll push 
+some test data in.
