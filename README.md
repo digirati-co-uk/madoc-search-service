@@ -44,4 +44,5 @@ DATABASE_URL=postgres://postgres:SOME PASSWORD@postgres:5432/postgres  # change 
 ## Testing
 
 You can run `search_service/search/tests.py` in any Python3 environment with `requests` installed and it'll push 
-some test data in.
+some test data in. Not a proper unit or integration test. It just POSTs
+some data.
