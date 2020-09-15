@@ -321,7 +321,8 @@ class IIIFSearch(viewsets.ReadOnlyModelViewSet, ListModelMixin):
                     .filter(indexables__subtype__iexact=v)
                     .values("indexables__indexable")
                     .distinct()
-                    .annotate(n=models.Count("pk")).order_by("-n")
+                    .annotate(n=models.Count("pk"))
+                    .order_by("-n")
                 }
         response.data["facets"] = facet_summary
         return response
