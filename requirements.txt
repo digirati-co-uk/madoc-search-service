@@ -15,6 +15,7 @@ distro==1.5.0
 Django==3.1.1
 django-environ==0.4.5
 django-environment==0.3.8
+django-extensions==3.0.8
 django-filter==2.3.0
 django-js-asset==1.2.2
 django-model-utils==4.0.0
@@ -47,6 +48,7 @@ pbr==5.5.0
 pluggy==0.13.1
 psycopg2-binary==2.8.6
 py==1.9.0
+pyaml==20.4.0
 pycparser==2.20
 PyLD==2.0.3
 PyNaCl==1.4.0
@@ -65,6 +67,7 @@ sqlparse==0.3.1
 stevedore==3.2.1
 texttable==1.6.3
 toml==0.10.1
+uritemplate==3.0.1
 urllib3==1.25.10
 virtualenv==20.0.31
 virtualenv-clone==0.5.4
@@ -73,4 +76,3 @@ waitress==1.4.4
 wcwidth==0.2.5
 websocket-client==0.57.0
 zipp==3.1.0
-django-extensions
