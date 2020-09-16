@@ -9,6 +9,8 @@ from django.utils.translation import get_language
 from django_filters import rest_framework as df_filters
 from django_filters.rest_framework import DjangoFilterBackend
 
+from django.conf import settings as conf_settings
+
 # DRF Imports
 from rest_framework import generics, filters, status
 from rest_framework import viewsets
@@ -302,7 +304,6 @@ def parse_search(req):
     into a set of filter kwargs that can be passed to the list and hits methods.
     """
     if req.method == "POST":
-        print("Generating filter and postfilter kwargs on POST")
         prefilter_kwargs = {}
         filter_kwargs = {}
         postfilter_kwargs = []
@@ -334,18 +335,44 @@ def parse_search(req):
                 if f.get("type") and f.get("subtype") and f.get("value"):
                     postfilter_kwargs.append(
                         {
-                            "indexables__type__iexact":  f["type"],
+                            "indexables__type__iexact": f["type"],
                             "indexables__subtype__iexact": f["subtype"],
-                            "indexables__indexable__iexact": f["value"]
-                        },
+                            "indexables__indexable__iexact": f["value"],
+                        }
                     )
-        return prefilter_kwargs, filter_kwargs, postfilter_kwargs, facet_fields
+        hits_filter_kwargs = {
+            k.replace("indexables__", ""): v
+            for k, v in filter_kwargs.items()
+            if k.startswith("indexables")
+        }
+        if search_string:
+            hits_filter_kwargs["search_string"] = search_string
+        if language:
+            hits_filter_kwargs["language"] = language
+        if search_type:
+            hits_filter_kwargs["search_type"] = search_type
+        hits_postfilter_kwargs = [
+            {
+                k.replace("indexables__", ""): v
+                for k, v in postfilter.items()
+                if k.startswith("indexables")
+            }
+            for postfilter in postfilter_kwargs
+        ]
+        return (
+            prefilter_kwargs,
+            filter_kwargs,
+            postfilter_kwargs,
+            facet_fields,
+            hits_filter_kwargs,
+            hits_postfilter_kwargs,
+        )
     elif req.method == "GET":
         search_string = req.query_params.get("fulltext", None)
         language = req.query_params.get("search_language", None)
         search_type = req.query_params.get("search_type", "websearch")
         filter_kwargs = {}
-        postfilter_kwargs = {}
+        postfilter_kwargs = [{}]
         prefilter_kwargs = {}
         for param in req.query_params:
             if param in [
@@ -358,13 +385,13 @@ def parse_search(req):
             ]:
                 filter_kwargs[f"indexables__{param}__iexact"] = req.query_params.get(param, None)
             elif param == "facet_type":
-                postfilter_kwargs[f"indexables__type__iexact"] = req.query_params.get(param, None)
+                postfilter_kwargs[0][f"indexables__type__iexact"] = req.query_params.get(param, None)
             elif param == "facet_subtype":
-                postfilter_kwargs[f"indexables__subtype__iexact"] = req.query_params.get(
+                postfilter_kwargs[0][f"indexables__subtype__iexact"] = req.query_params.get(
                     param, None
                 )
             elif param == "facet_value":
-                postfilter_kwargs[f"indexables__indexable__iexact"] = req.query_params.get(
+                postfilter_kwargs[0][f"indexables__indexable__iexact"] = req.query_params.get(
                     param, None
                 )
         if search_string:
@@ -376,7 +403,33 @@ def parse_search(req):
                 filter_kwargs["indexables__search_vector"] = SearchQuery(
                     search_string, search_type=search_type
                 )
-        return prefilter_kwargs, filter_kwargs, postfilter_kwargs, None
+        hits_filter_kwargs = {
+            k.replace("indexables__", ""): v
+            for k, v in filter_kwargs.items()
+            if k.startswith("indexables")
+        }
+        if search_string:
+            hits_filter_kwargs["search_string"] = search_string
+        if language:
+            hits_filter_kwargs["language"] = language
+        if search_type:
+            hits_filter_kwargs["search_type"] = search_type
+        hits_postfilter_kwargs = [
+            {
+                k.replace("indexables__", ""): v
+                for k, v in postfilter.items()
+                if k.startswith("indexables")
+            }
+            for postfilter in postfilter_kwargs
+        ]
+        return (
+            prefilter_kwargs,
+            filter_kwargs,
+            postfilter_kwargs,
+            None,
+            hits_filter_kwargs,
+            hits_postfilter_kwargs,
+        )
 
 
 class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
@@ -410,8 +463,11 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         Ways of making this query more efficient when the number of objects is high.
 
         """
+        print("List method")
         # Call a function to set the filter_kwargs and postfilter_kwargs based on incoming request
-        prefilter_kwargs, filter_kwargs, postfilter_kwargs, facet_fields = parse_search(req=request)
+        prefilter_kwargs, filter_kwargs, postfilter_kwargs, facet_fields, hits_filter_kwargs, hits_postfilter_kwargs = parse_search(
+            req=request
+        )
         if facet_fields:
             setattr(self, "facet_fields", facet_fields)
         if prefilter_kwargs:
@@ -420,6 +476,10 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             setattr(self, "filter_kwargs", filter_kwargs)
         if postfilter_kwargs:
             setattr(self, "postfilter_kwargs", postfilter_kwargs)
+        if hits_filter_kwargs:
+            setattr(self, "hits_filter_kwargs", hits_filter_kwargs)
+        if hits_postfilter_kwargs:
+            setattr(self, "hits_postfilter_kwargs", hits_postfilter_kwargs)
         response = super(IIIFSearch, self).list(request, args, kwargs)
         facet_summary = {"metadata": {}}
         # If we haven't been provided a list of facet fields via a POST
@@ -427,10 +487,10 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         if not facet_fields:
             facet_fields = []
             for t in (
-                    self.get_queryset()
-                            .filter(indexables__type__iexact="metadata")
-                            .values("indexables__subtype")
-                            .distinct()
+                self.get_queryset()
+                .filter(indexables__type__iexact="metadata")
+                .values("indexables__subtype")
+                .distinct()
             ):
                 for _, v in t.items():
                     facet_fields.append(v)
@@ -454,8 +514,13 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         populate each manifest with a list of hits that match the query
         parameters
         """
+        print("Updating context")
         context = super(IIIFSearch, self).get_serializer_context()
         context.update({"request": self.request})
+        if hasattr(self, "hits_filter_kwargs"):
+            context.update({"hits_filter_kwargs": self.hits_filter_kwargs})
+        if hasattr(self, "hits_postfilter_kwargs"):
+            context.update({"hits_postfilter_kwargs": self.hits_postfilter_kwargs})
         return context
 
     def get_queryset(self):
@@ -468,14 +533,15 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
 
         Apply these and return distinct objects
         """
+        print("Updating queryset")
         queryset = IIIFResource.objects.all()
         if hasattr(self, "prefilter_kwargs"):
-            print(self.prefilter_kwargs)
             queryset = queryset.filter(**self.prefilter_kwargs)
         if hasattr(self, "filter_kwargs"):
             queryset = queryset.filter(**self.filter_kwargs)
         if hasattr(self, "postfilter_kwargs"):
             for filter_dict in self.postfilter_kwargs:
-                # print(filter_dict)
+                # This is a chaining operation
+                # Appending each filter one at a time
                 queryset = queryset.filter(**filter_dict)
         return queryset.distinct()
