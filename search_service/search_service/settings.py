@@ -16,7 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 import os
 import environ
 from django.utils.translation import ugettext_lazy as _
-
+from distutils.util import strtobool
 
 env = environ.Env()
 
@@ -91,6 +91,13 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 25,
 }
 
+BROWSABLE = strtobool(env('BROWSABLE'))
+
+if not BROWSABLE:
+    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = (
+        'rest_framework.renderers.JSONRenderer',
+    )
+
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -133,3 +140,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"
 
 APPEND_SLASH = False
+

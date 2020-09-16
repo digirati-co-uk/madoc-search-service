@@ -9,6 +9,7 @@ services:
       - LOAD=False
       - DJANGO_DEBUG=False
       - WAITRESS=False
+      - BROWSABLE=False
       - POSTGRES_HOST=shared-postgres
       - POSTGRES_PORT=${POSTGRES_PORT:-5432}
       - POSTGRES_USER=${POSTGRES_SEARCH_API_USER:-search_api}
