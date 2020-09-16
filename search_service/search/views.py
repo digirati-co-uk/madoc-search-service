@@ -305,7 +305,7 @@ def parse_search(req):
         print("Generating filter and postfilter kwargs on POST")
         prefilter_kwargs = {}
         filter_kwargs = {}
-        postfilter_kwargs = {}
+        postfilter_kwargs = []
         search_string = req.data.get("fulltext", None)
         language = req.data.get("search_language", None)
         search_type = req.data.get("search_type", "websearch")
@@ -313,6 +313,7 @@ def parse_search(req):
         contexts = req.data.get("contexts", None)
         madoc_identifiers = req.data.get("madoc_identifiers", None)
         iiif_identifiers = req.data.get("iiif_identifiers", None)
+        facet_queries = req.data.get("facets", None)
         if contexts:
             prefilter_kwargs[f"contexts__id__in"] = contexts
         if madoc_identifiers:
@@ -328,6 +329,16 @@ def parse_search(req):
                 filter_kwargs["indexables__search_vector"] = SearchQuery(
                     search_string, search_type=search_type
                 )
+        if facet_queries:
+            for f in facet_queries:
+                if f.get("type") and f.get("subtype") and f.get("value"):
+                    postfilter_kwargs.append(
+                        {
+                            "indexables__type__iexact":  f["type"],
+                            "indexables__subtype__iexact": f["subtype"],
+                            "indexables__indexable__iexact": f["value"]
+                        },
+                    )
         return prefilter_kwargs, filter_kwargs, postfilter_kwargs, facet_fields
     elif req.method == "GET":
         search_string = req.query_params.get("fulltext", None)
@@ -459,9 +470,12 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         """
         queryset = IIIFResource.objects.all()
         if hasattr(self, "prefilter_kwargs"):
+            print(self.prefilter_kwargs)
             queryset = queryset.filter(**self.prefilter_kwargs)
         if hasattr(self, "filter_kwargs"):
             queryset = queryset.filter(**self.filter_kwargs)
         if hasattr(self, "postfilter_kwargs"):
-            queryset = queryset.filter(**self.postfilter_kwargs)
+            for filter_dict in self.postfilter_kwargs:
+                # print(filter_dict)
+                queryset = queryset.filter(**filter_dict)
         return queryset.distinct()
