@@ -1,0 +1,36 @@
+version: 3
+services:
+  search:
+    build: .
+    environment:
+      - USE_DOCKER=yes
+      - IPYTHONDIR=/app/.ipython
+      - MIGRATE=True
+      - LOAD=False
+      - DJANGO_DEBUG=False
+      - WAITRESS=False
+      - POSTGRES_HOST=shared-postgres
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_USER=${POSTGRES_SEARCH_API_USER:-search_api}
+      - POSTGRES_PASSWORD=${POSTGRES_SEARCH_API_PASSWORD:-search_api_password}
+      - POSTGRES_SCHEMA=${POSTGRES_SEARCH_API_SCHEMA:-search_api}
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - DATABASE_URL=postgres://${POSTGRES_SEARCH_API_USER:-search_api}:${POSTGRES_SEARCH_API_PASSWORD:-search_api_password}@shared-postgres:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-postgres}
+    links:
+      - shared-postgres
+    ports:
+      - 8000:8000
+      - 5000:5000
+
+  ## This may not work until tag is pushed with updates.
+  shared-postgres:
+    image: digirati/madoc-shared-postgres-beta:v2
+    volumes:
+      - ./var/shared-database:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_SEARCH_API_USER=search_api
+      - POSTGRES_SEARCH_API_SCHEMA=search_api
+      - POSTGRES_SEARCH_API_PASSWORD=search_api_password
