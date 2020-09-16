@@ -359,6 +359,7 @@ def parse_search(req):
             }
             for postfilter in postfilter_kwargs
         ]
+        sort_order = req.data.get("ordering", "-rank")
         return (
             prefilter_kwargs,
             filter_kwargs,
@@ -366,6 +367,7 @@ def parse_search(req):
             facet_fields,
             hits_filter_kwargs,
             hits_postfilter_kwargs,
+            sort_order,
         )
     elif req.method == "GET":
         search_string = req.query_params.get("fulltext", None)
@@ -385,7 +387,9 @@ def parse_search(req):
             ]:
                 filter_kwargs[f"indexables__{param}__iexact"] = req.query_params.get(param, None)
             elif param == "facet_type":
-                postfilter_kwargs[0][f"indexables__type__iexact"] = req.query_params.get(param, None)
+                postfilter_kwargs[0][f"indexables__type__iexact"] = req.query_params.get(
+                    param, None
+                )
             elif param == "facet_subtype":
                 postfilter_kwargs[0][f"indexables__subtype__iexact"] = req.query_params.get(
                     param, None
@@ -422,6 +426,7 @@ def parse_search(req):
             }
             for postfilter in postfilter_kwargs
         ]
+        sort_order = req.query_params.get("ordering", "-rank")
         return (
             prefilter_kwargs,
             filter_kwargs,
@@ -429,6 +434,7 @@ def parse_search(req):
             None,
             hits_filter_kwargs,
             hits_postfilter_kwargs,
+            sort_order,
         )
 
 
@@ -465,9 +471,15 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         """
         print("List method")
         # Call a function to set the filter_kwargs and postfilter_kwargs based on incoming request
-        prefilter_kwargs, filter_kwargs, postfilter_kwargs, facet_fields, hits_filter_kwargs, hits_postfilter_kwargs = parse_search(
-            req=request
-        )
+        (
+            prefilter_kwargs,
+            filter_kwargs,
+            postfilter_kwargs,
+            facet_fields,
+            hits_filter_kwargs,
+            hits_postfilter_kwargs,
+            sort_order,
+        ) = parse_search(req=request)
         if facet_fields:
             setattr(self, "facet_fields", facet_fields)
         if prefilter_kwargs:
@@ -505,13 +517,17 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
                 .order_by("-n")[:10]
             }
         response.data["facets"] = facet_summary
-        ordering = request.query_params.get("ordering", "-rank")
-        if ordering:
-            if "-" in ordering:
-                response.data['results'] = sorted(response.data['results'],
-                                                  key=lambda k: (k[ordering.replace('-', '')],), reverse=True)
+        if sort_order:
+            if "-" in sort_order:
+                response.data["results"] = sorted(
+                    response.data["results"],
+                    key=lambda k: (k[sort_order.replace("-", "")],),
+                    reverse=True,
+                )
             else:
-                response.data['results'] = sorted(response.data['results'], key=lambda k: (k[ordering],))
+                response.data["results"] = sorted(
+                    response.data["results"], key=lambda k: (k[sort_order],)
+                )
         return response
 
     def get_serializer_context(self):
