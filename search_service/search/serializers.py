@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Indexables, IIIFResource, Context
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchHeadline
-from django.db.models import F, Value
+from django.db.models import F, Value, Max
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -72,39 +72,51 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
     hits = serializers.SerializerMethodField("get_hits")
     resource_id = serializers.CharField(source="madoc_id")
     resource_type = serializers.CharField(source="type")
+    rank = serializers.SerializerMethodField("get_rank")
+
+    def get_rank(self, iiif):
+        return max([h["rank"] for h in self.get_hits(iiif=iiif)])
 
     def get_hits(self, iiif):
-        qs = Indexables.objects.filter(iiif=iiif)
-        search_string = self.context["request"].query_params.get("fulltext", None)
-        language = self.context["request"].query_params.get("search_language", None)
-        search_type = self.context["request"].query_params.get("search_type", "websearch")
         filter_kwargs = {"rank__gt": 0.0}
-        for param in self.context["request"].query_params:
-            if param not in ["fulltext", "search_language", "search_type"]:
-                if param in [
-                    "language_iso629_2",
-                    "language_iso629_1",
-                    "language_display",
-                    "language_pg",
-                    # "type",
-                    # "subtype"
-                ]:
-                    filter_kwargs[f"{param}__iexact"] = self.context["request"].query_params.get(
-                        param, None
-                    )
-        if search_string:
-            if language:
-                query = SearchQuery(search_string, config=language, search_type=search_type)
+        qs = Indexables.objects.filter(iiif=iiif)
+        if self.context.get("hits_filter_kwargs"):
+            search_string = self.context["hits_filter_kwargs"].get("fulltext", None)
+            language = self.context["hits_filter_kwargs"].get("search_language", None)
+            search_type = self.context["hits_filter_kwargs"].get("search_type", "websearch")
+            search_query = self.context["hits_filter_kwargs"].get("search_vector", None)
+        else:
+            search_string = self.context["request"].query_params.get("fulltext", None)
+            language = self.context["request"].query_params.get("search_language", None)
+            search_type = self.context["request"].query_params.get("search_type", "websearch")
+            if search_string:
+                if language:
+                    search_query = SearchQuery(search_string, config=language, search_type=search_type)
+                else:
+                    search_query = SearchQuery(search_string, search_type=search_type)
             else:
-                query = SearchQuery(search_string, search_type=search_type)
+                search_query = None
+        # for param in self.context["request"].query_params:
+        #     if param in [
+        #         "language_iso629_2",
+        #         "language_iso629_1",
+        #         "language_display",
+        #         "language_pg",
+        #         # "type",
+        #         # "subtype"
+        #     ]:
+        #         filter_kwargs[f"{param}__iexact"] = self.context["request"].query_params.get(
+        #             param, None
+        #         )
+        if search_query:
             qs = (
                 qs.annotate(
-                    rank=SearchRank(F("search_vector"), query, cover_density=True),
+                    rank=SearchRank(F("search_vector"), search_query, cover_density=True),
                     snippet=SearchHeadline(
-                        "original_content", query, max_words=50, min_words=25, max_fragments=3
+                        "original_content", search_query, max_words=50, min_words=25, max_fragments=3
                     ),
                 )
-                .filter(search_vector=query, **filter_kwargs)
+                .filter(search_vector=search_query, **filter_kwargs)
                 .order_by("-rank")
             )
         serializer = IndexablesSummarySerializer(instance=qs, many=True)
@@ -118,6 +130,7 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
             "resource_type",
             "madoc_thumbnail",
             "id",
+            "rank",
             "label",
             "context",
             "hits",
