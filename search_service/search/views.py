@@ -330,6 +330,16 @@ def parse_search(req):
                 filter_kwargs["indexables__search_vector"] = SearchQuery(
                     search_string, search_type=search_type
                 )
+        for p in [
+                "type",
+                "subtype",
+                "language_iso629_2",
+                "language_iso629_1",
+                "language_display",
+                "language_pg",
+            ]:
+            if req.data.get(p, None):
+                filter_kwargs[f"indexables__{p}__iexact"] = req.data[p]
         if facet_queries:
             for f in facet_queries:
                 if f.get("type") and f.get("subtype") and f.get("value"):
@@ -486,6 +496,7 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             setattr(self, "prefilter_kwargs", prefilter_kwargs)
         if filter_kwargs:
             setattr(self, "filter_kwargs", filter_kwargs)
+            print(filter_kwargs)
         if postfilter_kwargs:
             setattr(self, "postfilter_kwargs", postfilter_kwargs)
         if hits_filter_kwargs:
