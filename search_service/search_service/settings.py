@@ -131,3 +131,5 @@ MODELTRANSLATION_FALLBACK_LANGUAGES = {"default": ("en",)}
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"
+
+APPEND_SLASH = False
