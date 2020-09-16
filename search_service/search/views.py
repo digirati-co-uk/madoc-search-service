@@ -9,8 +9,6 @@ from django.utils.translation import get_language
 from django_filters import rest_framework as df_filters
 from django_filters.rest_framework import DjangoFilterBackend
 
-from django.conf import settings as conf_settings
-
 # DRF Imports
 from rest_framework import generics, filters, status
 from rest_framework import viewsets
@@ -331,13 +329,13 @@ def parse_search(req):
                     search_string, search_type=search_type
                 )
         for p in [
-                "type",
-                "subtype",
-                "language_iso629_2",
-                "language_iso629_1",
-                "language_display",
-                "language_pg",
-            ]:
+            "type",
+            "subtype",
+            "language_iso629_2",
+            "language_iso629_1",
+            "language_display",
+            "language_pg",
+        ]:
             if req.data.get(p, None):
                 filter_kwargs[f"indexables__{p}__iexact"] = req.data[p]
         if facet_queries:
