@@ -309,6 +309,16 @@ def parse_search(req):
         search_string = req.data.get("fulltext", None)
         language = req.data.get("search_language", None)
         search_type = req.data.get("search_type", "websearch")
+        facet_fields = req.data.get("facet_fields", None)
+        contexts = req.data.get("contexts", None)
+        madoc_identifiers = req.data.get("madoc_identifiers", None)
+        iiif_identifiers = req.data.get("iiif_identifiers", None)
+        if contexts:
+            prefilter_kwargs[f"contexts__id__in"] = contexts
+        if madoc_identifiers:
+            prefilter_kwargs[f"madoc_id__in"] = madoc_identifiers
+        if iiif_identifiers:
+            prefilter_kwargs[f"id__in"] = iiif_identifiers
         if search_string:
             if language:
                 filter_kwargs["indexables__search_vector"] = SearchQuery(
@@ -318,7 +328,7 @@ def parse_search(req):
                 filter_kwargs["indexables__search_vector"] = SearchQuery(
                     search_string, search_type=search_type
                 )
-        return prefilter_kwargs, filter_kwargs, postfilter_kwargs
+        return prefilter_kwargs, filter_kwargs, postfilter_kwargs, facet_fields
     elif req.method == "GET":
         search_string = req.query_params.get("fulltext", None)
         language = req.query_params.get("search_language", None)
@@ -355,7 +365,7 @@ def parse_search(req):
                 filter_kwargs["indexables__search_vector"] = SearchQuery(
                     search_string, search_type=search_type
                 )
-        return prefilter_kwargs, filter_kwargs, postfilter_kwargs
+        return prefilter_kwargs, filter_kwargs, postfilter_kwargs, None
 
 
 class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
@@ -390,7 +400,9 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
 
         """
         # Call a function to set the filter_kwargs and postfilter_kwargs based on incoming request
-        prefilter_kwargs, filter_kwargs, postfilter_kwargs = parse_search(req=request)
+        prefilter_kwargs, filter_kwargs, postfilter_kwargs, facet_fields = parse_search(req=request)
+        if facet_fields:
+            setattr(self, "facet_fields", facet_fields)
         if prefilter_kwargs:
             setattr(self, "prefilter_kwargs", prefilter_kwargs)
         if filter_kwargs:
@@ -399,24 +411,28 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             setattr(self, "postfilter_kwargs", postfilter_kwargs)
         response = super(IIIFSearch, self).list(request, args, kwargs)
         facet_summary = {"metadata": {}}
-        # Query the indexables with a metadata type and generate a list of distinct
-        # subtypes (i.e. field labels from the metadata)
-        for t in (
-            self.get_queryset()
-            .filter(indexables__type__iexact="metadata")
-            .values("indexables__subtype")
-            .distinct()
-        ):
-            for _, v in t.items():  # k = ?
-                facet_summary["metadata"][v] = {
-                    x["indexables__indexable"]: x["n"]
-                    for x in self.get_queryset()
-                    .filter(indexables__subtype__iexact=v)
-                    .values("indexables__indexable")
-                    .distinct()
-                    .annotate(n=models.Count("pk"))
-                    .order_by("-n")[:10]
-                }
+        # If we haven't been provided a list of facet fields via a POST
+        # just generate the list by querying the unique list of metadata subtypes
+        if not facet_fields:
+            facet_fields = []
+            for t in (
+                    self.get_queryset()
+                            .filter(indexables__type__iexact="metadata")
+                            .values("indexables__subtype")
+                            .distinct()
+            ):
+                for _, v in t.items():
+                    facet_fields.append(v)
+        for v in facet_fields:
+            facet_summary["metadata"][v] = {
+                x["indexables__indexable"]: x["n"]
+                for x in self.get_queryset()
+                .filter(indexables__subtype__iexact=v)
+                .values("indexables__indexable")
+                .distinct()
+                .annotate(n=models.Count("pk"))
+                .order_by("-n")[:10]
+            }
         response.data["facets"] = facet_summary
         return response
 
