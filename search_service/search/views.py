@@ -505,6 +505,13 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
                 .order_by("-n")[:10]
             }
         response.data["facets"] = facet_summary
+        ordering = request.query_params.get("ordering", "-rank")
+        if ordering:
+            if "-" in ordering:
+                response.data['results'] = sorted(response.data['results'],
+                                                  key=lambda k: (k[ordering.replace('-', '')],), reverse=True)
+            else:
+                response.data['results'] = sorted(response.data['results'], key=lambda k: (k[ordering],))
         return response
 
     def get_serializer_context(self):
