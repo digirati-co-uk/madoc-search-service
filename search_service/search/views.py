@@ -1,30 +1,28 @@
-# Stdlib imports
-
-import json
+# Django Imports
 
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchHeadline
+from django.db import models
 from django.db.models import F, Value
 from django.db.models import JSONField
-from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.translation import get_language
-from django.db import models
+from django_filters import rest_framework as df_filters
+from django_filters.rest_framework import DjangoFilterBackend
 
-# Django Imports
+# DRF Imports
 from rest_framework import generics, filters, status
+from rest_framework import viewsets
 from rest_framework.decorators import api_view
+from rest_framework.mixins import ListModelMixin
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework import viewsets
-from rest_framework.decorators import action
-
-from rest_framework.request import Request
-from rest_framework.pagination import PageNumberPagination
-from django_filters import rest_framework as df_filters
-from rest_framework.mixins import ListModelMixin
-
 
 # Local imports
+from .langbase import LANGBASE
+from .models import Indexables, IIIFResource, Context
+from .prezi_upgrader import Upgrader
+from .serializer_utils import flatten_iiif_descriptive
 from .serializers import (
     UserSerializer,
     IndexablesSerializer,
@@ -32,11 +30,9 @@ from .serializers import (
     ContextSerializer,
     IIIFSearchSummarySerializer,
 )
-from .models import Indexables, IIIFResource, Context
-from .prezi_upgrader import Upgrader
-from .langbase import LANGBASE
-from .serializer_utils import flatten_iiif_descriptive
 
+
+# Globals
 default_lang = get_language()
 upgrader = Upgrader(flags={"default_lang": default_lang})
 
@@ -304,28 +300,32 @@ def parse_search(req):
     """
     Function to parse incoming search data (from request params or incoming json)
     into a set of filter kwargs that can be passed to the list and hits methods.
-
-    Parameters:
-
-        fulltext: the text to query using the __search (ts_query)
-        search_langyage: the language to use in constructing the query
-        search_type: e.g. websearch or plaintext
-        indexables_filters: e.g. language_display=english
-            "type",
-            "subtype",
-            "language_iso629_2",
-            "language_iso629_1",
-            "language_display",
-            "language_pg",
     """
     if req.method == "POST":
-        return None, None
+        print("Generating filter and postfilter kwargs on POST")
+        prefilter_kwargs = {}
+        filter_kwargs = {}
+        postfilter_kwargs = {}
+        search_string = req.data.get("fulltext", None)
+        language = req.data.get("search_language", None)
+        search_type = req.data.get("search_type", "websearch")
+        if search_string:
+            if language:
+                filter_kwargs["indexables__search_vector"] = SearchQuery(
+                    search_string, config=language, search_type=search_type
+                )
+            else:
+                filter_kwargs["indexables__search_vector"] = SearchQuery(
+                    search_string, search_type=search_type
+                )
+        return prefilter_kwargs, filter_kwargs, postfilter_kwargs
     elif req.method == "GET":
         search_string = req.query_params.get("fulltext", None)
         language = req.query_params.get("search_language", None)
         search_type = req.query_params.get("search_type", "websearch")
         filter_kwargs = {}
         postfilter_kwargs = {}
+        prefilter_kwargs = {}
         for param in req.query_params:
             if param in [
                 "type",
@@ -355,7 +355,7 @@ def parse_search(req):
                 filter_kwargs["indexables__search_vector"] = SearchQuery(
                     search_string, search_type=search_type
                 )
-        return filter_kwargs, postfilter_kwargs
+        return prefilter_kwargs, filter_kwargs, postfilter_kwargs
 
 
 class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
@@ -390,7 +390,9 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
 
         """
         # Call a function to set the filter_kwargs and postfilter_kwargs based on incoming request
-        filter_kwargs, postfilter_kwargs = parse_search(req=request)
+        prefilter_kwargs, filter_kwargs, postfilter_kwargs = parse_search(req=request)
+        if prefilter_kwargs:
+            setattr(self, "prefilter_kwargs", prefilter_kwargs)
         if filter_kwargs:
             setattr(self, "filter_kwargs", filter_kwargs)
         if postfilter_kwargs:
@@ -431,18 +433,19 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
 
     def get_queryset(self):
         """
+        Look for
 
+            self.prefilter_kwargs: filters to execute before the fulltext search
+            self.filter_kwargs: filters associated with the fulltext search
+            self.postfilter_kwargs: filters to run after the fulltext search
 
+        Apply these and return distinct objects
         """
-        if hasattr(self, "filter_kwargs") and hasattr(self, "postfilter_kwargs"):
-            print("I already have filter_kwargs")
-            queryset = (
-                IIIFResource.objects.all()
-                .filter(**self.filter_kwargs)
-                .filter(**self.postfilter_kwargs)
-                .distinct()
-            )
-            return queryset
-        else:
-            return IIIFResource.objects.all()
-
+        queryset = IIIFResource.objects.all()
+        if hasattr(self, "prefilter_kwargs"):
+            queryset = queryset.filter(**self.prefilter_kwargs)
+        if hasattr(self, "filter_kwargs"):
+            queryset = queryset.filter(**self.filter_kwargs)
+        if hasattr(self, "postfilter_kwargs"):
+            queryset = queryset.filter(**self.postfilter_kwargs)
+        return queryset.distinct()
