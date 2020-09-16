@@ -16,6 +16,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import viewsets
+from rest_framework.decorators import action
+
 from rest_framework.request import Request
 from rest_framework.pagination import PageNumberPagination
 from django_filters import rest_framework as df_filters
@@ -193,6 +195,7 @@ class IIIFList(generics.ListCreateAPIView):
                         )
                         indexable_obj.save()
             return serializer.data, self.get_success_headers(serializer.data)
+
         if iiif3.get("items"):
             print("Got items")
         manifest_data, manifest_headers = ingest_iiif(
@@ -297,7 +300,65 @@ class ContextFilterSet(df_filters.FilterSet):
         fields = ["cont"]
 
 
-class IIIFSearch(viewsets.ReadOnlyModelViewSet, ListModelMixin):
+def parse_search(req):
+    """
+    Function to parse incoming search data (from request params or incoming json)
+    into a set of filter kwargs that can be passed to the list and hits methods.
+
+    Parameters:
+
+        fulltext: the text to query using the __search (ts_query)
+        search_langyage: the language to use in constructing the query
+        search_type: e.g. websearch or plaintext
+        indexables_filters: e.g. language_display=english
+            "type",
+            "subtype",
+            "language_iso629_2",
+            "language_iso629_1",
+            "language_display",
+            "language_pg",
+    """
+    if req.method == "POST":
+        return None, None
+    elif req.method == "GET":
+        search_string = req.query_params.get("fulltext", None)
+        language = req.query_params.get("search_language", None)
+        search_type = req.query_params.get("search_type", "websearch")
+        filter_kwargs = {}
+        postfilter_kwargs = {}
+        for param in req.query_params:
+            if param in [
+                "type",
+                "subtype",
+                "language_iso629_2",
+                "language_iso629_1",
+                "language_display",
+                "language_pg",
+            ]:
+                filter_kwargs[f"indexables__{param}__iexact"] = req.query_params.get(param, None)
+            elif param == "facet_type":
+                postfilter_kwargs[f"indexables__type__iexact"] = req.query_params.get(param, None)
+            elif param == "facet_subtype":
+                postfilter_kwargs[f"indexables__subtype__iexact"] = req.query_params.get(
+                    param, None
+                )
+            elif param == "facet_value":
+                postfilter_kwargs[f"indexables__indexable__iexact"] = req.query_params.get(
+                    param, None
+                )
+        if search_string:
+            if language:
+                filter_kwargs["indexables__search_vector"] = SearchQuery(
+                    search_string, config=language, search_type=search_type
+                )
+            else:
+                filter_kwargs["indexables__search_vector"] = SearchQuery(
+                    search_string, search_type=search_type
+                )
+        return filter_kwargs, postfilter_kwargs
+
+
+class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
     """
     Simple read only view for the IIIF data with methods for
     adding hits and generating facets for return in the results
@@ -328,6 +389,12 @@ class IIIFSearch(viewsets.ReadOnlyModelViewSet, ListModelMixin):
         Ways of making this query more efficient when the number of objects is high.
 
         """
+        # Call a function to set the filter_kwargs and postfilter_kwargs based on incoming request
+        filter_kwargs, postfilter_kwargs = parse_search(req=request)
+        if filter_kwargs:
+            setattr(self, "filter_kwargs", filter_kwargs)
+        if postfilter_kwargs:
+            setattr(self, "postfilter_kwargs", postfilter_kwargs)
         response = super(IIIFSearch, self).list(request, args, kwargs)
         facet_summary = {"metadata": {}}
         # Query the indexables with a metadata type and generate a list of distinct
@@ -364,59 +431,18 @@ class IIIFSearch(viewsets.ReadOnlyModelViewSet, ListModelMixin):
 
     def get_queryset(self):
         """
-        Parameters:
 
-        fulltext: the text to query using the __search (ts_query)
-        search_langyage: the language to use in constructing the query
-        search_type: e.g. websearch or plaintext
-        indexables_filters: e.g. language_display=english
-            "type",
-            "subtype",
-            "language_iso629_2",
-            "language_iso629_1",
-            "language_display",
-            "language_pg",
 
         """
-        search_string = self.request.query_params.get("fulltext", None)
-        language = self.request.query_params.get("search_language", None)
-        search_type = self.request.query_params.get("search_type", "websearch")
-        filter_kwargs = {}
-        postfilter_kwargs = {}
-        for param in self.request.query_params:
-            if param in [
-                "type",
-                "subtype",
-                "language_iso629_2",
-                "language_iso629_1",
-                "language_display",
-                "language_pg",
-            ]:
-                filter_kwargs[f"indexables__{param}__iexact"] = self.request.query_params.get(
-                    param, None
-                )
-            elif param == "facet_type":
-                postfilter_kwargs[f"indexables__type__iexact"] = self.request.query_params.get(
-                    param, None
-                )
-            elif param == "facet_subtype":
-                postfilter_kwargs[f"indexables__subtype__iexact"] = self.request.query_params.get(
-                    param, None
-                )
-            elif param == "facet_value":
-                postfilter_kwargs[
-                    f"indexables__indexable__iexact"
-                ] = self.request.query_params.get(param, None)
-        if search_string:
-            if language:
-                filter_kwargs["indexables__search_vector"] = SearchQuery(
-                    search_string, config=language, search_type=search_type
-                )
-            else:
-                filter_kwargs["indexables__search_vector"] = SearchQuery(
-                    search_string, search_type=search_type
-                )
-        queryset = IIIFResource.objects.all().filter(**filter_kwargs)
-        if postfilter_kwargs:
-            queryset = queryset.filter(**postfilter_kwargs)
-        return queryset.distinct()
+        if hasattr(self, "filter_kwargs") and hasattr(self, "postfilter_kwargs"):
+            print("I already have filter_kwargs")
+            queryset = (
+                IIIFResource.objects.all()
+                .filter(**self.filter_kwargs)
+                .filter(**self.postfilter_kwargs)
+                .distinct()
+            )
+            return queryset
+        else:
+            return IIIFResource.objects.all()
+
