@@ -340,18 +340,26 @@ def parse_search(req):
             if req.data.get(p, None):
                 filter_kwargs[f"indexables__{p}__iexact"] = req.data[p]
         postfilter_q = []
-        if facet_queries:
+        if facet_queries:  # *** This code really needs a refactor for elegance/speed ***
             # Generate a list of keys concatenated from type and subtype
             # These should be "OR"d together later.
+            # e.g.
+            # {"metadata|author": []}
             sorted_facets = {
                 "|".join([f.get("type", ""), f.get("subtype", "")]): [] for f in facet_queries
             }
             # Copy the query into that lookup so we can get queries against the same type/subtype
+            # e.g.
+            # {"metadata|author": ["John Smith", "Mary Jones"]}
             for f in facet_queries:
                 sorted_facets["|".join([f.get("type", ""), f.get("subtype", "")])].append(f)
             # Generate one "OR"d query per key in this lookup
             for sorted_facet_key, sorted_facet_queries in sorted_facets.items():
-                # The query on the related indexable for matching IIIF resources
+                # For each combination of type/subtype
+                # 1. Concatenate all of the queries into an AND
+                # e.g. "type" = "metadata" AND "subtype" = "author" AND "indexables" = "John Smith"
+                # 2. Concatenate all of thes einto an OR
+                # so that you get something with the intent of AUTHOR = (A or B)
                 postfilter_q.append(
                     reduce(
                         or_,
@@ -361,17 +369,19 @@ def parse_search(req):
                                 (
                                     Q(
                                         **{
-                                            f"indexables__{k}__{sorted_facet_query.get('field_lookup', 'iexact')}": v
+                                            f"indexables__{(lambda k: 'indexable' if k == 'value' else k)(k)}__"
+                                            f"{sorted_facet_query.get('field_lookup', 'iexact')}": v
                                         }
                                     )
                                     for k, v in sorted_facet_query.items()
-                                    if k in ["type", "subtype", "indexable"]
+                                    if k in ["type", "subtype", "indexable", "value"]
                                 ),
                             )
                             for sorted_facet_query in sorted_facet_queries
                         ],
                     )
                 )
+        print(postfilter_q)
         hits_filter_kwargs = {
             k.replace("indexables__", ""): v
             for k, v in filter_kwargs.items()
