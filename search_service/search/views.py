@@ -517,10 +517,13 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         facet_summary = {"metadata": {}}
         # If we haven't been provided a list of facet fields via a POST
         # just generate the list by querying the unique list of metadata subtypes
+        print("Calculating the facets")
+        # Make a copy of the query so we aren't running the get_queryset logic every time
+        facetable_q = self.get_queryset().all().distinct()
         if not facet_fields:
             facet_fields = []
             for t in (
-                self.get_queryset()
+                facetable_q
                 .filter(indexables__type__iexact="metadata")
                 .values("indexables__subtype")
                 .distinct()
@@ -530,11 +533,11 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         for v in facet_fields:
             facet_summary["metadata"][v] = {
                 x["indexables__indexable"]: x["n"]
-                for x in self.get_queryset()
-                .filter(indexables__subtype__iexact=v)
+                for x in facetable_q.filter(indexables__type__iexact="metadata",
+                                            indexables__subtype__iexact=v)
                 .values("indexables__indexable")
                 .distinct()
-                .annotate(n=models.Count("pk"))
+                .annotate(n=models.Count('pk', distinct=True))
                 .order_by("-n")[:10]
             }
         response.data["facets"] = facet_summary
@@ -577,7 +580,6 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
 
         Apply these and return distinct objects
         """
-        print("Updating queryset")
         queryset = IIIFResource.objects.all()
         if hasattr(self, "prefilter_kwargs"):
             queryset = queryset.filter(**self.prefilter_kwargs)
@@ -595,4 +597,5 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
                     # This is a chaining operation
                     # Appending each filter one at a time
                     queryset = queryset.filter(**filter_dict)
+        print(len(queryset.distinct()))
         return queryset.distinct()

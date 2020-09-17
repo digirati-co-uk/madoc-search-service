@@ -55,7 +55,6 @@ def test_faceted_query():
                 "type": "metadata",
                 "subtype": "collection name",
                 "value": "Staatsarchiv Aargau",
-                "indexable": "Staatsarchiv Aargau",
             },
             # {
             #     "type": "metadata",
@@ -80,6 +79,7 @@ def test_faceted_query():
             # {"type": "metadata", "subtype": "author", "value": "Smith, John"},
         ],
     }
+    print(json.dumps(query, indent=2))
     r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
     if r.status_code == requests.codes.ok:
         j = r.json()
