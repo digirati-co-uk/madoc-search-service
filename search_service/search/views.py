@@ -3,8 +3,7 @@
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchHeadline
 from django.db import models
-from django.db.models import F, Value
-from django.db.models import JSONField
+from django.db.models import F, Value, Q, JSONField
 from django.utils.translation import get_language
 from django_filters import rest_framework as df_filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -17,6 +16,9 @@ from rest_framework.mixins import ListModelMixin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+
+from operator import or_, and_
+from functools import reduce
 
 # Local imports
 from .langbase import LANGBASE
@@ -304,7 +306,6 @@ def parse_search(req):
     if req.method == "POST":
         prefilter_kwargs = {}
         filter_kwargs = {}
-        postfilter_kwargs = []
         search_string = req.data.get("fulltext", None)
         language = req.data.get("search_language", None)
         search_type = req.data.get("search_type", "websearch")
@@ -338,16 +339,39 @@ def parse_search(req):
         ]:
             if req.data.get(p, None):
                 filter_kwargs[f"indexables__{p}__iexact"] = req.data[p]
+        postfilter_q = []
         if facet_queries:
+            # Generate a list of keys concatenated from type and subtype
+            # These should be "OR"d together later.
+            sorted_facets = {
+                "|".join([f.get("type", ""), f.get("subtype", "")]): [] for f in facet_queries
+            }
+            # Copy the query into that lookup so we can get queries against the same type/subtype
             for f in facet_queries:
-                if f.get("type") and f.get("subtype") and f.get("value"):
-                    postfilter_kwargs.append(
-                        {
-                            "indexables__type__iexact": f["type"],
-                            "indexables__subtype__iexact": f["subtype"],
-                            "indexables__indexable__iexact": f["value"],
-                        }
+                sorted_facets["|".join([f.get("type", ""), f.get("subtype", "")])].append(f)
+            # Generate one "OR"d query per key in this lookup
+            for sorted_facet_key, sorted_facet_queries in sorted_facets.items():
+                # The query on the related indexable for matching IIIF resources
+                postfilter_q.append(
+                    reduce(
+                        or_,
+                        [
+                            reduce(
+                                and_,
+                                (
+                                    Q(
+                                        **{
+                                            f"indexables__{k}__{sorted_facet_query.get('field_lookup', 'iexact')}": v
+                                        }
+                                    )
+                                    for k, v in sorted_facet_query.items()
+                                    if k in ["type", "subtype", "indexable"]
+                                ),
+                            )
+                            for sorted_facet_query in sorted_facet_queries
+                        ],
                     )
+                )
         hits_filter_kwargs = {
             k.replace("indexables__", ""): v
             for k, v in filter_kwargs.items()
@@ -359,22 +383,14 @@ def parse_search(req):
             hits_filter_kwargs["language"] = language
         if search_type:
             hits_filter_kwargs["search_type"] = search_type
-        hits_postfilter_kwargs = [
-            {
-                k.replace("indexables__", ""): v
-                for k, v in postfilter.items()
-                if k.startswith("indexables")
-            }
-            for postfilter in postfilter_kwargs
-        ]
+
         sort_order = req.data.get("ordering", "-rank")
         return (
             prefilter_kwargs,
             filter_kwargs,
-            postfilter_kwargs,
+            postfilter_q,  # postfilter_kwargs,
             facet_fields,
             hits_filter_kwargs,
-            hits_postfilter_kwargs,
             sort_order,
         )
     elif req.method == "GET":
@@ -426,14 +442,6 @@ def parse_search(req):
             hits_filter_kwargs["language"] = language
         if search_type:
             hits_filter_kwargs["search_type"] = search_type
-        hits_postfilter_kwargs = [
-            {
-                k.replace("indexables__", ""): v
-                for k, v in postfilter.items()
-                if k.startswith("indexables")
-            }
-            for postfilter in postfilter_kwargs
-        ]
         sort_order = req.query_params.get("ordering", "-rank")
         return (
             prefilter_kwargs,
@@ -441,7 +449,6 @@ def parse_search(req):
             postfilter_kwargs,
             None,
             hits_filter_kwargs,
-            hits_postfilter_kwargs,
             sort_order,
         )
 
@@ -485,7 +492,6 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             postfilter_kwargs,
             facet_fields,
             hits_filter_kwargs,
-            hits_postfilter_kwargs,
             sort_order,
         ) = parse_search(req=request)
         if facet_fields:
@@ -499,8 +505,6 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             setattr(self, "postfilter_kwargs", postfilter_kwargs)
         if hits_filter_kwargs:
             setattr(self, "hits_filter_kwargs", hits_filter_kwargs)
-        if hits_postfilter_kwargs:
-            setattr(self, "hits_postfilter_kwargs", hits_postfilter_kwargs)
         response = super(IIIFSearch, self).list(request, args, kwargs)
         facet_summary = {"metadata": {}}
         # If we haven't been provided a list of facet fields via a POST
@@ -551,8 +555,8 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         context.update({"request": self.request})
         if hasattr(self, "hits_filter_kwargs"):
             context.update({"hits_filter_kwargs": self.hits_filter_kwargs})
-        if hasattr(self, "hits_postfilter_kwargs"):
-            context.update({"hits_postfilter_kwargs": self.hits_postfilter_kwargs})
+        # if hasattr(self, "hits_postfilter_kwargs"):
+        #     context.update({"hits_postfilter_kwargs": self.hits_postfilter_kwargs})
         return context
 
     def get_queryset(self):
@@ -572,8 +576,15 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         if hasattr(self, "filter_kwargs"):
             queryset = queryset.filter(**self.filter_kwargs)
         if hasattr(self, "postfilter_kwargs"):
-            for filter_dict in self.postfilter_kwargs:
-                # This is a chaining operation
-                # Appending each filter one at a time
-                queryset = queryset.filter(**filter_dict)
+            # Just check if this thing is nested Q() objects, rather than dicts
+            if type(self.postfilter_kwargs[0]) == Q:
+                # This is also a chainging operation but the filters being
+                # chained might contain "OR"s rather than ANDs
+                for f in self.postfilter_kwargs:
+                    queryset = queryset.filter(*(f,))
+            else:  # GET requests (i.e. without the fancy Q reduction)
+                for filter_dict in self.postfilter_kwargs:
+                    # This is a chaining operation
+                    # Appending each filter one at a time
+                    queryset = queryset.filter(**filter_dict)
         return queryset.distinct()
