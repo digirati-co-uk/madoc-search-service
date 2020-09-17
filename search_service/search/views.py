@@ -492,7 +492,6 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         Ways of making this query more efficient when the number of objects is high.
 
         """
-        print("List method")
         # Call a function to set the filter_kwargs and postfilter_kwargs based on incoming request
         (
             prefilter_kwargs,
@@ -508,7 +507,6 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             setattr(self, "prefilter_kwargs", prefilter_kwargs)
         if filter_kwargs:
             setattr(self, "filter_kwargs", filter_kwargs)
-            print(filter_kwargs)
         if postfilter_kwargs:
             setattr(self, "postfilter_kwargs", postfilter_kwargs)
         if hits_filter_kwargs:
@@ -517,7 +515,6 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         facet_summary = {"metadata": {}}
         # If we haven't been provided a list of facet fields via a POST
         # just generate the list by querying the unique list of metadata subtypes
-        print("Calculating the facets")
         # Make a copy of the query so we aren't running the get_queryset logic every time
         facetable_q = self.get_queryset().all().distinct()
         if not facet_fields:
@@ -561,7 +558,6 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         populate each manifest with a list of hits that match the query
         parameters
         """
-        print("Updating context")
         context = super(IIIFSearch, self).get_serializer_context()
         context.update({"request": self.request})
         if hasattr(self, "hits_filter_kwargs"):
@@ -597,5 +593,4 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
                     # This is a chaining operation
                     # Appending each filter one at a time
                     queryset = queryset.filter(**filter_dict)
-        print(len(queryset.distinct()))
         return queryset.distinct()

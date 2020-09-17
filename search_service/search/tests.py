@@ -56,11 +56,16 @@ def test_faceted_query():
                 "subtype": "collection name",
                 "value": "Staatsarchiv Aargau",
             },
-            # {
-            #     "type": "metadata",
-            #     "subtype": "location",
-            #     "value": "aarau",
-            # },
+            {
+                "type": "metadata",
+                "subtype": "material",
+                "value": "paper",
+            },
+            {
+                "type": "metadata",
+                "subtype": "material",
+                "value": "parchment",
+            },
             {
                 "type": "metadata",
                 "subtype": "text language",
