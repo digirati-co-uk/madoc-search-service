@@ -75,7 +75,10 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
     rank = serializers.SerializerMethodField("get_rank")
 
     def get_rank(self, iiif):
-        return max([h["rank"] for h in self.get_hits(iiif=iiif)])
+        try:
+            return max([h["rank"] for h in self.get_hits(iiif=iiif)])
+        except TypeError:
+            return 1.0
 
     def get_hits(self, iiif):
         filter_kwargs = {"rank__gt": 0.0}
