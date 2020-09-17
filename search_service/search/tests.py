@@ -51,36 +51,32 @@ def test_faceted_query():
         # "facet_fields": ['author', 'collection', 'date of publication', 'publisher', "location"],
         "contexts": ["urn:madoc:site:2"],
         "facets": [
+            {
+                "type": "metadata",
+                "subtype": "collection name",
+                "value": "Staatsarchiv Aargau",
+                "indexable": "Staatsarchiv Aargau",
+            },
             # {
             #     "type": "metadata",
-            #     "subtype": "collection name",
-            #     "value": "Staatsarchiv Aargau",
-            #     "indexable": "Staatsarchiv Aargau",
+            #     "subtype": "location",
+            #     "value": "aarau",
             # },
             {
                 "type": "metadata",
-                "subtype": "location",
-                "value": "aarau",
-                "indexable": "aarau",
+                "subtype": "text language",
+                "value": "German",
             },
             # {
             #     "type": "metadata",
             #     "subtype": "text language",
-            #     "value": "German",
-            #     "indexable": "German",
+            #     "value": "French",
             # },
-            {
-                "type": "metadata",
-                "subtype": "text language",
-                "value": "French",
-                "indexable": "French",
-            },
-            {
-                "type": "metadata",
-                "subtype": "text language",
-                "value": "Latin",
-                "indexable": "Latin",
-            }
+            # {
+            #     "type": "metadata",
+            #     "subtype": "text language",
+            #     "value": "Latin",
+            # },
             # {"type": "metadata", "subtype": "author", "value": "Smith, John"},
         ],
     }

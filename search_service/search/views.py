@@ -353,7 +353,6 @@ def parse_search(req):
             # {"metadata|author": ["John Smith", "Mary Jones"]}
             for f in facet_queries:
                 sorted_facets["|".join([f.get("type", ""), f.get("subtype", "")])].append(f)
-            # Generate one "OR"d query per key in this lookup
             for sorted_facet_key, sorted_facet_queries in sorted_facets.items():
                 # For each combination of type/subtype
                 # 1. Concatenate all of the queries into an AND
@@ -361,27 +360,26 @@ def parse_search(req):
                 # 2. Concatenate all of thes einto an OR
                 # so that you get something with the intent of AUTHOR = (A or B)
                 postfilter_q.append(
-                    reduce(
+                    reduce(  # All of the queries with the same field are OR'd together
                         or_,
                         [
-                            reduce(
+                            reduce(  # All of the fields within a single facet query are AND'd together
                                 and_,
                                 (
-                                    Q(
+                                    Q(  # Iterate the keys in the facet dict to generate the Q()
                                         **{
                                             f"indexables__{(lambda k: 'indexable' if k == 'value' else k)(k)}__"
                                             f"{sorted_facet_query.get('field_lookup', 'iexact')}": v
-                                        }
+                                        }  # You can pass in something other than iexact using the field_lookup key
                                     )
                                     for k, v in sorted_facet_query.items()
-                                    if k in ["type", "subtype", "indexable", "value"]
+                                    if k in ["type", "subtype", "indexable", "value"]  # These are the fields to query
                                 ),
                             )
                             for sorted_facet_query in sorted_facet_queries
                         ],
                     )
                 )
-        print(postfilter_q)
         hits_filter_kwargs = {
             k.replace("indexables__", ""): v
             for k, v in filter_kwargs.items()
