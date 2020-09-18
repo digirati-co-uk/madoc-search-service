@@ -374,4 +374,4 @@ We can run the same query, but just set the facets and request the facet counts,
 }
 ```
 
-As per Example 3, only this time we are using `istartswith` (case insensitive startswith) for the type = "metadata", subtype = "place of publication", "value" = "Staat" facet. (N.B. this will also match, e.g. "place of publication (English)" for example).
+As per Example 3, only this time we are using `istartswith` (case insensitive startswith) for the type = "metadata", subtype = "collection name", "value" = "Staat" facet. (N.B. this will also match, e.g. "collection name (English)" for example).
