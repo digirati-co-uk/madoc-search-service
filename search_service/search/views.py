@@ -195,7 +195,7 @@ class IIIFList(generics.ListCreateAPIView):
             return serializer.data, self.get_success_headers(serializer.data)
 
         if iiif3.get("items"):
-            print("Got items")
+            print(f"Got items, this is where I would cascade: {len(iiif3['items'])} items.")
         manifest_data, manifest_headers = ingest_iiif(
             iiif3_resource=iiif3, resource_contexts=contexts
         )
@@ -373,7 +373,13 @@ def parse_search(req):
                                         }  # You can pass in something other than iexact using the field_lookup key
                                     )
                                     for k, v in sorted_facet_query.items()
-                                    if k in ["type", "subtype", "indexable", "value"]  # These are the fields to query
+                                    if k
+                                    in [
+                                        "type",
+                                        "subtype",
+                                        "indexable",
+                                        "value",
+                                    ]  # These are the fields to query
                                 ),
                             )
                             for sorted_facet_query in sorted_facet_queries
@@ -520,8 +526,7 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         if not facet_fields:
             facet_fields = []
             for t in (
-                facetable_q
-                .filter(indexables__type__iexact="metadata")
+                facetable_q.filter(indexables__type__iexact="metadata")
                 .values("indexables__subtype")
                 .distinct()
             ):
@@ -530,11 +535,12 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         for v in facet_fields:
             facet_summary["metadata"][v] = {
                 x["indexables__indexable"]: x["n"]
-                for x in facetable_q.filter(indexables__type__iexact="metadata",
-                                            indexables__subtype__iexact=v)
+                for x in facetable_q.filter(
+                    indexables__type__iexact="metadata", indexables__subtype__iexact=v
+                )
                 .values("indexables__indexable")
                 .distinct()
-                .annotate(n=models.Count('pk', distinct=True))
+                .annotate(n=models.Count("pk", distinct=True))
                 .order_by("-n")[:10]
             }
         response.data["facets"] = facet_summary

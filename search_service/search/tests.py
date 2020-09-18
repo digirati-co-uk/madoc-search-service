@@ -51,26 +51,10 @@ def test_faceted_query():
         # "facet_fields": ['author', 'collection', 'date of publication', 'publisher', "location"],
         "contexts": ["urn:madoc:site:2"],
         "facets": [
-            {
-                "type": "metadata",
-                "subtype": "collection name",
-                "value": "Staatsarchiv Aargau",
-            },
-            {
-                "type": "metadata",
-                "subtype": "material",
-                "value": "paper",
-            },
-            {
-                "type": "metadata",
-                "subtype": "material",
-                "value": "parchment",
-            },
-            {
-                "type": "metadata",
-                "subtype": "text language",
-                "value": "German",
-            },
+            {"type": "metadata", "subtype": "collection name", "value": "Staatsarchiv Aargau"},
+            {"type": "metadata", "subtype": "material", "value": "paper"},
+            {"type": "metadata", "subtype": "material", "value": "parchment"},
+            {"type": "metadata", "subtype": "text language", "value": "German"},
             # {
             #     "type": "metadata",
             #     "subtype": "text language",

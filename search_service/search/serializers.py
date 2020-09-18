@@ -91,7 +91,9 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
             search_type = self.context["request"].query_params.get("search_type", "websearch")
             if search_string:
                 if language:
-                    search_query = SearchQuery(search_string, config=language, search_type=search_type)
+                    search_query = SearchQuery(
+                        search_string, config=language, search_type=search_type
+                    )
                 else:
                     search_query = SearchQuery(search_string, search_type=search_type)
             else:
@@ -101,7 +103,11 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
                 qs.annotate(
                     rank=SearchRank(F("search_vector"), search_query, cover_density=True),
                     snippet=SearchHeadline(
-                        "original_content", search_query, max_words=50, min_words=25, max_fragments=3
+                        "original_content",
+                        search_query,
+                        max_words=50,
+                        min_words=25,
+                        max_fragments=3,
                     ),
                 )
                 .filter(search_vector=search_query, **filter_kwargs)

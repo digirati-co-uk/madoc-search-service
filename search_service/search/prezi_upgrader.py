@@ -976,8 +976,9 @@ class Upgrader(object):
 if __name__ == "__main__":
     upgrader = Upgrader(flags={"default_lang": "en"})
     print(get_language())
-    v3 = upgrader.process_uri(uri="http://madoc.dlcs.digirati.io/public/storage/urn:madoc:site:1/"
-                              "AA00000463_00010/public/AA00000463_00010_manifest.json")
+    v3 = upgrader.process_uri(
+        uri="http://madoc.dlcs.digirati.io/public/storage/urn:madoc:site:1/"
+        "AA00000463_00010/public/AA00000463_00010_manifest.json"
+    )
     v3["@context"] = "http://iiif.io/api/presentation/3/context.json"
     print(json.dumps(v3, indent=2))
-

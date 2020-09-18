@@ -128,7 +128,7 @@ def get_language_data(lang_code=None, langbase=None):
                     "language_iso629_2": language_data[0][0],
                     "language_iso629_1": language_data[0][1],
                     "language_display": language_data[0][-1].lower(),
-                    "language_pg": pg_lang
+                    "language_pg": pg_lang,
                 }
         elif len(lang_code) == 3:
             language_data = [x for x in langbase if x[0] == lang_code]
@@ -141,10 +141,14 @@ def get_language_data(lang_code=None, langbase=None):
                     "language_iso629_2": language_data[0][0],
                     "language_iso629_1": language_data[0][1],
                     "language_display": language_data[0][-1].lower(),
-                    "language_pg": pg_lang
+                    "language_pg": pg_lang,
                 }
-    return {"language_iso629_2": None, "language_iso629_1": None, "language_display": None,
-            "language_pg": None}
+    return {
+        "language_iso629_2": None,
+        "language_iso629_1": None,
+        "language_display": None,
+        "language_pg": None,
+    }
 
 
 def process_field(field_instance, key, default_language, lang_base, field_type="descriptive"):
@@ -538,7 +542,4 @@ if __name__ == "__main__":
     for j in test_data:
         result = flatten_iiif_descriptive(iiif=j, default_language="en", lang_base=LANGBASE)
         if result:
-            print(
-                json.dumps(result, indent=2, ensure_ascii=False)
-            )
-
+            print(json.dumps(result, indent=2, ensure_ascii=False))
