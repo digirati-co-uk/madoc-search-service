@@ -47,11 +47,12 @@ def test_faceted_query():
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
     query = {
-        "fulltext": "Abbey",
-        # "facet_fields": ['author', 'collection', 'date of publication', 'publisher', "location"],
+        # "fulltext": "Abbey",
+        "facet_fields": ['text language', 'place of origin (english)',
+                         'collection name', 'publisher', "persons", "material", "location"],
         "contexts": ["urn:madoc:site:2"],
         "facets": [
-            {"type": "metadata", "subtype": "collection name", "value": "Staatsarchiv Aargau"},
+            {"type": "metadata", "subtype": "collection name", "value": "Staat", "field_lookup": "istartswith"},
             {"type": "metadata", "subtype": "material", "value": "paper"},
             {"type": "metadata", "subtype": "material", "value": "parchment"},
             {"type": "metadata", "subtype": "text language", "value": "German"},
@@ -68,6 +69,15 @@ def test_faceted_query():
             # {"type": "metadata", "subtype": "author", "value": "Smith, John"},
         ],
     }
+    #
+    # query = {
+    #     "fulltext": "Götter",
+    #     "search_language": "german",
+    #     "contexts": ["urn:madoc:site:2"],
+    #     "facets": [
+    #         {"type": "metadata", "subtype": "place of publication", "value": "Hamburg"},
+    #     ]
+    # }
     print(json.dumps(query, indent=2))
     r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
     if r.status_code == requests.codes.ok:
