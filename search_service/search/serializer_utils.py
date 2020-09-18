@@ -117,6 +117,8 @@ def iiif_to_presentationapiresourcemodel(data_dict):
 
 def get_language_data(lang_code=None, langbase=None):
     if lang_code:
+        if "-" in lang_code:
+            lang_code = lang_code.split("-")[0]
         if len(lang_code) == 2:
             language_data = [x for x in langbase if x[1] == lang_code]
             if language_data:
