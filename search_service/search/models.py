@@ -58,6 +58,10 @@ class Indexables(TimeStampedModel):
     language_iso639_1: e.g. en, ar
     language_display: e.g English
     language_pg: postgres language
+    indexable_int: indexable integer
+    indexable_float: indexable float
+    indexable_datetime: indexable date time
+    indexable_json: indexable json
     indexable: concatenated/summarised content for indexing
     search_vector: search vector for the indexer to use
     original_content: textual content (as per original), if the original is JSON, this will be
@@ -82,6 +86,10 @@ class Indexables(TimeStampedModel):
         IIIFResource, related_name="indexables", blank=True, on_delete=models.CASCADE
     )
     indexable = models.TextField()
+    indexable_date = models.DateTimeField(blank=True, null=True)
+    indexable_int = models.IntegerField(blank=True, null=True)
+    indexable_json = models.JSONField(blank=True, null=True)
+    indexable_float = models.FloatField(blank=True, null=True)
     original_content = models.TextField()
     search_vector = SearchVectorField(blank=True, null=True)
     language_iso639_2 = models.CharField(max_length=3, blank=True, null=True)
