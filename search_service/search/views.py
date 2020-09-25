@@ -403,8 +403,8 @@ def parse_search(req):
         for p in [
             "type",
             "subtype",
-            "language_iso629_2",
-            "language_iso629_1",
+            "language_iso639_2",
+            "language_iso639_1",
             "language_display",
             "language_pg",
         ]:
@@ -489,8 +489,8 @@ def parse_search(req):
             if param in [
                 "type",
                 "subtype",
-                "language_iso629_2",
-                "language_iso629_1",
+                "language_iso639_2",
+                "language_iso639_1",
                 "language_display",
                 "language_pg",
             ]:
