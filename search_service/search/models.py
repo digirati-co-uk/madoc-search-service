@@ -54,8 +54,8 @@ class Indexables(TimeStampedModel):
     resource_id: this is just a string
     ? contexts: store here, or on the related resource (prob. resource)
     type: metadata, capture model, presentation_api, see_also
-    language_iso629_2: e.g. eng, ara   ? store just this but use lookups to identify
-    language_iso629_1: e.g. en, ar
+    language_iso639_2: e.g. eng, ara   ? store just this but use lookups to identify
+    language_iso639_1: e.g. en, ar
     language_display: e.g English
     language_pg: postgres language
     indexable: concatenated/summarised content for indexing
@@ -84,8 +84,8 @@ class Indexables(TimeStampedModel):
     indexable = models.TextField()
     original_content = models.TextField()
     search_vector = SearchVectorField(blank=True, null=True)
-    language_iso629_2 = models.CharField(max_length=3, blank=True, null=True)
-    language_iso629_1 = models.CharField(max_length=2, blank=True, null=True)
+    language_iso639_2 = models.CharField(max_length=3, blank=True, null=True)
+    language_iso639_1 = models.CharField(max_length=2, blank=True, null=True)
     language_display = models.CharField(max_length=64, blank=True, null=True)
     language_pg = models.CharField(max_length=64, blank=True, null=True)
     selector = models.JSONField(blank=True, null=True)
@@ -107,7 +107,7 @@ class Indexables(TimeStampedModel):
             GinIndex(fields=["search_vector"]),
             models.Index(fields=["original_content"]),
             models.Index(fields=["content_id"]),
-            models.Index(fields=["language_iso629_2", "language_iso629_1", "language_display"]),
+            models.Index(fields=["language_iso639_2", "language_iso639_1", "language_display"]),
             models.Index(fields=["type"]),
             models.Index(fields=["subtype"]),
         ]
