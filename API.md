@@ -378,6 +378,8 @@ As per Example 3, only this time we are using `istartswith` (case insensitive st
 
 # POSTing "raw" Indexable content
 
+POST to `/api/search/indexables`
+
 ```json
 {
     "resource_id": "urn:foo:bar",
