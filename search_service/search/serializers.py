@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Indexables, IIIFResource, Context
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchHeadline
-from django.db.models import F
+from django.db.models import F, Q
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -154,3 +154,9 @@ class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
             "language_pg",
             "iiif",
         ]
+
+    def create(self, validated_data):
+        resource_id = validated_data.get("resource_id")
+        iiif = IIIFResource.objects.get(madoc_id=resource_id)
+        validated_data["iiif"] = iiif
+        return super(IndexablesSerializer, self).create(validated_data)
