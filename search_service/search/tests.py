@@ -4,20 +4,20 @@ import json
 
 def test_ingest():
     collections = [
-        "https://iiif.ub.uni-leipzig.de/static/collections/Drucke17/collection.json",
-        "https://iiif.ub.uni-leipzig.de/static/collections/Drucke16/collection.json",
-        "https://iiif.ub.uni-leipzig.de/static/collections/misc/cdvost2018.json",
+        # "https://iiif.ub.uni-leipzig.de/static/collections/Drucke17/collection.json",
+        # "https://iiif.ub.uni-leipzig.de/static/collections/Drucke16/collection.json",
+        # "https://iiif.ub.uni-leipzig.de/static/collections/misc/cdvost2018.json",
         "https://iiif.hab.de/collection/project/mssox.json",
         "https://www.e-codices.unifr.ch/metadata/iiif/collection/sl.json",
-        "https://www.e-codices.unifr.ch/metadata/iiif/collection/saa.json",
-        "https://www.e-codices.unifr.ch/metadata/iiif/collection/bge.json",
+        # "https://www.e-codices.unifr.ch/metadata/iiif/collection/saa.json",
+        # "https://www.e-codices.unifr.ch/metadata/iiif/collection/bge.json",
         "https://digital.library.villanova.edu/Collection/vudl:294849/IIIF",
         "https://digital.library.villanova.edu/Collection/vudl:289364/IIIF",
-        "https://digital.library.villanova.edu/Collection/vudl:313874/IIIF",
-        "https://digital.library.villanova.edu/Collection/vudl:293828/IIIF",
-        "https://digital.library.villanova.edu/Collection/vudl:287996/IIIF",
-        "https://digital.library.villanova.edu/Collection/vudl:321794/IIIF",
-        "https://digital.library.villanova.edu/Collection/vudl:289113/IIIF",
+        # "https://digital.library.villanova.edu/Collection/vudl:313874/IIIF",
+        # "https://digital.library.villanova.edu/Collection/vudl:293828/IIIF",
+        # "https://digital.library.villanova.edu/Collection/vudl:287996/IIIF",
+        # "https://digital.library.villanova.edu/Collection/vudl:321794/IIIF",
+        # "https://digital.library.villanova.edu/Collection/vudl:289113/IIIF",
         "https://view.nls.uk/collections/7446/74466699.json",
     ]
     for coll in collections:
@@ -38,7 +38,7 @@ def test_ingest():
                 }
                 headers = {"Content-Type": "application/json", "Accept": "application/json"}
                 p = requests.post(
-                    url="http://localhost:8000/iiif/", json=post_json, headers=headers
+                    url="http://localhost:8000/api/search/iiif", json=post_json, headers=headers
                 )
                 print(p.status_code)
 
@@ -87,4 +87,5 @@ def test_faceted_query():
 
 
 if __name__ == "__main__":
-    test_faceted_query()
+    # test_faceted_query()
+    test_ingest()
