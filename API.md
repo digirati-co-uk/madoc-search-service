@@ -63,8 +63,8 @@ The accepted fields are as follows:
 * __type__: _Optional_ Search againsts just textual data with this type, e.g. metadata (to only search metadata)
 * __subtype__: _Optional_ Search against just textual data with this subtype, e.g. a specific metadata field.
 * __language_display__: _Optional_ only search fields where the display language is, e.g. "english".
-* __language_iso629_1__: _Optional_ only search fields where the iso639_1 language code is, e.g. "en" (N.B. that currently the field is called iso629_1, when the ISO standard is actually iso639)
-* __language_iso629_2__: _Optional_ only search fields where the iso639_2 language code is, e.g. "eng" (N.B. that currently the field is called iso629_2, when the ISO standard is actually iso639)
+* __language_iso639_1__: _Optional_ only search fields where the iso639_1 language code is, e.g. "en" 
+* __language_iso639_2__: _Optional_ only search fields where the iso639_2 language code is, e.g. "eng" 
 * __iiif_identifiers__: _Optional_ an array of identifiers (these should be the `@id`s for the objects), the query will filter to just these objects before it runs any fulltext or facet filters.
 * __madoc_identifiers__: _Optional_ an array of identifiers (these should be the `madoc id`s for the objects), the query will filter to just these objects before it runs any fulltext or facet filters.
 * __contexts__: _Optional_ an array of identifiers (these should be the ids for the relevant site, project, collection, etc), the query will filter to just those objects associated with those _any_ of those contexts before it runs any fulltext or facet filters.
@@ -90,8 +90,8 @@ The query is constructed in the following order:
    * type: only search text marked with this `type`. Current types are `descriptive` (content in the IIIF manifest), `metadata` (content in the IIIF metadata block). Additional types will be added.
    * subtype: `field` type for the search text, e.g. `label` to search just the IIIF labels; `author` to search just metadata where the label is `author` etc.
    * language_display: only search fields where the display language is, e.g. "english".
-   * language_iso629_1: only search fields where the iso639_1 language code is, e.g. "en" (N.B. that currently the field is called iso629_1, when the ISO standard is actually iso639)
-   * language_iso629_2: only search fields where the iso639_2 language code is, e.g. "eng" (N.B. that currently the field is called iso629_2, when the ISO standard is actually iso639)
+   * language_iso639_1: only search fields where the iso639_1 language code is, e.g. "en" 
+   * language_iso639_2: only search fields where the iso639_2 language code is, e.g. "eng" 
 3. facet filter(s): apply the facet filters (which may be a mixture of ANDs and ORs, see examples below) to the result of the fulltext query.
 
 Facet counts are calculated on the output of this query.
