@@ -60,7 +60,6 @@ class IndexablesSummarySerializer(serializers.HyperlinkedModelSerializer):
     rank = serializers.FloatField(default=None, read_only=True)
     snippet = serializers.CharField(default=None, read_only=True)
     language = serializers.CharField(default=None, read_only=None, source="language_iso639_1")
-    # facets = serializers.JSONField(default=None, read_only=True)
 
     class Meta:
         model = Indexables
@@ -132,9 +131,6 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
-    rank = serializers.FloatField(default=None, read_only=True)
-    snippet = serializers.CharField(default=None, read_only=True)
-    facets = serializers.JSONField(default=None, read_only=True)
     iiif = IIIFSummary(read_only=True)
 
     class Meta:
@@ -145,16 +141,16 @@ class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
             "content_id",
             "original_content",
             "indexable",
-            "search_vector",
+            "indexable_date",
+            "indexable_int",
+            "indexable_float",
+            "indexable_json",
+            "selector",
             "type",
             "subtype",
             "language_iso639_2",
             "language_iso639_1",
             "language_display",
             "language_pg",
-            "rank",
-            "snippet",
-            "facets",
             "iiif",
         ]
-        read_only_fields = ["search_vector", "rank", "snippet"]

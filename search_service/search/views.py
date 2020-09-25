@@ -284,53 +284,6 @@ class ContextList(generics.ListCreateAPIView):
     serializer_class = ContextSerializer
 
 
-class IndexablesDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Indexables.objects.all()
-    serializer_class = IndexablesSerializer
-
-
-class IndexablesList(generics.ListCreateAPIView):
-    serializer_class = IndexablesSerializer
-    filter_backends = [DjangoFilterBackend]
-
-    def get_queryset(self):
-        search_string = self.request.query_params.get("fulltext", None)
-        language = self.request.query_params.get("search_language", None)
-        search_type = self.request.query_params.get("search_type", "websearch")
-        filter_kwargs = {"rank__gt": 0.0}
-        for param in self.request.query_params:
-            if param not in ["fulltext", "search_language", "search_type"]:
-                filter_kwargs[f"{param}__iexact"] = self.request.query_params.get(param, None)
-        queryset = Indexables.objects.all()
-        if search_string:
-            if language:
-                query = SearchQuery(search_string, config=language, search_type=search_type)
-            else:
-                query = SearchQuery(search_string, search_type=search_type)
-            queryset = (
-                queryset.annotate(
-                    rank=SearchRank(F("search_vector"), query, cover_density=True),
-                    snippet=SearchHeadline(
-                        "original_content", query, max_words=50, min_words=25, max_fragments=3
-                    ),
-                )
-                .filter(search_vector=query)
-                .filter(**filter_kwargs)
-                .order_by("-rank")
-            )
-        facet_dict = {}
-        # This should really happen elsewhere, as it won't work when filters are also applied
-        # as the data is annotated before the filters, so the counts are inaccurate
-        # instead, there should probably be something happening on the dataset in aggregate
-        # via some manually invoked filters etc.
-        for facet_key in ["type", "language_display", "type", "subtype"]:
-            facet_dict[facet_key] = {}
-            for t in queryset.values_list(facet_key).distinct():
-                kwargs = {f"{facet_key}__iexact": t[0]}
-                facet_dict[facet_key][t[0]] = queryset.filter(**kwargs).count()
-        return queryset.annotate(facets=Value(facet_dict, JSONField()))
-
-
 class MadocPagination(PageNumberPagination):
     """
 
@@ -354,6 +307,20 @@ class MadocPagination(PageNumberPagination):
                 "results": data,
             }
         )
+
+
+class IndexablesDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Indexables.objects.all()
+    serializer_class = IndexablesSerializer
+
+
+class IndexablesList(generics.ListCreateAPIView):
+    serializer_class = IndexablesSerializer
+    filter_backends = [DjangoFilterBackend]
+    queryset = Indexables.objects.all()
+    filterset_fields = ["resource_id", "content_id", "iiif__madoc_id", "iiif__contexts__id",
+                        "type", "subtype"]
+    pagination_class = MadocPagination
 
 
 class ContextFilterSet(df_filters.FilterSet):
