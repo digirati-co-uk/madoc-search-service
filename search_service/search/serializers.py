@@ -59,7 +59,7 @@ class ContextSummarySerializer(serializers.HyperlinkedModelSerializer):
 class IndexablesSummarySerializer(serializers.HyperlinkedModelSerializer):
     rank = serializers.FloatField(default=None, read_only=True)
     snippet = serializers.CharField(default=None, read_only=True)
-    language = serializers.CharField(default=None, read_only=None, source="language_iso629_1")
+    language = serializers.CharField(default=None, read_only=None, source="language_iso639_1")
     # facets = serializers.JSONField(default=None, read_only=True)
 
     class Meta:
@@ -148,8 +148,8 @@ class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
             "search_vector",
             "type",
             "subtype",
-            "language_iso629_2",
-            "language_iso629_1",
+            "language_iso639_2",
+            "language_iso639_1",
             "language_display",
             "language_pg",
             "rank",
