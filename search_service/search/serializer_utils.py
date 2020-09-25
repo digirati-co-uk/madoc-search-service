@@ -127,8 +127,8 @@ def get_language_data(lang_code=None, langbase=None):
                 else:
                     pg_lang = None
                 return {
-                    "language_iso629_2": language_data[0][0],
-                    "language_iso629_1": language_data[0][1],
+                    "language_iso639_2": language_data[0][0],
+                    "language_iso639_1": language_data[0][1],
                     "language_display": language_data[0][-1].lower(),
                     "language_pg": pg_lang,
                 }
@@ -140,14 +140,14 @@ def get_language_data(lang_code=None, langbase=None):
                 else:
                     pg_lang = None
                 return {
-                    "language_iso629_2": language_data[0][0],
-                    "language_iso629_1": language_data[0][1],
+                    "language_iso639_2": language_data[0][0],
+                    "language_iso639_1": language_data[0][1],
                     "language_display": language_data[0][-1].lower(),
                     "language_pg": pg_lang,
                 }
     return {
-        "language_iso629_2": None,
-        "language_iso629_1": None,
+        "language_iso639_2": None,
+        "language_iso639_1": None,
         "language_display": None,
         "language_pg": None,
     }
