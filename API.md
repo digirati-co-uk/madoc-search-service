@@ -375,3 +375,35 @@ We can run the same query, but just set the facets and request the facet counts,
 ```
 
 As per Example 3, only this time we are using `istartswith` (case insensitive startswith) for the type = "metadata", subtype = "collection name", "value" = "Staat" facet. (N.B. this will also match, e.g. "collection name (English)" for example).
+
+# POSTing "raw" Indexable content
+
+```json
+{
+    "resource_id": "urn:foo:bar",
+    "content_id": "https://example.org/foo/bar",
+    "original_content": "<html>Whooo!</html>",
+    "indexable": "Whooo!",
+    "indexable_date": null,
+    "indexable_int": null,
+    "indexable_float": null,
+    "indexable_json": null,
+    "selector": null,
+    "type": "custom",
+    "subtype": "custom1",
+    "language_iso639_2": "eng",
+    "language_iso639_1": "en",
+    "language_display": "english",
+    "language_pg": "english"
+}
+```
+
+N.B. The following fields are compulsory:
+
+* resource_id : the identifier in madoc for the object this relates to
+* indexable: this is the text to be indexed by the fulltext search
+* original_content: this is whatever will get highlighted by the snipper API
+* type: e.g. custom
+* subtype: e.g. custom_subfield
+
+N.B. the _resource_id_ __must__ exist and must be already in the search service.
