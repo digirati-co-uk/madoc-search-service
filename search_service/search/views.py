@@ -1,13 +1,16 @@
 # Django Imports
 
+from copy import deepcopy
+from functools import reduce
+from operator import or_, and_
+
 from django.contrib.auth.models import User
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchHeadline
+from django.contrib.postgres.search import SearchQuery
 from django.db import models
-from django.db.models import F, Value, Q, JSONField
+from django.db.models import Q
 from django.utils.translation import get_language
 from django_filters import rest_framework as df_filters
 from django_filters.rest_framework import DjangoFilterBackend
-
 # DRF Imports
 from rest_framework import generics, filters, status
 from rest_framework import viewsets
@@ -16,10 +19,6 @@ from rest_framework.mixins import ListModelMixin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-
-from operator import or_, and_
-from functools import reduce
-from copy import deepcopy
 
 # Local imports
 from .langbase import LANGBASE
@@ -33,7 +32,6 @@ from .serializers import (
     ContextSerializer,
     IIIFSearchSummarySerializer,
 )
-
 
 # Globals
 default_lang = get_language()
@@ -142,6 +140,7 @@ class IIIFList(generics.ListCreateAPIView):
         """
         Override the .create() method on the rest-framework generic ListCreateAPIViewset
         """
+
         def ingest_iiif(
             iiif3_resource=None,
             resource_contexts=None,
@@ -199,9 +198,7 @@ class IIIFList(generics.ListCreateAPIView):
             if parent_object is not None:
                 # If I'm, e.g. a Canvas, add my parent manifest to the list of context(s)
                 local_contexts += [{"id": parent_object.id, "type": parent_object.type}]
-                local_contexts += [
-                    {"id": parent_object.madoc_id, "type": parent_object.type}
-                ]
+                local_contexts += [{"id": parent_object.madoc_id, "type": parent_object.type}]
             if local_contexts:
                 # Get or create the context object in the ORM
                 c_objs = [Context.objects.get_or_create(**cont) for cont in local_contexts]
@@ -318,8 +315,14 @@ class IndexablesList(generics.ListCreateAPIView):
     serializer_class = IndexablesSerializer
     filter_backends = [DjangoFilterBackend]
     queryset = Indexables.objects.all()
-    filterset_fields = ["resource_id", "content_id", "iiif__madoc_id", "iiif__contexts__id",
-                        "type", "subtype"]
+    filterset_fields = [
+        "resource_id",
+        "content_id",
+        "iiif__madoc_id",
+        "iiif__contexts__id",
+        "type",
+        "subtype",
+    ]
     pagination_class = MadocPagination
 
 
