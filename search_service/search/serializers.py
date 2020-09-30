@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Indexables, IIIFResource, Context
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchHeadline
-from django.db.models import F, Q
+from django.db.models import F
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -12,6 +12,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ContextSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer for Context objects, i.e. for the site, project, collection, etc
+    that might be associated with a IIIF resource.
+    """
+
     class Meta:
         model = Context
         fields = ["url", "id", "type", "slug"]
@@ -19,6 +24,10 @@ class ContextSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class IIIFSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer for IIIF Prezi 3 resources.
+    """
+
     contexts = ContextSerializer(read_only=True, many=True)
 
     class Meta:
@@ -42,6 +51,11 @@ class IIIFSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class IIIFSummary(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer that produces a summary of a IIIF resource for return in lists
+    of search results or other similar nested views
+    """
+
     contexts = ContextSerializer(read_only=True, many=True)
 
     class Meta:
@@ -50,6 +64,11 @@ class IIIFSummary(serializers.HyperlinkedModelSerializer):
 
 
 class ContextSummarySerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer that produces a summary of a Context object for return in lists of
+    search results or other similar nested views
+    """
+
     class Meta:
         model = Context
         fields = ["url", "id", "type"]
@@ -57,6 +76,11 @@ class ContextSummarySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class IndexablesSummarySerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer that produces a summary of an individually indexed "field" or text
+    reource for return in lists of results or other similar nested views
+    """
+
     rank = serializers.FloatField(default=None, read_only=True)
     snippet = serializers.CharField(default=None, read_only=True)
     language = serializers.CharField(default=None, read_only=None, source="language_iso639_1")
@@ -67,6 +91,10 @@ class IndexablesSummarySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer that produces the summarized search results.
+    """
+
     contexts = ContextSummarySerializer(read_only=True, many=True)
     hits = serializers.SerializerMethodField("get_hits")
     resource_id = serializers.CharField(source="madoc_id")
@@ -74,17 +102,29 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
     rank = serializers.SerializerMethodField("get_rank")
 
     def get_rank(self, iiif):
+        """
+        Serializer method that calculates the average rank from the hits associated
+        with this search result
+        """
         try:
             return max([h["rank"] for h in self.get_hits(iiif=iiif)])
         except TypeError:
             return 1.0
 
     def get_hits(self, iiif):
+        """
+        Serializer method that calculates the hits to return along with this search
+        result
+        """
+        # Rank must be greater than 0 (i.e. this is some kind of hit)
         filter_kwargs = {"rank__gt": 0.0}
+        # Filter the indexables to query against to just those associated with this IIIF resource
         qs = Indexables.objects.filter(iiif=iiif)
         if self.context.get("hits_filter_kwargs"):
+            # We have a dictionary of queries to use, so we use that
             search_query = self.context["hits_filter_kwargs"].get("search_vector", None)
         else:
+            # Otherwise, this is probably a simple GET request, so we construct the queries from params
             search_string = self.context["request"].query_params.get("fulltext", None)
             language = self.context["request"].query_params.get("search_language", None)
             search_type = self.context["request"].query_params.get("search_type", "websearch")
@@ -98,6 +138,7 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
             else:
                 search_query = None
         if search_query:
+            # Annotate the results in the queryset with rank, and with a snippet
             qs = (
                 qs.annotate(
                     rank=SearchRank(F("search_vector"), search_query, cover_density=True),
@@ -112,6 +153,7 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
                 .filter(search_vector=search_query, **filter_kwargs)
                 .order_by("-rank")
             )
+        # Use the Indexables summary serializer to return the hit list
         serializer = IndexablesSummarySerializer(instance=qs, many=True)
         return serializer.data
 
@@ -131,6 +173,11 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer for the Indexables, i.e. the indexed objects that are used to
+    drive search and which are associated with a IIIF resource
+    """
+
     iiif = IIIFSummary(read_only=True)
 
     class Meta:
@@ -156,6 +203,8 @@ class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
     def create(self, validated_data):
+        # On create, associate the resource with the relevant IIIF resource
+        # via the Madoc identifier for that object
         resource_id = validated_data.get("resource_id")
         iiif = IIIFResource.objects.get(madoc_id=resource_id)
         validated_data["iiif"] = iiif
