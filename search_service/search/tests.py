@@ -105,6 +105,40 @@ def test_faceted_query():
         print(json.dumps(j, indent=2, ensure_ascii=False))
 
 
+def test_ocr():
+    # m = "https://wellcomelibrary.org/iiif/b28034831/manifest"
+    # j = requests.get(m).json()
+    # if j:
+    #     post_json = {
+    #         "contexts": [  # List of contexts with their id and type
+    #             {"id": "urn:madoc:site:2", "type": "Site"},
+    #         ],
+    #         "resource": j,  # this is the JSON for the IIIF resource
+    #         "id": f"urn:madoc:manifest:{j['@id'].split('/')[-2]}",  # Madoc ID for the subject/object
+    #         "thumbnail": f"http://madoc.foo/thumbnail/{j['@id'].split('/')[-2]}/fake.jpg",  # Thumbnail URL
+    #         "cascade": True,
+    #     }
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    #     p = requests.post(
+    #         url="http://localhost:8000/api/search/iiif", json=post_json, headers=headers
+    #     )
+    #     print(p.status_code)
+    # https://wellcomelibrary.org/service/alto/b28034831/0?image=11
+    # https://wellcomelibrary.org/iiif/b28034831/canvas/c11
+    post_json = {
+        "resource_id": "urn:madoc:manifest:b28034831:canvas:11",
+        "resource": requests.get("http://madoc.dlcs.digirati.io/public/storage/urn:madoc:site:1/canvas-ocr/public/255/mets-alto.json").json()
+    }
+    p = requests.post(
+                url="http://localhost:8000/api/search/ocr", json=post_json, headers=headers
+            )
+    # p = requests.put(url="http://localhost:8000/api/search/indexables/158909", json=post_json,
+    #                  headers=headers)
+    print(p.status_code)
+    print(p.json())
+
+
 if __name__ == "__main__":
     # test_faceted_query()
-    test_ingest()
+    # test_ingest()
+    test_ocr()
