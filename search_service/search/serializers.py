@@ -82,7 +82,8 @@ def calc_offsets(obj):
         if word.startswith("<start_sel>") and word.endswith("<end_sel>"):
             offsets.append(i)
     if offsets:
-        return [f"xywh={','.join([str(i) for i in obj.selector[x]])}" for x in offsets if obj.selector[x]]
+        if obj.selector:
+            return [f"xywh={','.join([str(i) for i in obj.selector[x] if i])}" for x in offsets if obj.selector[x]]
     return
 
 
