@@ -642,3 +642,27 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
                     # Appending each filter one at a time
                     queryset = queryset.filter(**filter_dict)
         return queryset.distinct()
+
+
+class OCRDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Indexables.objects.all()
+    serializer_class = IndexablesSerializer
+
+
+class OCRList(generics.ListCreateAPIView):
+    """
+    List/Create API view for Indexables that are being created/listed
+    view the OCR specific URL route
+    """
+    serializer_class = IndexablesSerializer
+    filter_backends = [DjangoFilterBackend]
+    queryset = Indexables.objects.all()
+    filterset_fields = [
+        "resource_id",
+        "content_id",
+        "iiif__madoc_id",
+        "iiif__contexts__id",
+        "type",
+        "subtype",
+    ]
+    pagination_class = MadocPagination

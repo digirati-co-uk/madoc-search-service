@@ -13,6 +13,12 @@ urlpatterns = [
         views.IndexablesDetail.as_view(),
         name="indexables-detail",
     ),
+    path("api/search/ocr", views.OCRList.as_view(), name="ocr-list"),
+    path(
+        "api/search/ocr/<int:pk>",
+        views.OCRDetail.as_view(),
+        name="ocr-detail",
+    ),
     path(
         "api/search/search",
         views.IIIFSearch.as_view({"get": "list", "post": "list"}),

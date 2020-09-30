@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .models import Indexables, IIIFResource, Context
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchHeadline
 from django.db.models import F
-
+from .serializer_utils import simplify_ocr
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -201,6 +201,19 @@ class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
             "language_pg",
             "iiif",
         ]
+
+    def to_internal_value(self, data):
+        if data.get("resource"):
+            # To Do: Add something here that wraps the configuration for how it should parse
+            # and index the data? Currently, if it gets a resource, it just assumes it's OCR
+            data["type"] = "capturemodel"
+            data["subtype"] = "ocr"
+            simplified = simplify_ocr(data["resource"])
+            if simplified.get("indexable"):
+                data["indexable"] = simplified["indexable"]
+                data["original_content"] = simplified["indexable"]
+                data["selector"] = simplified["selectors"]
+        return super(IndexablesSerializer, self).to_internal_value(data)
 
     def create(self, validated_data):
         # On create, associate the resource with the relevant IIIF resource
