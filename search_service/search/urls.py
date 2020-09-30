@@ -7,17 +7,12 @@ from . import views
 
 urlpatterns = [
     path("", views.api_root),
-    # path("iiif/", views.IIIFList.as_view(), name="iiifresource-list"),
-    # path("iiif/<str:pk>/", views.IIIFDetail.as_view(), name="iiifresource-detail"),
     path("api/search/indexables", views.IndexablesList.as_view(), name="indexables-list"),
     path(
         "api/search/indexables/<int:pk>",
         views.IndexablesDetail.as_view(),
         name="indexables-detail",
     ),
-    # path("contexts/", views.ContextList.as_view(), name="context-list"),
-    # path("contexts/<slug:slug>/", views.ContextDetail.as_view(), name="context-detail"),
-    # path("search/", views.IIIFSearch.as_view({"get": "list", "post": "list"}), name="search_"),
     path(
         "api/search/search",
         views.IIIFSearch.as_view({"get": "list", "post": "list"}),
