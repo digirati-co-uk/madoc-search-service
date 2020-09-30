@@ -75,6 +75,17 @@ class ContextSummarySerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {"url": {"lookup_field": "slug"}}
 
 
+def calc_offsets(obj):
+    words = obj.fullsnip.split(" ")
+    offsets = []
+    for i, word in enumerate(words):
+        if word.startswith("<start_sel>") and word.endswith("<end_sel>"):
+            offsets.append(i)
+    if offsets:
+        return [f"xywh={','.join([str(i) for i in obj.selector[x]])}" for x in offsets if obj.selector[x]]
+    return
+
+
 class IndexablesSummarySerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer that produces a summary of an individually indexed "field" or text
@@ -84,10 +95,15 @@ class IndexablesSummarySerializer(serializers.HyperlinkedModelSerializer):
     rank = serializers.FloatField(default=None, read_only=True)
     snippet = serializers.CharField(default=None, read_only=True)
     language = serializers.CharField(default=None, read_only=None, source="language_iso639_1")
+    bounding_boxes = serializers.SerializerMethodField()
+
+    def get_bounding_boxes(self, obj):
+        return calc_offsets(obj)
 
     class Meta:
         model = Indexables
-        fields = ["type", "subtype", "snippet", "language", "rank", "original_content"]
+        fields = ["type", "subtype", "snippet", "language", "rank",
+                  "bounding_boxes"]
 
 
 class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
@@ -149,6 +165,13 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
                         min_words=25,
                         max_fragments=3,
                     ),
+                    fullsnip=SearchHeadline(
+                        "indexable",
+                        search_query,
+                        start_sel="<start_sel>",
+                        stop_sel="<end_sel>",
+                        highlight_all=True
+                    )
                 )
                 .filter(search_vector=search_query, **filter_kwargs)
                 .order_by("-rank")
