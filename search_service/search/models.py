@@ -14,8 +14,13 @@ from django.utils.translation import ugettext_lazy as _
 
 class Context(TimeStampedModel):
     """"
-    Context
+    Context, i.e. the IIIF collection, manifest, Madoc site or project
+    or any associated resource that is the context for a IIIF resource being indexed and
+    searched against.
 
+    id: Identifier (this is usually the Madoc ID but could be a IIIF @id)
+    type: e.g. Site, Manifest, Collection, Project, etc. Not constrained.
+    slug: a slugify'd version of the id for use in URL routing and URIs
     """
 
     id = models.CharField(
@@ -26,6 +31,11 @@ class Context(TimeStampedModel):
 
 
 class IIIFResource(TimeStampedModel):
+    """
+    Abbreviated version of a IIIF Presentation API 3 resource. This is the master document that
+    is returned in search results.
+    """
+
     madoc_id = models.CharField(
         max_length=512, primary_key=True, verbose_name=_("Identifier (Madoc)")
     )
