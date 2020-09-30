@@ -13,91 +13,187 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Context',
+            name="Context",
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
-                ('id', models.CharField(max_length=512, primary_key=True, serialize=False, verbose_name='Identifier (Context)')),
-                ('type', models.CharField(max_length=30)),
-                ('slug', django_extensions.db.fields.AutoSlugField(blank=True, editable=False, populate_from='id')),
+                (
+                    "created",
+                    model_utils.fields.AutoCreatedField(
+                        default=django.utils.timezone.now, editable=False, verbose_name="created"
+                    ),
+                ),
+                (
+                    "modified",
+                    model_utils.fields.AutoLastModifiedField(
+                        default=django.utils.timezone.now, editable=False, verbose_name="modified"
+                    ),
+                ),
+                (
+                    "id",
+                    models.CharField(
+                        max_length=512,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="Identifier (Context)",
+                    ),
+                ),
+                ("type", models.CharField(max_length=30)),
+                (
+                    "slug",
+                    django_extensions.db.fields.AutoSlugField(
+                        blank=True, editable=False, populate_from="id"
+                    ),
+                ),
             ],
-            options={
-                'abstract': False,
-            },
+            options={"abstract": False},
         ),
         migrations.CreateModel(
-            name='IIIFResource',
+            name="IIIFResource",
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
-                ('madoc_id', models.CharField(max_length=512, primary_key=True, serialize=False, verbose_name='Identifier (Madoc)')),
-                ('madoc_thumbnail', models.URLField(blank=True, null=True)),
-                ('id', models.URLField(verbose_name='IIIF id')),
-                ('slug', django_extensions.db.fields.AutoSlugField(blank=True, editable=False, populate_from='madoc_id')),
-                ('type', models.CharField(max_length=30)),
-                ('label', models.JSONField(blank=True, null=True)),
-                ('thumbnail', models.JSONField(blank=True, null=True)),
-                ('summary', models.JSONField(blank=True, null=True)),
-                ('metadata', models.JSONField(blank=True, null=True)),
-                ('navDate', models.DateTimeField(blank=True, null=True)),
-                ('rights', models.URLField(blank=True, null=True)),
-                ('requiredStatement', models.JSONField(blank=True, null=True)),
-                ('provider', models.JSONField(blank=True, null=True)),
-                ('contexts', models.ManyToManyField(blank=True, related_name='associated_iiif', to='search.Context')),
-                ('items', models.ManyToManyField(blank=True, related_name='_iiifresource_items_+', to='search.IIIFResource')),
+                (
+                    "created",
+                    model_utils.fields.AutoCreatedField(
+                        default=django.utils.timezone.now, editable=False, verbose_name="created"
+                    ),
+                ),
+                (
+                    "modified",
+                    model_utils.fields.AutoLastModifiedField(
+                        default=django.utils.timezone.now, editable=False, verbose_name="modified"
+                    ),
+                ),
+                (
+                    "madoc_id",
+                    models.CharField(
+                        max_length=512,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="Identifier (Madoc)",
+                    ),
+                ),
+                ("madoc_thumbnail", models.URLField(blank=True, null=True)),
+                ("id", models.URLField(verbose_name="IIIF id")),
+                (
+                    "slug",
+                    django_extensions.db.fields.AutoSlugField(
+                        blank=True, editable=False, populate_from="madoc_id"
+                    ),
+                ),
+                ("type", models.CharField(max_length=30)),
+                ("label", models.JSONField(blank=True, null=True)),
+                ("thumbnail", models.JSONField(blank=True, null=True)),
+                ("summary", models.JSONField(blank=True, null=True)),
+                ("metadata", models.JSONField(blank=True, null=True)),
+                ("navDate", models.DateTimeField(blank=True, null=True)),
+                ("rights", models.URLField(blank=True, null=True)),
+                ("requiredStatement", models.JSONField(blank=True, null=True)),
+                ("provider", models.JSONField(blank=True, null=True)),
+                (
+                    "contexts",
+                    models.ManyToManyField(
+                        blank=True, related_name="associated_iiif", to="search.Context"
+                    ),
+                ),
+                (
+                    "items",
+                    models.ManyToManyField(
+                        blank=True, related_name="_iiifresource_items_+", to="search.IIIFResource"
+                    ),
+                ),
             ],
-            options={
-                'abstract': False,
-            },
+            options={"abstract": False},
         ),
         migrations.CreateModel(
-            name='Indexables',
+            name="Indexables",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
-                ('resource_id', models.CharField(max_length=512, verbose_name='Identifier (URL/URI/URN) for associated IIIF resource')),
-                ('content_id', models.CharField(blank=True, max_length=512, null=True, verbose_name='Identifier (URL/URI/URN) for the content, if it has one')),
-                ('indexable', models.TextField()),
-                ('original_content', models.TextField()),
-                ('search_vector', django.contrib.postgres.search.SearchVectorField(blank=True, null=True)),
-                ('language_iso629_2', models.CharField(blank=True, max_length=3, null=True)),
-                ('language_iso629_1', models.CharField(blank=True, max_length=2, null=True)),
-                ('language_display', models.CharField(blank=True, max_length=64, null=True)),
-                ('language_pg', models.CharField(blank=True, max_length=64, null=True)),
-                ('selector', models.JSONField(blank=True, null=True)),
-                ('type', models.CharField(max_length=64)),
-                ('subtype', models.CharField(max_length=256)),
-                ('iiif', models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, related_name='indexables', to='search.iiifresource')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "created",
+                    model_utils.fields.AutoCreatedField(
+                        default=django.utils.timezone.now, editable=False, verbose_name="created"
+                    ),
+                ),
+                (
+                    "modified",
+                    model_utils.fields.AutoLastModifiedField(
+                        default=django.utils.timezone.now, editable=False, verbose_name="modified"
+                    ),
+                ),
+                (
+                    "resource_id",
+                    models.CharField(
+                        max_length=512,
+                        verbose_name="Identifier (URL/URI/URN) for associated IIIF resource",
+                    ),
+                ),
+                (
+                    "content_id",
+                    models.CharField(
+                        blank=True,
+                        max_length=512,
+                        null=True,
+                        verbose_name="Identifier (URL/URI/URN) for the content, if it has one",
+                    ),
+                ),
+                ("indexable", models.TextField()),
+                ("original_content", models.TextField()),
+                (
+                    "search_vector",
+                    django.contrib.postgres.search.SearchVectorField(blank=True, null=True),
+                ),
+                ("language_iso629_2", models.CharField(blank=True, max_length=3, null=True)),
+                ("language_iso629_1", models.CharField(blank=True, max_length=2, null=True)),
+                ("language_display", models.CharField(blank=True, max_length=64, null=True)),
+                ("language_pg", models.CharField(blank=True, max_length=64, null=True)),
+                ("selector", models.JSONField(blank=True, null=True)),
+                ("type", models.CharField(max_length=64)),
+                ("subtype", models.CharField(max_length=256)),
+                (
+                    "iiif",
+                    models.ForeignKey(
+                        blank=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="indexables",
+                        to="search.iiifresource",
+                    ),
+                ),
             ],
         ),
         migrations.AddIndex(
-            model_name='indexables',
-            index=django.contrib.postgres.indexes.GinIndex(fields=['search_vector'], name='search_inde_search__09e477_gin'),
+            model_name="indexables",
+            index=django.contrib.postgres.indexes.GinIndex(
+                fields=["search_vector"], name="search_inde_search__09e477_gin"
+            ),
         ),
         migrations.AddIndex(
-            model_name='indexables',
-            index=models.Index(fields=['original_content'], name='search_inde_origina_7999e9_idx'),
+            model_name="indexables",
+            index=models.Index(fields=["original_content"], name="search_inde_origina_7999e9_idx"),
         ),
         migrations.AddIndex(
-            model_name='indexables',
-            index=models.Index(fields=['content_id'], name='search_inde_content_2b8043_idx'),
+            model_name="indexables",
+            index=models.Index(fields=["content_id"], name="search_inde_content_2b8043_idx"),
         ),
         migrations.AddIndex(
-            model_name='indexables',
-            index=models.Index(fields=['language_iso629_2', 'language_iso629_1', 'language_display'], name='search_inde_languag_8d9a47_idx'),
+            model_name="indexables",
+            index=models.Index(
+                fields=["language_iso629_2", "language_iso629_1", "language_display"],
+                name="search_inde_languag_8d9a47_idx",
+            ),
         ),
         migrations.AddIndex(
-            model_name='indexables',
-            index=models.Index(fields=['type'], name='search_inde_type_8a963a_idx'),
+            model_name="indexables",
+            index=models.Index(fields=["type"], name="search_inde_type_8a963a_idx"),
         ),
         migrations.AddIndex(
-            model_name='indexables',
-            index=models.Index(fields=['subtype'], name='search_inde_subtype_c91e89_idx'),
+            model_name="indexables",
+            index=models.Index(fields=["subtype"], name="search_inde_subtype_c91e89_idx"),
         ),
     ]

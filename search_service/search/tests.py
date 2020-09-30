@@ -19,12 +19,12 @@ def test_ingest():
         # "https://digital.library.villanova.edu/Collection/vudl:321794/IIIF",
         # "https://digital.library.villanova.edu/Collection/vudl:289113/IIIF",
         # "https://view.nls.uk/collections/7446/74466699.json",
-        # "https://wellcomelibrary.org/service/collections/topics/Alcoholism/",
-        # "https://wellcomelibrary.org/service/collections/topics/dragons/",
-        # "https://wellcomelibrary.org/service/collections/authors/Aldrovandi,%20Ulisse,/"
-        # "https://wellcomelibrary.org/service/collections/topics/Mydriasis/",
-        # "https://wellcomelibrary.org/service/collections/topics/Abipon%20Indians/",
-        "https://wellcomelibrary.org/service/collections/topics/Acropora/",
+        "https://wellcomelibrary.org/service/collections/topics/Alcoholism/",
+        "https://wellcomelibrary.org/service/collections/topics/dragons/",
+        # # "https://wellcomelibrary.org/service/collections/authors/Aldrovandi,%20Ulisse,/"
+        # # "https://wellcomelibrary.org/service/collections/topics/Mydriasis/",
+        # # "https://wellcomelibrary.org/service/collections/topics/Abipon%20Indians/",
+        # "https://wellcomelibrary.org/service/collections/topics/Acropora/",
     ]
     for coll in collections:
         collection = requests.get(coll).json()
@@ -41,7 +41,7 @@ def test_ingest():
                     "resource": j,  # this is the JSON for the IIIF resource
                     "id": f"urn:madoc:manifest:{m['@id'].split('/')[-2]}",  # Madoc ID for the subject/object
                     "thumbnail": f"http://madoc.foo/thumbnail/{m['@id'].split('/')[-2]}/fake.jpg",  # Thumbnail URL
-                    "cascade": True
+                    "cascade": True,
                 }
                 headers = {"Content-Type": "application/json", "Accept": "application/json"}
                 p = requests.post(
@@ -55,11 +55,23 @@ def test_faceted_query():
 
     query = {
         # "fulltext": "Abbey",
-        "facet_fields": ['text language', 'place of origin (english)',
-                         'collection name', 'publisher', "persons", "material", "location"],
+        "facet_fields": [
+            "text language",
+            "place of origin (english)",
+            "collection name",
+            "publisher",
+            "persons",
+            "material",
+            "location",
+        ],
         "contexts": ["urn:madoc:site:2"],
         "facets": [
-            {"type": "metadata", "subtype": "collection name", "value": "Staat", "field_lookup": "istartswith"},
+            {
+                "type": "metadata",
+                "subtype": "collection name",
+                "value": "Staat",
+                "field_lookup": "istartswith",
+            },
             {"type": "metadata", "subtype": "material", "value": "paper"},
             {"type": "metadata", "subtype": "material", "value": "parchment"},
             {"type": "metadata", "subtype": "text language", "value": "German"},

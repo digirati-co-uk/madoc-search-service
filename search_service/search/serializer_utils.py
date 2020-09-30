@@ -260,11 +260,12 @@ def simplify_selector(selector):
         832,644,20,60
     """
     if selector.get("state"):
-        selector_list = [selector["state"].get("x"),
-                         selector["state"].get("y"),
-                         selector["state"].get("width"),
-                         selector["state"].get("height")
-                         ]
+        selector_list = [
+            selector["state"].get("x"),
+            selector["state"].get("y"),
+            selector["state"].get("width"),
+            selector["state"].get("height"),
+        ]
         if all([x is not None for x in selector_list]):
             try:
                 return [int(x) for x in selector_list]
@@ -287,14 +288,20 @@ def simplify_ocr(ocr):
                             if line["properties"].get("text"):
                                 for text in line["properties"]["text"]:
                                     simplified["text"].append(text.get("value"))
-                                    simplified["selectors"].append(simplify_selector(text["selector"]))
+                                    simplified["selectors"].append(
+                                        simplify_selector(text["selector"])
+                                    )
     simplified["indexable"] = " ".join([t for t in simplified["text"] if t])
     return simplified
 
 
 if __name__ == "__main__":
     import requests
-    foo = requests.get("http://madoc.dlcs.digirati.io/public/storage/urn:madoc:site:1/canvas-ocr/public/255/mets-alto.json").json()
+
+    foo = requests.get(
+        "http://madoc.dlcs.digirati.io/public/storage/urn:madoc:site:1/canvas-ocr/public/255/mets-alto.json"
+    ).json()
     bar = simplify_ocr(foo)
     import json
+
     print(json.dumps(bar, indent=2, ensure_ascii=False))
