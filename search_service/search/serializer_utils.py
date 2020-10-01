@@ -111,7 +111,7 @@ def iiif_to_presentationapiresourcemodel(data_dict):
             try:
                 val(return_dict["license"])
             except ValidationError:
-                del (return_dict["license"])
+                del return_dict["license"]
     return return_dict
 
 
@@ -294,11 +294,32 @@ def simplify_ocr(ocr):
                                     if selector_obj:
                                         for k, v in selector_obj.items():
                                             simplified["selectors"][k].append(v)
-                                    # simplified["selectors"].append(
-                                    #     simplify_selector(text["selector"])
-                                    # )
     simplified["indexable"] = " ".join([t for t in simplified["text"] if t])
     return simplified
+
+
+def calc_offsets(obj):
+    """
+    The search "hit" should have a 'fullsnip' annotation which is a the entire
+    text of the indexable resource, with <start_sel> and <end_sel> wrapping each
+    highlighted word.
+
+    Check if there's a selector on the indexable, and then if there's a box-selector
+    use this to generate a list of xywh coordinates by retrieving the selector by
+    its index from a list of lists
+    """
+    if hasattr(obj, "fullsnip"):
+        words = obj.fullsnip.split(" ")
+        offsets = []
+        if words:
+            for i, word in enumerate(words):
+                if word.startswith("<start_sel>") and word.endswith("<end_sel>"):
+                    offsets.append(i)
+            if offsets:
+                if obj.selector:
+                    if (boxes := obj.selector.get("box-selector")) is not None:
+                        return [boxes[x] for x in offsets if boxes[x]]
+    return
 
 
 if __name__ == "__main__":

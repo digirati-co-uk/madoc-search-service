@@ -3,7 +3,8 @@ from rest_framework import serializers
 from .models import Indexables, IIIFResource, Context
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchHeadline
 from django.db.models import F
-from .serializer_utils import simplify_ocr
+from .serializer_utils import simplify_ocr, calc_offsets
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -75,29 +76,6 @@ class ContextSummarySerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {"url": {"lookup_field": "slug"}}
 
 
-def calc_offsets(obj):
-    """
-    The search "hit" should have a 'fullsnip' annotation which is a the entire
-    text of the indexable resource, with <start_sel> and <end_sel> wrapping each
-    highlighted word.
-
-    Check if there's a selector on the indexable, and then if there's a box-selector
-    use this to generate a list of xywh coordinates by retrieving the selector by
-    its index from a list of lists
-    """
-    if hasattr(obj, "fullsnip"):
-        words = obj.fullsnip.split(" ")
-        offsets = []
-        for i, word in enumerate(words):
-            if word.startswith("<start_sel>") and word.endswith("<end_sel>"):
-                offsets.append(i)
-        if offsets:
-            if obj.selector:
-                if (boxes := obj.selector.get("box-selector")) is not None:
-                    return [boxes[x] for x in offsets if boxes[x]]
-    return
-
-
 class IndexablesSummarySerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer that produces a summary of an individually indexed "field" or text
@@ -114,8 +92,7 @@ class IndexablesSummarySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Indexables
-        fields = ["type", "subtype", "snippet", "language", "rank",
-                  "bounding_boxes"]
+        fields = ["type", "subtype", "snippet", "language", "rank", "bounding_boxes"]
 
 
 class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
@@ -182,8 +159,8 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
                         search_query,
                         start_sel="<start_sel>",
                         stop_sel="<end_sel>",
-                        highlight_all=True
-                    )
+                        highlight_all=True,
+                    ),
                 )
                 .filter(search_vector=search_query, **filter_kwargs)
                 .order_by("-rank")
