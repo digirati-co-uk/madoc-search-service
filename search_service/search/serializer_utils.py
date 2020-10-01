@@ -260,17 +260,19 @@ def simplify_selector(selector):
         832,644,20,60
     """
     if selector.get("state"):
-        selector_list = [
-            selector["state"].get("x"),
-            selector["state"].get("y"),
-            selector["state"].get("width"),
-            selector["state"].get("height"),
-        ]
-        if all([x is not None for x in selector_list]):
-            try:
-                return [int(x) for x in selector_list]
-            except ValueError:
-                return
+        if (selector_type := selector.get("type")) is not None:
+            if selector_type == "box-selector":
+                selector_list = [
+                    selector["state"].get("x"),
+                    selector["state"].get("y"),
+                    selector["state"].get("width"),
+                    selector["state"].get("height"),
+                ]
+                if all([x is not None for x in selector_list]):
+                    try:
+                        return {selector_type: [int(x) for x in selector_list]}
+                    except ValueError:
+                        return
     return
 
 
