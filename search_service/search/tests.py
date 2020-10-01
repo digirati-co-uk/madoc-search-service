@@ -5,33 +5,23 @@ import json
 def test_ingest():
     collections = [
         # "https://iiif.ub.uni-leipzig.de/static/collections/Drucke17/collection.json",
-        # "https://iiif.ub.uni-leipzig.de/static/collections/Drucke16/collection.json",
-        # "https://iiif.ub.uni-leipzig.de/static/collections/misc/cdvost2018.json",
-        # "https://iiif.hab.de/collection/project/mssox.json",
-        # "https://www.e-codices.unifr.ch/metadata/iiif/collection/sl.json",
-        # "https://www.e-codices.unifr.ch/metadata/iiif/collection/saa.json",
-        # "https://www.e-codices.unifr.ch/metadata/iiif/collection/bge.json",
-        # "https://digital.library.villanova.edu/Collection/vudl:294849/IIIF",
-        # "https://digital.library.villanova.edu/Collection/vudl:289364/IIIF",
-        # "https://digital.library.villanova.edu/Collection/vudl:313874/IIIF",
-        # "https://digital.library.villanova.edu/Collection/vudl:293828/IIIF",
-        # "https://digital.library.villanova.edu/Collection/vudl:287996/IIIF",
-        # "https://digital.library.villanova.edu/Collection/vudl:321794/IIIF",
-        # "https://digital.library.villanova.edu/Collection/vudl:289113/IIIF",
-        # "https://view.nls.uk/collections/7446/74466699.json",
+        "https://iiif.hab.de/collection/project/mssox.json",
+        "https://www.e-codices.unifr.ch/metadata/iiif/collection/sl.json",
+        "https://digital.library.villanova.edu/Collection/vudl:294849/IIIF",
+        "https://view.nls.uk/collections/7446/74466699.json",
         "https://wellcomelibrary.org/service/collections/topics/Alcoholism/",
         "https://wellcomelibrary.org/service/collections/topics/dragons/",
-        # # "https://wellcomelibrary.org/service/collections/authors/Aldrovandi,%20Ulisse,/"
-        # # "https://wellcomelibrary.org/service/collections/topics/Mydriasis/",
-        # # "https://wellcomelibrary.org/service/collections/topics/Abipon%20Indians/",
-        # "https://wellcomelibrary.org/service/collections/topics/Acropora/",
     ]
     for coll in collections:
         collection = requests.get(coll).json()
         manifests = collection.get("members", collection.get("manifests", None))
         for m in manifests:
             print(m["@id"])
-            j = requests.get(m["@id"]).json()
+            r = requests.get(m["@id"])
+            if r.status_code == requests.codes.ok:
+                j = r.json()
+            else:
+                j = None
             if j:
                 post_json = {
                     "contexts": [  # List of contexts with their id and type
@@ -41,7 +31,7 @@ def test_ingest():
                     "resource": j,  # this is the JSON for the IIIF resource
                     "id": f"urn:madoc:manifest:{m['@id'].split('/')[-2]}",  # Madoc ID for the subject/object
                     "thumbnail": f"http://madoc.foo/thumbnail/{m['@id'].split('/')[-2]}/fake.jpg",  # Thumbnail URL
-                    "cascade": True,
+                    "cascade": False,
                 }
                 headers = {"Content-Type": "application/json", "Accept": "application/json"}
                 p = requests.post(
@@ -54,7 +44,7 @@ def test_faceted_query():
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
     query = {
-        # "fulltext": "Abbey",
+        "fulltext": "Abbey",
         "facet_fields": [
             "text language",
             "place of origin (english)",
@@ -66,15 +56,15 @@ def test_faceted_query():
         ],
         "contexts": ["urn:madoc:site:2"],
         "facets": [
-            {
-                "type": "metadata",
-                "subtype": "collection name",
-                "value": "Staat",
-                "field_lookup": "istartswith",
-            },
-            {"type": "metadata", "subtype": "material", "value": "paper"},
+            # {
+            #     "type": "metadata",
+            #     "subtype": "collection name",
+            #     "value": "Staat",
+            #     "field_lookup": "istartswith",
+            # },
+            # {"type": "metadata", "subtype": "material", "value": "paper"},
             {"type": "metadata", "subtype": "material", "value": "parchment"},
-            {"type": "metadata", "subtype": "text language", "value": "German"},
+            # {"type": "metadata", "subtype": "text language", "value": "German"},
             # {
             #     "type": "metadata",
             #     "subtype": "text language",
@@ -118,7 +108,10 @@ def test_ocr():
     #         "thumbnail": f"http://madoc.foo/thumbnail/{j['@id'].split('/')[-2]}/fake.jpg",  # Thumbnail URL
     #         "cascade": True,
     #     }
+    # else:
+    #     post_json = None
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    # if post_json:
     #     p = requests.post(
     #         url="http://localhost:8000/api/search/iiif", json=post_json, headers=headers
     #     )

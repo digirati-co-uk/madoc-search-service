@@ -2,7 +2,7 @@ from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 import json
 from bs4 import BeautifulSoup
-
+from collections import defaultdict
 
 pg_languages = [
     "danish",
@@ -280,7 +280,7 @@ def simplify_ocr(ocr):
     """
     Simplify ocr to just a single continuous page of text, with selectors.
     """
-    simplified = dict(text=[], selectors=[])
+    simplified = dict(text=[], selectors=defaultdict(list))
     if ocr.get("paragraph"):
         for paragraph in ocr["paragraph"]:
             if paragraph.get("properties"):
@@ -290,9 +290,13 @@ def simplify_ocr(ocr):
                             if line["properties"].get("text"):
                                 for text in line["properties"]["text"]:
                                     simplified["text"].append(text.get("value"))
-                                    simplified["selectors"].append(
-                                        simplify_selector(text["selector"])
-                                    )
+                                    selector_obj = simplify_selector(text["selector"])
+                                    if selector_obj:
+                                        for k, v in selector_obj.items():
+                                            simplified["selectors"][k].append(v)
+                                    # simplified["selectors"].append(
+                                    #     simplify_selector(text["selector"])
+                                    # )
     simplified["indexable"] = " ".join([t for t in simplified["text"] if t])
     return simplified
 

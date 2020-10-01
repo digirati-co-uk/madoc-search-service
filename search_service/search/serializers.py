@@ -76,14 +76,25 @@ class ContextSummarySerializer(serializers.HyperlinkedModelSerializer):
 
 
 def calc_offsets(obj):
-    words = obj.fullsnip.split(" ")
-    offsets = []
-    for i, word in enumerate(words):
-        if word.startswith("<start_sel>") and word.endswith("<end_sel>"):
-            offsets.append(i)
-    if offsets:
-        if obj.selector:
-            return [f"xywh={','.join([str(i) for i in obj.selector[x] if i])}" for x in offsets if obj.selector[x]]
+    """
+    The search "hit" should have a 'fullsnip' annotation which is a the entire
+    text of the indexable resource, with <start_sel> and <end_sel> wrapping each
+    highlighted word.
+
+    Check if there's a selector on the indexable, and then if there's a box-selector
+    use this to generate a list of xywh coordinates by retrieving the selector by
+    its index from a list of lists
+    """
+    if hasattr(obj, "fullsnip"):
+        words = obj.fullsnip.split(" ")
+        offsets = []
+        for i, word in enumerate(words):
+            if word.startswith("<start_sel>") and word.endswith("<end_sel>"):
+                offsets.append(i)
+        if offsets:
+            if obj.selector:
+                if (boxes := obj.selector.get("box-selector")) is not None:
+                    return [boxes[x] for x in offsets if boxes[x]]
     return
 
 
