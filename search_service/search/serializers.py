@@ -214,23 +214,23 @@ class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
             "iiif",
         ]
 
-    def to_internal_value(self, data):
-        if data.get("resource"):
-            # To Do: Add something here that wraps the configuration for how it should parse
-            # and index the data? Currently, if it gets a resource, it just assumes it's OCR
-            if not data.get("type"):  # Only set this if not set
-                data["type"] = "capturemodel"
-            if not data.get("subtype"):  # Only set this if not set
-                data["subtype"] = "ocr"
-            # Assumption that this is OCR
-            simplified = simplify_ocr(data["resource"])
-            if simplified.get("indexable"):
-                data["indexable"] = simplified["indexable"]
-                data["original_content"] = simplified["indexable"]
-            if simplified.get("selectors"):
-                data["selector"] = simplified["selectors"]
-            print("Internal value")
-        return super(IndexablesSerializer, self).to_internal_value(data)
+    # def to_internal_value(self, data):
+    #     if data.get("resource"):
+    #         # To Do: Add something here that wraps the configuration for how it should parse
+    #         # and index the data? Currently, if it gets a resource, it just assumes it's OCR
+    #         if not data.get("type"):  # Only set this if not set
+    #             data["type"] = "capturemodel"
+    #         if not data.get("subtype"):  # Only set this if not set
+    #             data["subtype"] = "ocr"
+    #         # Assumption that this is OCR
+    #         simplified = simplify_ocr(data["resource"])
+    #         if simplified.get("indexable"):
+    #             data["indexable"] = simplified["indexable"]
+    #             data["original_content"] = simplified["indexable"]
+    #         if simplified.get("selectors"):
+    #             data["selector"] = simplified["selectors"]
+    #         print("Internal value")
+    #     return super(IndexablesSerializer, self).to_internal_value(data)
 
     def create(self, validated_data):
         # On create, associate the resource with the relevant IIIF resource

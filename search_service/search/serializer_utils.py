@@ -352,7 +352,7 @@ def calc_offsets(obj):
         offsets = []
         if words:
             for i, word in enumerate(words):
-                if word.startswith("<start_sel>") and word.endswith("<end_sel>"):
+                if "<start_sel>" in word and "<end_sel>" in word:
                     offsets.append(i)
             if offsets:
                 if obj.selector:
