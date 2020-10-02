@@ -76,13 +76,13 @@ test_model = {
 
 def test_ingest():
     collections = [
-        # "https://iiif.ub.uni-leipzig.de/static/collections/Drucke17/collection.json",
+        "https://iiif.ub.uni-leipzig.de/static/collections/Drucke17/collection.json",
         "https://iiif.hab.de/collection/project/mssox.json",
         "https://www.e-codices.unifr.ch/metadata/iiif/collection/sl.json",
         "https://digital.library.villanova.edu/Collection/vudl:294849/IIIF",
         "https://view.nls.uk/collections/7446/74466699.json",
         "https://wellcomelibrary.org/service/collections/topics/Alcoholism/",
-        "https://wellcomelibrary.org/service/collections/topics/dragons/",
+        "https://wellcomelibrary.org/service/collections/topics/Antisocial%20Personality%20Disorder/",
     ]
     for coll in collections:
         collection = requests.get(coll).json()
@@ -116,7 +116,7 @@ def test_faceted_query():
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
     query = {
-        "fulltext": "Abbey",
+        # "fulltext": "Abbey",
         "facet_fields": [
             "text language",
             "place of origin (english)",
@@ -128,26 +128,10 @@ def test_faceted_query():
         ],
         "contexts": ["urn:madoc:site:2"],
         "facets": [
-            # {
-            #     "type": "metadata",
-            #     "subtype": "collection name",
-            #     "value": "Staat",
-            #     "field_lookup": "istartswith",
-            # },
-            # {"type": "metadata", "subtype": "material", "value": "paper"},
+            {"type": "metadata", "subtype": "material", "value": "paper"},
             {"type": "metadata", "subtype": "material", "value": "parchment"},
-            # {"type": "metadata", "subtype": "text language", "value": "German"},
-            # {
-            #     "type": "metadata",
-            #     "subtype": "text language",
-            #     "value": "French",
-            # },
-            # {
-            #     "type": "metadata",
-            #     "subtype": "text language",
-            #     "value": "Latin",
-            # },
-            # {"type": "metadata", "subtype": "author", "value": "Smith, John"},
+            {"type": "metadata", "subtype": "place of origin (english)", "value": "Fulda"},
+
         ],
     }
     #
@@ -155,6 +139,7 @@ def test_faceted_query():
     #     "fulltext": "Götter",
     #     "search_language": "german",
     #     "contexts": ["urn:madoc:site:2"],
+    #     "facet_fields": ["date of publication"],
     #     "facets": [
     #         {"type": "metadata", "subtype": "place of publication", "value": "Hamburg"},
     #     ]
@@ -232,7 +217,7 @@ def test_ocr():
     print(post_json)
     p = requests.post(url="http://localhost:8000/api/search/model", json=post_json, headers=headers)
     print(p.status_code)
-    print(p.json())
+    print(json.dumps(p.json(), indent=2, ensure_ascii=False))
 
 
 def test_capturemodel():
@@ -244,15 +229,14 @@ def test_capturemodel():
     print(post_json)
     p = requests.post(url="http://localhost:8000/api/search/model", json=post_json, headers=headers)
     print(p.status_code)
-    print(p.json())
+    print(json.dumps(p.json(), indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":
-    # test_faceted_query()
-    # test_ingest()
+    test_ingest()
     test_ocr()
     test_capturemodel()
-    # test_ocr_query()
-    test_model_query()
+    # # test_ocr_query()
+    # test_model_query()
 
 
