@@ -33,9 +33,11 @@ from .serializers import (
     IIIFSerializer,
     ContextSerializer,
     IIIFSearchSummarySerializer,
-    CaptureModelSerializer
+    CaptureModelSerializer,
 )
-from .serializer_utils import simplify_ocr, simplify_capturemodel
+from .serializer_utils import simplify_ocr
+from .indexable_utils import gen_indexables
+
 
 # Globals
 default_lang = get_language()
@@ -153,7 +155,7 @@ class IIIFList(generics.ListCreateAPIView):
             child=False,
             parent=None,
         ):
-            """"
+            """ "
             Nested function that ingests the IIIF object into PostgreSQL via the Django ORM.
 
             :param iiif3_resource: IIIF object (this could be anything in the API spec)
@@ -647,16 +649,16 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         return queryset.distinct()
 
 
-class OCRDetail(generics.RetrieveUpdateDestroyAPIView):
+class ModelDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Indexables.objects.all()
     serializer_class = CaptureModelSerializer
 
 
-class OCRList(generics.ListCreateAPIView):
+class ModelList(generics.ListCreateAPIView):
     """
     List/Create API view for Indexables that are being created/listed
-    view the OCR specific URL route
     """
+
     serializer_class = CaptureModelSerializer
     filter_backends = [DjangoFilterBackend]
     queryset = Indexables.objects.all()
@@ -679,33 +681,28 @@ class OCRList(generics.ListCreateAPIView):
         bad_results = []
         indexables = []
         if data.get("resource"):
-            local_dict = {"type": data.get("type", "capturemodel"), "subtype": data.get("subtype", "ocr")}
-            # To Do: Add something here that wraps the configuration for how it should parse
-            # and index the data? Currently, if it gets a resource, it just assumes it's OCR
-            # Assumption that this is OCR
-            simplified = simplify_ocr(data["resource"])
-            if simplified.get("indexable"):
-                local_dict["indexable"] = simplified["indexable"]
-                local_dict["original_content"] = simplified["indexable"]
-            if simplified.get("selectors"):
-                local_dict["selector"] = simplified["selectors"]
-            local_dict["content_id"] = data.get("content_id")
-            local_dict["resource_id"] = data.get("resource_id")
-            indexables.append(local_dict)
-        for indexable in indexables:
-            serializer = self.get_serializer(data=indexable)  # Serialize the data
-            serializer.is_valid(raise_exception=True)  # Check it's valid
-            self.perform_create(serializer)  # Create the object
-            if serializer.errors != {}:
-                bad_results.append((serializer.data, self.get_success_headers(serializer.data)))
-            else:
-                good_results.append((serializer.data, self.get_success_headers(serializer.data)))
-        return_status = status.HTTP_201_CREATED
-        if len(good_results) > 0:
-            if len(bad_results) > 0:
-                return_status = status.HTTP_206_PARTIAL_CONTENT
-            return Response([res[0] for res in good_results],
-                            status=return_status,
-                            headers=good_results[-1][1])
-        raise ValidationError
-
+            indexables = gen_indexables(data)
+        if indexables:
+            for indexable in indexables:
+                serializer = self.get_serializer(data=indexable)  # Serialize the data
+                serializer.is_valid(raise_exception=True)  # Check it's valid
+                self.perform_create(serializer)  # Create the object
+                if serializer.errors != {}:
+                    bad_results.append(
+                        (serializer.data, self.get_success_headers(serializer.data))
+                    )
+                else:
+                    good_results.append(
+                        (serializer.data, self.get_success_headers(serializer.data))
+                    )
+            return_status = status.HTTP_201_CREATED
+            if len(good_results) > 0:
+                if len(bad_results) > 0:
+                    return_status = status.HTTP_206_PARTIAL_CONTENT
+                return Response(
+                    [res[0] for res in good_results],
+                    status=return_status,
+                    headers=good_results[-1][1],
+                )
+            raise ValidationError
+        raise ParseError
