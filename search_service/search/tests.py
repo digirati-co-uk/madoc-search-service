@@ -111,24 +111,15 @@ def test_ocr():
     # else:
     #     post_json = None
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
-    # if post_json:
-    #     p = requests.post(
-    #         url="http://localhost:8000/api/search/iiif", json=post_json, headers=headers
-    #     )
-    #     print(p.status_code)
-    # https://wellcomelibrary.org/service/alto/b28034831/0?image=11
-    # https://wellcomelibrary.org/iiif/b28034831/canvas/c11
     post_json = {
-        "xresource_id": "urn:madoc:manifest:b28034831:canvas:11",
-        "xcontent_id": "urn:madoc:manifest:b28034831:canvas:11:ocr",
-        "xresource": requests.get(
+        "resource_id": "urn:madoc:manifest:b28034831:canvas:11",
+        "content_id": "urn:madoc:manifest:b28034831:canvas:11:ocr",
+        "resource": requests.get(
             "http://madoc.dlcs.digirati.io/public/storage/urn:madoc:site:1/canvas-ocr/public/255/mets-alto.json"
         ).json(),
     }
     print(post_json)
-    p = requests.post(url="http://localhost:8000/api/search/ocr", json=post_json, headers=headers)
-    # p = requests.put(url="http://localhost:8000/api/search/indexables/158909", json=post_json,
-    #                  headers=headers)
+    p = requests.post(url="http://localhost:8000/api/search/model", json=post_json, headers=headers)
     print(p.status_code)
     print(p.json())
 
@@ -185,7 +176,7 @@ test_model = {
     "target": [
         {"id": "urn:madoc:collection:1478", "type": "Collection"},
         {"id": "urn:madoc:manifest:1479", "type": "Manifest"},
-        {"id": "urn:madoc:canvas:1481", "type": "Canvas"},
+        {"id": "urn:madoc:manifest:b28034831:canvas:11", "type": "Canvas"},
     ],
     "derivedFrom": "4748dc6a-3494-4b4d-84b1-25de668ed665",
     "revisions": [
@@ -208,4 +199,15 @@ test_model = {
 if __name__ == "__main__":
     # test_faceted_query()
     # test_ingest()
-    test_ocr()
+    # test_ocr()
+    from search_service.search.indexable_utils import gen_indexables
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    post_json = {
+        "resource_id": "foo",
+        "resource": test_model
+    }
+    print(post_json)
+    p = requests.post(url="http://localhost:8000/api/search/model", json=post_json, headers=headers)
+    print(p.status_code)
+    print(p.json())
+

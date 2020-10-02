@@ -13,11 +13,11 @@ urlpatterns = [
         views.IndexablesDetail.as_view(),
         name="indexables-detail",
     ),
-    path("api/search/ocr", views.OCRList.as_view(), name="ocr-list"),
+    path("api/search/model", views.ModelList.as_view(), name="model-list"),
     path(
-        "api/search/ocr/<int:pk>",
-        views.OCRDetail.as_view(),
-        name="ocr-detail",
+        "api/search/model/<int:pk>",
+        views.ModelDetail.as_view(),
+        name="model-detail",
     ),
     path(
         "api/search/search",

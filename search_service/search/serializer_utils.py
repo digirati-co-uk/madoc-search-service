@@ -297,30 +297,28 @@ def simplify_ocr(ocr):
                                         for k, v in selector_obj.items():
                                             simplified["selectors"][k].append(v)
     simplified["indexable"] = " ".join([t for t in simplified["text"] if t])
-    return simplified
+    simplified["original_content"] = simplified["indexable"]
+    simplified["subtype"] = "intermediate"
+    return [simplified]
 
 
-def simplify_capturemodel(capturemodel, default_doctype="capturemodel"):
+def simplify_capturemodel(capturemodel):
     """
     Function for parsing a capture model into indexables
     """
     if (document := capturemodel.get("document")) is not None:
         indexables = []
         doc_subtype = document.get("type")
-        doc_type = default_doctype
-        print(f"Type: {doc_type}")
         if (targets := capturemodel.get("target")) is not None:
             target = targets[-1].get("id")
         else:
             target = None
         if document.get("properties") and target is not None:
             if (regions := document["properties"].get("region")) is not None:
-                print("Got regions")
                 for region in regions:
                     if region.get("value"):
                         indexables.append(
                             {
-                                "type": doc_type,
                                 "subtype": ".".join([doc_subtype, slugify(region.get("label", ""))]),
                                 "indexable": region.get("value"),
                                 "original_content": region.get("value"),
