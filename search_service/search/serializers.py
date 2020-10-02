@@ -218,19 +218,71 @@ class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
         if data.get("resource"):
             # To Do: Add something here that wraps the configuration for how it should parse
             # and index the data? Currently, if it gets a resource, it just assumes it's OCR
-            data["type"] = "capturemodel"
-            data["subtype"] = "ocr"
+            if not data.get("type"):  # Only set this if not set
+                data["type"] = "capturemodel"
+            if not data.get("subtype"):  # Only set this if not set
+                data["subtype"] = "ocr"
+            # Assumption that this is OCR
             simplified = simplify_ocr(data["resource"])
             if simplified.get("indexable"):
                 data["indexable"] = simplified["indexable"]
                 data["original_content"] = simplified["indexable"]
+            if simplified.get("selectors"):
                 data["selector"] = simplified["selectors"]
+            print("Internal value")
         return super(IndexablesSerializer, self).to_internal_value(data)
 
     def create(self, validated_data):
         # On create, associate the resource with the relevant IIIF resource
         # via the Madoc identifier for that object
         resource_id = validated_data.get("resource_id")
+        content_id = validated_data.get("content_id")
         iiif = IIIFResource.objects.get(madoc_id=resource_id)
         validated_data["iiif"] = iiif
+        if content_id and resource_id:
+            print(f"Deleting any indexables for {resource_id} with content id {content_id}")
+            Indexables.objects.filter(resource_id=resource_id, content_id=content_id).delete()
         return super(IndexablesSerializer, self).create(validated_data)
+
+
+class CaptureModelSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer for the Indexables, i.e. the indexed objects that are used to
+    drive search and which are associated with a IIIF resource
+    """
+
+    iiif = IIIFSummary(read_only=True)
+
+    class Meta:
+        model = Indexables
+        fields = [
+            "url",
+            "resource_id",
+            "content_id",
+            "original_content",
+            "indexable",
+            "indexable_date",
+            "indexable_int",
+            "indexable_float",
+            "indexable_json",
+            "selector",
+            "type",
+            "subtype",
+            "language_iso639_2",
+            "language_iso639_1",
+            "language_display",
+            "language_pg",
+            "iiif",
+        ]
+
+    def create(self, validated_data):
+        # On create, associate the resource with the relevant IIIF resource
+        # via the Madoc identifier for that object
+        resource_id = validated_data.get("resource_id")
+        content_id = validated_data.get("content_id")
+        iiif = IIIFResource.objects.get(madoc_id=resource_id)
+        validated_data["iiif"] = iiif
+        if content_id and resource_id:
+            print(f"Deleting any indexables for {resource_id} with content id {content_id}")
+            Indexables.objects.filter(resource_id=resource_id, content_id=content_id).delete()
+        return super(CaptureModelSerializer, self).create(validated_data)

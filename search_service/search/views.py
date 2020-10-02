@@ -20,6 +20,7 @@ from rest_framework.mixins import ListModelMixin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.exceptions import ValidationError, ParseError
 
 # Local imports
 from .langbase import LANGBASE
@@ -32,7 +33,9 @@ from .serializers import (
     IIIFSerializer,
     ContextSerializer,
     IIIFSearchSummarySerializer,
+    CaptureModelSerializer
 )
+from .serializer_utils import simplify_ocr, simplify_capturemodel
 
 # Globals
 default_lang = get_language()
@@ -646,7 +649,7 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
 
 class OCRDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Indexables.objects.all()
-    serializer_class = IndexablesSerializer
+    serializer_class = CaptureModelSerializer
 
 
 class OCRList(generics.ListCreateAPIView):
@@ -654,7 +657,7 @@ class OCRList(generics.ListCreateAPIView):
     List/Create API view for Indexables that are being created/listed
     view the OCR specific URL route
     """
-    serializer_class = IndexablesSerializer
+    serializer_class = CaptureModelSerializer
     filter_backends = [DjangoFilterBackend]
     queryset = Indexables.objects.all()
     filterset_fields = [
@@ -666,3 +669,43 @@ class OCRList(generics.ListCreateAPIView):
         "subtype",
     ]
     pagination_class = MadocPagination
+
+    def create(self, request, *args, **kwargs):
+        """
+        Override the .create() method on the rest-framework generic ListCreateAPIViewset
+        """
+        data = request.data
+        good_results = []
+        bad_results = []
+        indexables = []
+        if data.get("resource"):
+            local_dict = {"type": data.get("type", "capturemodel"), "subtype": data.get("subtype", "ocr")}
+            # To Do: Add something here that wraps the configuration for how it should parse
+            # and index the data? Currently, if it gets a resource, it just assumes it's OCR
+            # Assumption that this is OCR
+            simplified = simplify_ocr(data["resource"])
+            if simplified.get("indexable"):
+                local_dict["indexable"] = simplified["indexable"]
+                local_dict["original_content"] = simplified["indexable"]
+            if simplified.get("selectors"):
+                local_dict["selector"] = simplified["selectors"]
+            local_dict["content_id"] = data.get("content_id")
+            local_dict["resource_id"] = data.get("resource_id")
+            indexables.append(local_dict)
+        for indexable in indexables:
+            serializer = self.get_serializer(data=indexable)  # Serialize the data
+            serializer.is_valid(raise_exception=True)  # Check it's valid
+            self.perform_create(serializer)  # Create the object
+            if serializer.errors != {}:
+                bad_results.append((serializer.data, self.get_success_headers(serializer.data)))
+            else:
+                good_results.append((serializer.data, self.get_success_headers(serializer.data)))
+        return_status = status.HTTP_201_CREATED
+        if len(good_results) > 0:
+            if len(bad_results) > 0:
+                return_status = status.HTTP_206_PARTIAL_CONTENT
+            return Response([res[0] for res in good_results],
+                            status=return_status,
+                            headers=good_results[-1][1])
+        raise ValidationError
+

@@ -1,5 +1,6 @@
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
+from django.utils.text import slugify
 import json
 from bs4 import BeautifulSoup
 from collections import defaultdict
@@ -259,20 +260,21 @@ def simplify_selector(selector):
 
         832,644,20,60
     """
-    if selector.get("state"):
-        if (selector_type := selector.get("type")) is not None:
-            if selector_type == "box-selector":
-                selector_list = [
-                    selector["state"].get("x"),
-                    selector["state"].get("y"),
-                    selector["state"].get("width"),
-                    selector["state"].get("height"),
-                ]
-                if all([x is not None for x in selector_list]):
-                    try:
-                        return {selector_type: [int(x) for x in selector_list]}
-                    except ValueError:
-                        return
+    if selector:
+        if selector.get("state"):
+            if (selector_type := selector.get("type")) is not None:
+                if selector_type == "box-selector":
+                    selector_list = [
+                        selector["state"].get("x"),
+                        selector["state"].get("y"),
+                        selector["state"].get("width"),
+                        selector["state"].get("height"),
+                    ]
+                    if all([x is not None for x in selector_list]):
+                        try:
+                            return {selector_type: [int(x) for x in selector_list]}
+                        except ValueError:
+                            return
     return
 
 
@@ -298,6 +300,39 @@ def simplify_ocr(ocr):
     return simplified
 
 
+def simplify_capturemodel(capturemodel, default_doctype="capturemodel"):
+    """
+    Function for parsing a capture model into indexables
+    """
+    if (document := capturemodel.get("document")) is not None:
+        indexables = []
+        doc_subtype = document.get("type")
+        doc_type = default_doctype
+        print(f"Type: {doc_type}")
+        if (targets := capturemodel.get("target")) is not None:
+            target = targets[-1].get("id")
+        else:
+            target = None
+        if document.get("properties") and target is not None:
+            if (regions := document["properties"].get("region")) is not None:
+                print("Got regions")
+                for region in regions:
+                    if region.get("value"):
+                        indexables.append(
+                            {
+                                "type": doc_type,
+                                "subtype": ".".join([doc_subtype, slugify(region.get("label", ""))]),
+                                "indexable": region.get("value"),
+                                "original_content": region.get("value"),
+                                "selector": simplify_selector(region.get("selector")),
+                                "content_id": region["id"],
+                                "resource_id": target
+                            }
+                        )
+            return indexables
+    return
+
+
 def calc_offsets(obj):
     """
     The search "hit" should have a 'fullsnip' annotation which is a the entire
@@ -308,6 +343,7 @@ def calc_offsets(obj):
     use this to generate a list of xywh coordinates by retrieving the selector by
     its index from a list of lists
     """
+    print(obj.__dict__)
     if hasattr(obj, "fullsnip"):
         words = obj.fullsnip.split(" ")
         offsets = []
@@ -323,12 +359,13 @@ def calc_offsets(obj):
 
 
 if __name__ == "__main__":
-    import requests
-
-    foo = requests.get(
-        "http://madoc.dlcs.digirati.io/public/storage/urn:madoc:site:1/canvas-ocr/public/255/mets-alto.json"
-    ).json()
-    bar = simplify_ocr(foo)
-    import json
-
+    # import requests
+    #
+    # foo = requests.get(
+    #     "http://madoc.dlcs.digirati.io/public/storage/urn:madoc:site:1/canvas-ocr/public/255/mets-alto.json"
+    # ).json()
+    # bar = simplify_ocr(foo)
+    # import json
+    from search_service.search.tests import test_model
+    bar = simplify_capturemodel(capturemodel=test_model)
     print(json.dumps(bar, indent=2, ensure_ascii=False))

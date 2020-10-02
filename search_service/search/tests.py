@@ -119,17 +119,91 @@ def test_ocr():
     # https://wellcomelibrary.org/service/alto/b28034831/0?image=11
     # https://wellcomelibrary.org/iiif/b28034831/canvas/c11
     post_json = {
-        "resource_id": "urn:madoc:manifest:b28034831:canvas:11",
-        "resource": requests.get("http://madoc.dlcs.digirati.io/public/storage/urn:madoc:site:1/canvas-ocr/public/255/mets-alto.json").json()
+        "xresource_id": "urn:madoc:manifest:b28034831:canvas:11",
+        "xcontent_id": "urn:madoc:manifest:b28034831:canvas:11:ocr",
+        "xresource": requests.get(
+            "http://madoc.dlcs.digirati.io/public/storage/urn:madoc:site:1/canvas-ocr/public/255/mets-alto.json"
+        ).json(),
     }
-    p = requests.post(
-                url="http://localhost:8000/api/search/ocr", json=post_json, headers=headers
-            )
+    print(post_json)
+    p = requests.post(url="http://localhost:8000/api/search/ocr", json=post_json, headers=headers)
     # p = requests.put(url="http://localhost:8000/api/search/indexables/158909", json=post_json,
     #                  headers=headers)
     print(p.status_code)
     print(p.json())
 
+
+test_model = {
+    "id": "e6533db2-86aa-460b-bcee-de29e9e737f8",
+    "structure": {
+        "id": "d0a92a65-2658-46fe-bc14-e5091ef4880d",
+        "type": "choice",
+        "label": "Bridges",
+        "items": [
+            {
+                "id": "c8f44c56-e049-4803-acbc-8409452e7d81",
+                "type": "model",
+                "label": "Region of interest",
+                "fields": ["region"],
+            }
+        ],
+    },
+    "document": {
+        "id": "b72038ee-afa9-4a18-b5e6-22ad87f02c8d",
+        "type": "entity",
+        "label": "Untitled document",
+        "properties": {
+            "region": [
+                {
+                    "id": "71961317-6cbc-4c66-9777-14eea82942fe",
+                    "type": "text-field",
+                    "label": "Region of interest",
+                    "value": "",
+                    "allowMultiple": True,
+                    "selector": {
+                        "id": "3f276a4f-2910-4dc7-bff1-08f09a67ef63",
+                        "type": "box-selector",
+                        "state": None,
+                    },
+                },
+                {
+                    "id": "b3acb642-f3d3-4f33-85cc-9008b600cd2d",
+                    "type": "text-field",
+                    "label": "Region of interest",
+                    "value": "bridges",
+                    "allowMultiple": True,
+                    "selector": {
+                        "id": "dab80275-1784-41bc-ba4d-af50782cc4d8",
+                        "type": "box-selector",
+                        "state": {"x": 1496, "y": 768, "width": 358, "height": 355},
+                    },
+                    "revision": "802816cb-6d7d-401e-9566-7c5e8518a1d9",
+                },
+            ]
+        },
+    },
+    "target": [
+        {"id": "urn:madoc:collection:1478", "type": "Collection"},
+        {"id": "urn:madoc:manifest:1479", "type": "Manifest"},
+        {"id": "urn:madoc:canvas:1481", "type": "Canvas"},
+    ],
+    "derivedFrom": "4748dc6a-3494-4b4d-84b1-25de668ed665",
+    "revisions": [
+        {
+            "structureId": "c8f44c56-e049-4803-acbc-8409452e7d81",
+            "approved": True,
+            "label": "Region of interest",
+            "id": "802816cb-6d7d-401e-9566-7c5e8518a1d9",
+            "fields": ["region"],
+            "status": "accepted",
+            "revises": None,
+            "authors": ["urn:madoc:user:1"],
+        }
+    ],
+    "contributors": {
+        "urn:madoc:user:1": {"id": "urn:madoc:user:1", "type": "Person", "name": "Madoc TS"}
+    },
+}
 
 if __name__ == "__main__":
     # test_faceted_query()
