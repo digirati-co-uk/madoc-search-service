@@ -113,7 +113,7 @@ def test_ocr():
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
     post_json = {
         "resource_id": "urn:madoc:manifest:b28034831:canvas:11",
-        "content_id": "urn:madoc:manifest:b28034831:canvas:11:ocr",
+        # "content_id": "urn:madoc:manifest:b28034831:canvas:11:ocr",
         "resource": requests.get(
             "http://madoc.dlcs.digirati.io/public/storage/urn:madoc:site:1/canvas-ocr/public/255/mets-alto.json"
         ).json(),
@@ -196,11 +196,8 @@ test_model = {
     },
 }
 
-if __name__ == "__main__":
-    # test_faceted_query()
-    # test_ingest()
-    # test_ocr()
-    from search_service.search.indexable_utils import gen_indexables
+
+def test_capturemodel():
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
     post_json = {
         "resource_id": "foo",
@@ -210,4 +207,12 @@ if __name__ == "__main__":
     p = requests.post(url="http://localhost:8000/api/search/model", json=post_json, headers=headers)
     print(p.status_code)
     print(p.json())
+
+
+if __name__ == "__main__":
+    # test_faceted_query()
+    # test_ingest()
+    test_ocr()
+    test_capturemodel()
+
 
