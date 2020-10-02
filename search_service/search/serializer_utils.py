@@ -346,7 +346,6 @@ def calc_offsets(obj):
     use this to generate a list of xywh coordinates by retrieving the selector by
     its index from a list of lists
     """
-    print(obj.__dict__)
     if hasattr(obj, "fullsnip"):
         words = obj.fullsnip.split(" ")
         offsets = []
@@ -362,14 +361,6 @@ def calc_offsets(obj):
 
 
 if __name__ == "__main__":
-    # import requests
-    #
-    # foo = requests.get(
-    #     "http://madoc.dlcs.digirati.io/public/storage/urn:madoc:site:1/canvas-ocr/public/255/mets-alto.json"
-    # ).json()
-    # bar = simplify_ocr(foo)
-    # import json
     from search_service.search.tests import test_model
-
     bar = simplify_capturemodel(capturemodel=test_model)
     print(json.dumps(bar, indent=2, ensure_ascii=False))
