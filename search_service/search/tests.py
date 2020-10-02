@@ -1,6 +1,78 @@
 import requests
 import json
 
+test_model = {
+    "id": "e6533db2-86aa-460b-bcee-de29e9e737f8",
+    "structure": {
+        "id": "d0a92a65-2658-46fe-bc14-e5091ef4880d",
+        "type": "choice",
+        "label": "Bridges",
+        "items": [
+            {
+                "id": "c8f44c56-e049-4803-acbc-8409452e7d81",
+                "type": "model",
+                "label": "Region of interest",
+                "fields": ["region"],
+            }
+        ],
+    },
+    "document": {
+        "id": "b72038ee-afa9-4a18-b5e6-22ad87f02c8d",
+        "type": "entity",
+        "label": "Untitled document",
+        "properties": {
+            "region": [
+                {
+                    "id": "71961317-6cbc-4c66-9777-14eea82942fe",
+                    "type": "text-field",
+                    "label": "Region of interest",
+                    "value": "",
+                    "allowMultiple": True,
+                    "selector": {
+                        "id": "3f276a4f-2910-4dc7-bff1-08f09a67ef63",
+                        "type": "box-selector",
+                        "state": None,
+                    },
+                },
+                {
+                    "id": "b3acb642-f3d3-4f33-85cc-9008b600cd2d",
+                    "type": "text-field",
+                    "label": "Region of interest",
+                    "value": "bridges",
+                    "allowMultiple": True,
+                    "selector": {
+                        "id": "dab80275-1784-41bc-ba4d-af50782cc4d8",
+                        "type": "box-selector",
+                        "state": {"x": 1496, "y": 768, "width": 358, "height": 355},
+                    },
+                    "revision": "802816cb-6d7d-401e-9566-7c5e8518a1d9",
+                },
+            ]
+        },
+    },
+    "target": [
+        {"id": "urn:madoc:collection:1478", "type": "Collection"},
+        {"id": "urn:madoc:manifest:1479", "type": "Manifest"},
+        {"id": "urn:madoc:manifest:b28034831:canvas:11", "type": "Canvas"},
+    ],
+    "derivedFrom": "4748dc6a-3494-4b4d-84b1-25de668ed665",
+    "revisions": [
+        {
+            "structureId": "c8f44c56-e049-4803-acbc-8409452e7d81",
+            "approved": True,
+            "label": "Region of interest",
+            "id": "802816cb-6d7d-401e-9566-7c5e8518a1d9",
+            "fields": ["region"],
+            "status": "accepted",
+            "revises": None,
+            "authors": ["urn:madoc:user:1"],
+        }
+    ],
+    "contributors": {
+        "urn:madoc:user:1": {"id": "urn:madoc:user:1", "type": "Person", "name": "Madoc TS"}
+    },
+}
+
 
 def test_ingest():
     collections = [
@@ -95,6 +167,45 @@ def test_faceted_query():
         print(json.dumps(j, indent=2, ensure_ascii=False))
 
 
+def test_ocr_query():
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+    query = {
+        "fulltext": "appar menzogna",
+        "type": "ocr",
+        "facet_fields": [
+            "Title",
+            "Publication date"
+        ],
+        "contexts": ["urn:madoc:manifest:b28034831"],
+    }
+    print(json.dumps(query, indent=2))
+    r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
+    if r.status_code == requests.codes.ok:
+        j = r.json()
+        print(json.dumps(j, indent=2, ensure_ascii=False))
+
+
+def test_model_query():
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+    query = {
+        "fulltext": "bridges",
+        # "type": "capturemodel",
+        "subtype": "entity.region-of-interest",
+        "facet_fields": [
+            "Title",
+            "Publication date"
+        ],
+        "contexts": ["urn:madoc:manifest:b28034831"],
+    }
+    print(json.dumps(query, indent=2))
+    r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
+    if r.status_code == requests.codes.ok:
+        j = r.json()
+        print(json.dumps(j, indent=2, ensure_ascii=False))
+
+
 def test_ocr():
     # m = "https://wellcomelibrary.org/iiif/b28034831/manifest"
     # j = requests.get(m).json()
@@ -124,79 +235,6 @@ def test_ocr():
     print(p.json())
 
 
-test_model = {
-    "id": "e6533db2-86aa-460b-bcee-de29e9e737f8",
-    "structure": {
-        "id": "d0a92a65-2658-46fe-bc14-e5091ef4880d",
-        "type": "choice",
-        "label": "Bridges",
-        "items": [
-            {
-                "id": "c8f44c56-e049-4803-acbc-8409452e7d81",
-                "type": "model",
-                "label": "Region of interest",
-                "fields": ["region"],
-            }
-        ],
-    },
-    "document": {
-        "id": "b72038ee-afa9-4a18-b5e6-22ad87f02c8d",
-        "type": "entity",
-        "label": "Untitled document",
-        "properties": {
-            "region": [
-                {
-                    "id": "71961317-6cbc-4c66-9777-14eea82942fe",
-                    "type": "text-field",
-                    "label": "Region of interest",
-                    "value": "",
-                    "allowMultiple": True,
-                    "selector": {
-                        "id": "3f276a4f-2910-4dc7-bff1-08f09a67ef63",
-                        "type": "box-selector",
-                        "state": None,
-                    },
-                },
-                {
-                    "id": "b3acb642-f3d3-4f33-85cc-9008b600cd2d",
-                    "type": "text-field",
-                    "label": "Region of interest",
-                    "value": "bridges",
-                    "allowMultiple": True,
-                    "selector": {
-                        "id": "dab80275-1784-41bc-ba4d-af50782cc4d8",
-                        "type": "box-selector",
-                        "state": {"x": 1496, "y": 768, "width": 358, "height": 355},
-                    },
-                    "revision": "802816cb-6d7d-401e-9566-7c5e8518a1d9",
-                },
-            ]
-        },
-    },
-    "target": [
-        {"id": "urn:madoc:collection:1478", "type": "Collection"},
-        {"id": "urn:madoc:manifest:1479", "type": "Manifest"},
-        {"id": "urn:madoc:manifest:b28034831:canvas:11", "type": "Canvas"},
-    ],
-    "derivedFrom": "4748dc6a-3494-4b4d-84b1-25de668ed665",
-    "revisions": [
-        {
-            "structureId": "c8f44c56-e049-4803-acbc-8409452e7d81",
-            "approved": True,
-            "label": "Region of interest",
-            "id": "802816cb-6d7d-401e-9566-7c5e8518a1d9",
-            "fields": ["region"],
-            "status": "accepted",
-            "revises": None,
-            "authors": ["urn:madoc:user:1"],
-        }
-    ],
-    "contributors": {
-        "urn:madoc:user:1": {"id": "urn:madoc:user:1", "type": "Person", "name": "Madoc TS"}
-    },
-}
-
-
 def test_capturemodel():
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
     post_json = {
@@ -213,6 +251,8 @@ if __name__ == "__main__":
     # test_faceted_query()
     # test_ingest()
     test_ocr()
-    test_capturemodel()
+    # test_capturemodel()
+    test_ocr_query()
+    # test_model_query()
 
 

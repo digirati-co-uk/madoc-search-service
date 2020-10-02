@@ -282,7 +282,7 @@ def simplify_ocr(ocr):
     """
     Simplify ocr to just a single continuous page of text, with selectors.
     """
-    simplified = dict(text=[], selectors=defaultdict(list))
+    simplified = dict(text=[], selector=defaultdict(list))
     if ocr.get("paragraph"):
         for paragraph in ocr["paragraph"]:
             if paragraph.get("properties"):
@@ -295,7 +295,7 @@ def simplify_ocr(ocr):
                                     selector_obj = simplify_selector(text["selector"])
                                     if selector_obj:
                                         for k, v in selector_obj.items():
-                                            simplified["selectors"][k].append(v)
+                                            simplified["selector"][k].append(v)
     simplified["indexable"] = " ".join([t for t in simplified["text"] if t])
     simplified["original_content"] = simplified["indexable"]
     simplified["subtype"] = "intermediate"
