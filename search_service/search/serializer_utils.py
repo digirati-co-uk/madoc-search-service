@@ -324,7 +324,10 @@ def simplify_capturemodel(capturemodel):
                                 ),
                                 "indexable": region.get("value"),
                                 "original_content": region.get("value"),
-                                "selector": simplify_selector(region.get("selector")),
+                                "selector": {
+                                    k: [v]
+                                    for k, v in simplify_selector(region.get("selector")).items()
+                                },
                                 "content_id": region["id"],
                                 "resource_id": target,
                             }

@@ -251,8 +251,8 @@ if __name__ == "__main__":
     # test_faceted_query()
     # test_ingest()
     test_ocr()
-    # test_capturemodel()
-    test_ocr_query()
-    # test_model_query()
+    test_capturemodel()
+    # test_ocr_query()
+    test_model_query()
 
 
