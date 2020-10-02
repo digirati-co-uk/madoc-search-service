@@ -15,13 +15,15 @@ def identify_format(resource):
     return
 
 
-def gen_indexables(data):
+def gen_indexables(data, sep="."):
     func = None
     if (resource := data.get("resource")) is not None:
         resource_type = data.get("type", identify_format(resource))
         shared_fields = {
             "type": resource_type,
-            "content_id": data.get("content_id"),
+            "content_id": data.get("content_id",
+                                   sep.join([data.get("resource_id"),
+                                             resource_type])),
             "resource_id": data.get("resource_id"),
         }
         if resource_type:
