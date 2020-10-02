@@ -35,7 +35,6 @@ from .serializers import (
     IIIFSearchSummarySerializer,
     CaptureModelSerializer,
 )
-from .serializer_utils import simplify_ocr
 from .indexable_utils import gen_indexables
 
 

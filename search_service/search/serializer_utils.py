@@ -319,12 +319,14 @@ def simplify_capturemodel(capturemodel):
                     if region.get("value"):
                         indexables.append(
                             {
-                                "subtype": ".".join([doc_subtype, slugify(region.get("label", ""))]),
+                                "subtype": ".".join(
+                                    [doc_subtype, slugify(region.get("label", ""))]
+                                ),
                                 "indexable": region.get("value"),
                                 "original_content": region.get("value"),
                                 "selector": simplify_selector(region.get("selector")),
                                 "content_id": region["id"],
-                                "resource_id": target
+                                "resource_id": target,
                             }
                         )
             return indexables
@@ -365,5 +367,6 @@ if __name__ == "__main__":
     # bar = simplify_ocr(foo)
     # import json
     from search_service.search.tests import test_model
+
     bar = simplify_capturemodel(capturemodel=test_model)
     print(json.dumps(bar, indent=2, ensure_ascii=False))
