@@ -3,7 +3,8 @@ from rest_framework import serializers
 from .models import Indexables, IIIFResource, Context
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchHeadline
 from django.db.models import F
-from .serializer_utils import simplify_ocr
+from .serializer_utils import simplify_ocr, calc_offsets
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -84,10 +85,14 @@ class IndexablesSummarySerializer(serializers.HyperlinkedModelSerializer):
     rank = serializers.FloatField(default=None, read_only=True)
     snippet = serializers.CharField(default=None, read_only=True)
     language = serializers.CharField(default=None, read_only=None, source="language_iso639_1")
+    bounding_boxes = serializers.SerializerMethodField()
+
+    def get_bounding_boxes(self, obj):
+        return calc_offsets(obj)
 
     class Meta:
         model = Indexables
-        fields = ["type", "subtype", "snippet", "language", "rank", "original_content"]
+        fields = ["type", "subtype", "snippet", "language", "rank", "bounding_boxes"]
 
 
 class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
@@ -149,6 +154,13 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
                         min_words=25,
                         max_fragments=3,
                     ),
+                    fullsnip=SearchHeadline(
+                        "indexable",
+                        search_query,
+                        start_sel="<start_sel>",
+                        stop_sel="<end_sel>",
+                        highlight_all=True,
+                    ),
                 )
                 .filter(search_vector=search_query, **filter_kwargs)
                 .order_by("-rank")
@@ -202,23 +214,75 @@ class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
             "iiif",
         ]
 
-    def to_internal_value(self, data):
-        if data.get("resource"):
-            # To Do: Add something here that wraps the configuration for how it should parse
-            # and index the data? Currently, if it gets a resource, it just assumes it's OCR
-            data["type"] = "capturemodel"
-            data["subtype"] = "ocr"
-            simplified = simplify_ocr(data["resource"])
-            if simplified.get("indexable"):
-                data["indexable"] = simplified["indexable"]
-                data["original_content"] = simplified["indexable"]
-                data["selector"] = simplified["selectors"]
-        return super(IndexablesSerializer, self).to_internal_value(data)
+    # def to_internal_value(self, data):
+    #     if data.get("resource"):
+    #         # To Do: Add something here that wraps the configuration for how it should parse
+    #         # and index the data? Currently, if it gets a resource, it just assumes it's OCR
+    #         if not data.get("type"):  # Only set this if not set
+    #             data["type"] = "capturemodel"
+    #         if not data.get("subtype"):  # Only set this if not set
+    #             data["subtype"] = "ocr"
+    #         # Assumption that this is OCR
+    #         simplified = simplify_ocr(data["resource"])
+    #         if simplified.get("indexable"):
+    #             data["indexable"] = simplified["indexable"]
+    #             data["original_content"] = simplified["indexable"]
+    #         if simplified.get("selectors"):
+    #             data["selector"] = simplified["selectors"]
+    #         print("Internal value")
+    #     return super(IndexablesSerializer, self).to_internal_value(data)
 
     def create(self, validated_data):
         # On create, associate the resource with the relevant IIIF resource
         # via the Madoc identifier for that object
         resource_id = validated_data.get("resource_id")
+        content_id = validated_data.get("content_id")
         iiif = IIIFResource.objects.get(madoc_id=resource_id)
         validated_data["iiif"] = iiif
+        if content_id and resource_id:
+            print(f"Deleting any indexables for {resource_id} with content id {content_id}")
+            Indexables.objects.filter(resource_id=resource_id, content_id=content_id).delete()
         return super(IndexablesSerializer, self).create(validated_data)
+
+
+class CaptureModelSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer for the Indexables, i.e. the indexed objects that are used to
+    drive search and which are associated with a IIIF resource
+    """
+
+    iiif = IIIFSummary(read_only=True)
+
+    class Meta:
+        model = Indexables
+        fields = [
+            "url",
+            "resource_id",
+            "content_id",
+            "original_content",
+            "indexable",
+            "indexable_date",
+            "indexable_int",
+            "indexable_float",
+            "indexable_json",
+            "selector",
+            "type",
+            "subtype",
+            "language_iso639_2",
+            "language_iso639_1",
+            "language_display",
+            "language_pg",
+            "iiif",
+        ]
+
+    def create(self, validated_data):
+        # On create, associate the resource with the relevant IIIF resource
+        # via the Madoc identifier for that object
+        resource_id = validated_data.get("resource_id")
+        content_id = validated_data.get("content_id")
+        iiif = IIIFResource.objects.get(madoc_id=resource_id)
+        validated_data["iiif"] = iiif
+        if content_id and resource_id:
+            print(f"Deleting any indexables for {resource_id} with content id {content_id}")
+            Indexables.objects.filter(resource_id=resource_id, content_id=content_id).delete()
+        return super(CaptureModelSerializer, self).create(validated_data)

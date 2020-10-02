@@ -1,8 +1,9 @@
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
+from django.utils.text import slugify
 import json
 from bs4 import BeautifulSoup
-
+from collections import defaultdict
 
 pg_languages = [
     "danish",
@@ -111,7 +112,7 @@ def iiif_to_presentationapiresourcemodel(data_dict):
             try:
                 val(return_dict["license"])
             except ValidationError:
-                del (return_dict["license"])
+                del return_dict["license"]
     return return_dict
 
 
@@ -259,18 +260,21 @@ def simplify_selector(selector):
 
         832,644,20,60
     """
-    if selector.get("state"):
-        selector_list = [
-            selector["state"].get("x"),
-            selector["state"].get("y"),
-            selector["state"].get("width"),
-            selector["state"].get("height"),
-        ]
-        if all([x is not None for x in selector_list]):
-            try:
-                return [int(x) for x in selector_list]
-            except ValueError:
-                return
+    if selector:
+        if selector.get("state"):
+            if (selector_type := selector.get("type")) is not None:
+                if selector_type == "box-selector":
+                    selector_list = [
+                        selector["state"].get("x"),
+                        selector["state"].get("y"),
+                        selector["state"].get("width"),
+                        selector["state"].get("height"),
+                    ]
+                    if all([x is not None for x in selector_list]):
+                        try:
+                            return {selector_type: [int(x) for x in selector_list]}
+                        except ValueError:
+                            return
     return
 
 
@@ -278,7 +282,7 @@ def simplify_ocr(ocr):
     """
     Simplify ocr to just a single continuous page of text, with selectors.
     """
-    simplified = dict(text=[], selectors=[])
+    simplified = dict(text=[], selector=defaultdict(list))
     if ocr.get("paragraph"):
         for paragraph in ocr["paragraph"]:
             if paragraph.get("properties"):
@@ -288,20 +292,75 @@ def simplify_ocr(ocr):
                             if line["properties"].get("text"):
                                 for text in line["properties"]["text"]:
                                     simplified["text"].append(text.get("value"))
-                                    simplified["selectors"].append(
-                                        simplify_selector(text["selector"])
-                                    )
+                                    selector_obj = simplify_selector(text["selector"])
+                                    if selector_obj:
+                                        for k, v in selector_obj.items():
+                                            simplified["selector"][k].append(v)
     simplified["indexable"] = " ".join([t for t in simplified["text"] if t])
-    return simplified
+    simplified["original_content"] = simplified["indexable"]
+    simplified["subtype"] = "intermediate"
+    return [simplified]
+
+
+def simplify_capturemodel(capturemodel):
+    """
+    Function for parsing a capture model into indexables
+    """
+    if (document := capturemodel.get("document")) is not None:
+        indexables = []
+        doc_subtype = document.get("type")
+        if (targets := capturemodel.get("target")) is not None:
+            target = targets[-1].get("id")
+        else:
+            target = None
+        if document.get("properties") and target is not None:
+            if (regions := document["properties"].get("region")) is not None:
+                for region in regions:
+                    if region.get("value"):
+                        indexables.append(
+                            {
+                                "subtype": ".".join(
+                                    [doc_subtype, slugify(region.get("label", ""))]
+                                ),
+                                "indexable": region.get("value"),
+                                "original_content": region.get("value"),
+                                "selector": {
+                                    k: [v]
+                                    for k, v in simplify_selector(region.get("selector")).items()
+                                },
+                                "content_id": region["id"],
+                                "resource_id": target,
+                            }
+                        )
+            return indexables
+    return
+
+
+def calc_offsets(obj):
+    """
+    The search "hit" should have a 'fullsnip' annotation which is a the entire
+    text of the indexable resource, with <start_sel> and <end_sel> wrapping each
+    highlighted word.
+
+    Check if there's a selector on the indexable, and then if there's a box-selector
+    use this to generate a list of xywh coordinates by retrieving the selector by
+    its index from a list of lists
+    """
+    if hasattr(obj, "fullsnip"):
+        words = obj.fullsnip.split(" ")
+        offsets = []
+        if words:
+            for i, word in enumerate(words):
+                if "<start_sel>" in word and "<end_sel>" in word:
+                    offsets.append(i)
+            if offsets:
+                if obj.selector:
+                    if (boxes := obj.selector.get("box-selector")) is not None:
+                        return [boxes[x] for x in offsets if boxes[x]]
+    return
 
 
 if __name__ == "__main__":
-    import requests
-
-    foo = requests.get(
-        "http://madoc.dlcs.digirati.io/public/storage/urn:madoc:site:1/canvas-ocr/public/255/mets-alto.json"
-    ).json()
-    bar = simplify_ocr(foo)
-    import json
-
+    from search_service.search.tests import test_model
+    bar = simplify_capturemodel(capturemodel=test_model)
     print(json.dumps(bar, indent=2, ensure_ascii=False))

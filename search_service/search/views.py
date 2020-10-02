@@ -20,6 +20,7 @@ from rest_framework.mixins import ListModelMixin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.exceptions import ValidationError, ParseError
 
 # Local imports
 from .langbase import LANGBASE
@@ -32,7 +33,10 @@ from .serializers import (
     IIIFSerializer,
     ContextSerializer,
     IIIFSearchSummarySerializer,
+    CaptureModelSerializer,
 )
+from .indexable_utils import gen_indexables
+
 
 # Globals
 default_lang = get_language()
@@ -150,7 +154,7 @@ class IIIFList(generics.ListCreateAPIView):
             child=False,
             parent=None,
         ):
-            """"
+            """ "
             Nested function that ingests the IIIF object into PostgreSQL via the Django ORM.
 
             :param iiif3_resource: IIIF object (this could be anything in the API spec)
@@ -644,17 +648,17 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         return queryset.distinct()
 
 
-class OCRDetail(generics.RetrieveUpdateDestroyAPIView):
+class ModelDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Indexables.objects.all()
-    serializer_class = IndexablesSerializer
+    serializer_class = CaptureModelSerializer
 
 
-class OCRList(generics.ListCreateAPIView):
+class ModelList(generics.ListCreateAPIView):
     """
     List/Create API view for Indexables that are being created/listed
-    view the OCR specific URL route
     """
-    serializer_class = IndexablesSerializer
+
+    serializer_class = CaptureModelSerializer
     filter_backends = [DjangoFilterBackend]
     queryset = Indexables.objects.all()
     filterset_fields = [
@@ -666,3 +670,38 @@ class OCRList(generics.ListCreateAPIView):
         "subtype",
     ]
     pagination_class = MadocPagination
+
+    def create(self, request, *args, **kwargs):
+        """
+        Override the .create() method on the rest-framework generic ListCreateAPIViewset
+        """
+        data = request.data
+        good_results = []
+        bad_results = []
+        indexables = []
+        if data.get("resource"):
+            indexables = gen_indexables(data)
+        if indexables:
+            for indexable in indexables:
+                serializer = self.get_serializer(data=indexable)  # Serialize the data
+                serializer.is_valid(raise_exception=True)  # Check it's valid
+                self.perform_create(serializer)  # Create the object
+                if serializer.errors != {}:
+                    bad_results.append(
+                        (serializer.data, self.get_success_headers(serializer.data))
+                    )
+                else:
+                    good_results.append(
+                        (serializer.data, self.get_success_headers(serializer.data))
+                    )
+            return_status = status.HTTP_201_CREATED
+            if len(good_results) > 0:
+                if len(bad_results) > 0:
+                    return_status = status.HTTP_206_PARTIAL_CONTENT
+                return Response(
+                    [res[0] for res in good_results],
+                    status=return_status,
+                    headers=good_results[-1][1],
+                )
+            raise ValidationError
+        raise ParseError

@@ -376,6 +376,33 @@ We can run the same query, but just set the facets and request the facet counts,
 
 As per Example 3, only this time we are using `istartswith` (case insensitive startswith) for the type = "metadata", subtype = "collection name", "value" = "Staat" facet. (N.B. this will also match, e.g. "collection name (English)" for example).
 
+# POSTing Capture models and OCR
+
+POST to `/api/search/model`
+
+```json
+{
+    "resource_id": "urn:foo:bar",
+    "content_id": "123-abcdhd-24-j8-0000-foo",
+    "resource": { ... the capture model or ocr data ...}
+}
+```
+
+N.B. The following fields are compulsory:
+
+* resource_id : the identifier in madoc for the object this relates to
+* resource: there must be something to index
+
+N.B. the _resource_id_ __must__ exist and must be already in the search service.
+
+* content_id: 
+    * for capture models (not the intermediate OCR format) the content_id used for each
+        indexable object created will be derived _from the model_ and any content_id passed in in the POST will
+        be ignored.
+    * for OCR data, you MAY pass in a content_id and this will be used to identify the indexed content in the system,
+        if not content_id is passed in, the system will generate one based on the resource_id and the content_type.
+
+
 # POSTing "raw" Indexable content
 
 POST to `/api/search/indexables`
