@@ -591,15 +591,19 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             }
         response.data["facets"] = facet_summary
         if sort_order:
+            if "rank" in sort_order:
+                sort_default = 0
+            else:
+                sort_default = ""
             if "-" in sort_order:
                 response.data["results"] = sorted(
                     response.data["results"],
-                    key=lambda k: (k[sort_order.replace("-", "")],),
+                    key=lambda k: (k.get(sort_order.replace("-", ""), sort_default),),
                     reverse=True,
                 )
             else:
                 response.data["results"] = sorted(
-                    response.data["results"], key=lambda k: (k[sort_order],)
+                    response.data["results"], key=lambda k: (k.get(sort_order, sort_default),)
                 )
         return response
 
