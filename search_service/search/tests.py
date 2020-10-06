@@ -232,11 +232,32 @@ def test_capturemodel():
     print(json.dumps(p.json(), indent=2, ensure_ascii=False))
 
 
+def test_contexts_query():
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+    query = {
+        # "fulltext": "Abbey",
+        "contexts_all": ["urn:madoc:site:2",
+                     "urn:madoc:manifest:0000000856"
+                     ],
+        # "iiif_identifiers": [
+        #     "https://iiif.ub.uni-leipzig.de/0000000856/manifest.json"
+        # ]
+    }
+    print(json.dumps(query, indent=2))
+    r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
+    if r.status_code == requests.codes.ok:
+        j = r.json()
+        # assert j["pagination"]["totalResults"] != 4
+        print(json.dumps(j, indent=2, ensure_ascii=False))
+
+
 if __name__ == "__main__":
-    test_ingest()
-    test_ocr()
-    test_capturemodel()
+    # test_ingest()
+    # test_ocr()
+    # test_capturemodel()
     # # test_ocr_query()
     # test_model_query()
+    test_contexts_query()
 
 
