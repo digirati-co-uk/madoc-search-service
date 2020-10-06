@@ -350,22 +350,31 @@ def parse_search(req):
     into a set of filter kwargs that can be passed to the list and hits methods.
     """
     if req.method == "POST":
-        prefilter_kwargs = {}
+        prefilter_kwargs = []
         filter_kwargs = {}
         search_string = req.data.get("fulltext", None)
         language = req.data.get("search_language", None)
         search_type = req.data.get("search_type", "websearch")
         facet_fields = req.data.get("facet_fields", None)
         contexts = req.data.get("contexts", None)
+        contexts_all = req.data.get("contexts_all", None)
         madoc_identifiers = req.data.get("madoc_identifiers", None)
         iiif_identifiers = req.data.get("iiif_identifiers", None)
         facet_queries = req.data.get("facets", None)
         if contexts:
-            prefilter_kwargs[f"contexts__id__in"] = contexts
+            prefilter_kwargs.append(Q(**{f"contexts__id__in": contexts}))
+        if contexts_all:
+            for c in contexts_all:
+                prefilter_kwargs.append(Q(
+                            **{
+                                "contexts__id__iexact": c
+                            }
+                        )
+                    )
         if madoc_identifiers:
-            prefilter_kwargs[f"madoc_id__in"] = madoc_identifiers
+            prefilter_kwargs.append(Q(**{f"madoc_id__in": madoc_identifiers}))
         if iiif_identifiers:
-            prefilter_kwargs[f"id__in"] = iiif_identifiers
+            prefilter_kwargs.append(Q(**{f"id__in": iiif_identifiers}))
         if search_string:
             if language:
                 filter_kwargs["indexables__search_vector"] = SearchQuery(
@@ -459,7 +468,7 @@ def parse_search(req):
         search_type = req.query_params.get("search_type", "websearch")
         filter_kwargs = {}
         postfilter_kwargs = [{}]
-        prefilter_kwargs = {}
+        prefilter_kwargs = []
         for param in req.query_params:
             if param in [
                 "type",
@@ -634,7 +643,11 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         """
         queryset = IIIFResource.objects.all()
         if hasattr(self, "prefilter_kwargs"):
-            queryset = queryset.filter(**self.prefilter_kwargs)
+            # Just check if this thing is all nested Q() objects
+            if all([type(k) == Q for k in self.prefilter_kwargs]):
+                # This is a chaining operation
+                for f in self.prefilter_kwargs:
+                    queryset = queryset.filter(*(f,))
         if hasattr(self, "filter_kwargs"):
             queryset = queryset.filter(**self.filter_kwargs)
         if hasattr(self, "postfilter_kwargs"):
