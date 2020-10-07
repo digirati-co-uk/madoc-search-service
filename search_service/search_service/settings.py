@@ -32,6 +32,9 @@ SECRET_KEY = "a78)2yet@fa)ll+$(_)f#6p=12j$oox)z!bcr6649uf!h44!y_"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DJANGO_DEBUG", False)
 
+# Facet on Manifets
+FACET_ON_MANIFESTS_ONLY = env.bool("FACET_ON_MANIFESTS", True)
+
 ALLOWED_HOSTS = ["*"]
 
 # Application definition
