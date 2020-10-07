@@ -42,7 +42,7 @@ from django.conf import settings
 # Globals
 default_lang = get_language()
 upgrader = Upgrader(flags={"default_lang": default_lang})
-facet_on_manifests = settings.FACET_ON_MANIFESTS_ONLY
+global_facet_on_manifests = settings.FACET_ON_MANIFESTS_ONLY
 
 
 @api_view(["GET"])
@@ -372,6 +372,7 @@ def parse_search(req):
         madoc_identifiers = req.data.get("madoc_identifiers", None)
         iiif_identifiers = req.data.get("iiif_identifiers", None)
         facet_queries = req.data.get("facets", None)
+        facet_on_manifests = req.data.get("facet_on_manifests", global_facet_on_manifests)
         if contexts:
             prefilter_kwargs.append(Q(**{f"contexts__id__in": contexts}))
         if contexts_all:
@@ -467,6 +468,7 @@ def parse_search(req):
             facet_fields,
             hits_filter_kwargs,
             sort_order,
+            facet_on_manifests
         )
     elif req.method == "GET":
         search_string = req.query_params.get("fulltext", None)
@@ -525,6 +527,7 @@ def parse_search(req):
             None,
             hits_filter_kwargs,
             sort_order,
+            global_facet_on_manifests
         )
 
 
@@ -567,6 +570,7 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             facet_fields,
             hits_filter_kwargs,
             sort_order,
+            facet_on_manifests
         ) = parse_search(req=request)
         if facet_fields:
             setattr(self, "facet_fields", facet_fields)
@@ -578,6 +582,8 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             setattr(self, "postfilter_kwargs", postfilter_kwargs)
         if hits_filter_kwargs:
             setattr(self, "hits_filter_kwargs", hits_filter_kwargs)
+        if facet_on_manifests:
+            setattr(self, "facet_on_manifests", facet_on_manifests)
         response = super(IIIFSearch, self).list(request, args, kwargs)
         facet_summary = {"metadata": {}}
         # If we haven't been provided a list of facet fields via a POST
@@ -684,21 +690,27 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             if type(self.postfilter_kwargs[0]) == Q:
                 # This is also a chainging operation but the filters being
                 # chained might contain "OR"s rather than ANDs
-                if facet_on_manifests:
-                    """
-                    Create a list of manifests where the facets apply
-                    and then filter the queryset to just those objects where their context
-                    is one of those
-                    """
-                    manifests = IIIFResource.objects.filter(
-                        contexts__associated_iiif__madoc_id__in=queryset,
-                        contexts__type__iexact="manifest",
-                        type__iexact="manifest",
-                    ).distinct()
-                    for f in self.postfilter_kwargs:
-                        manifests = manifests.filter(*(f,))
-                    queryset = queryset.filter(**{"contexts__id__in": manifests})
+                if hasattr(self, "facet_on_manifests"):
+                    if self.facet_on_manifests is True:
+                        """
+                        Create a list of manifests where the facets apply
+                        and then filter the queryset to just those objects where their context
+                        is one of those
+                        """
+                        manifests = IIIFResource.objects.filter(
+                            contexts__associated_iiif__madoc_id__in=queryset,
+                            contexts__type__iexact="manifest",
+                            type__iexact="manifest",
+                        ).distinct()
+                        for f in self.postfilter_kwargs:
+                            manifests = manifests.filter(*(f,))
+                        queryset = queryset.filter(**{"contexts__id__in": manifests})
+                    else:
+                        print("Facet on manifests is False")
+                        for f in self.postfilter_kwargs:
+                            queryset = queryset.filter(*(f,))
                 else:
+                    print("Can't find facet on manifests in context")
                     for f in self.postfilter_kwargs:
                         queryset = queryset.filter(*(f,))
             else:  # GET requests (i.e. without the fancy Q reduction)
