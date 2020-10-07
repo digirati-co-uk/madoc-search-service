@@ -37,10 +37,12 @@ from .serializers import (
 )
 from .indexable_utils import gen_indexables
 
+from django.conf import settings
 
 # Globals
 default_lang = get_language()
 upgrader = Upgrader(flags={"default_lang": default_lang})
+facet_on_manifests = settings.FACET_ON_MANIFESTS_ONLY
 
 
 @api_view(["GET"])
@@ -214,7 +216,7 @@ class IIIFList(generics.ListCreateAPIView):
             if iiif3_resource:
                 # Flatten the IIIF metadata and descriptive properties into a list of indexables
                 indexable_list = flatten_iiif_descriptive(
-                    iiif=iiif3, default_language=default_lang, lang_base=LANGBASE
+                    iiif=iiif3_resource, default_language=default_lang, lang_base=LANGBASE
                 )
                 if indexable_list:
                     # Create the indexables
@@ -370,12 +372,7 @@ def parse_search(req):
             prefilter_kwargs.append(Q(**{f"contexts__id__in": contexts}))
         if contexts_all:
             for c in contexts_all:
-                prefilter_kwargs.append(Q(
-                            **{
-                                "contexts__id__iexact": c
-                            }
-                        )
-                    )
+                prefilter_kwargs.append(Q(**{"contexts__id__iexact": c}))
         if madoc_identifiers:
             prefilter_kwargs.append(Q(**{f"madoc_id__in": madoc_identifiers}))
         if iiif_identifiers:
@@ -582,7 +579,34 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         # If we haven't been provided a list of facet fields via a POST
         # just generate the list by querying the unique list of metadata subtypes
         # Make a copy of the query so we aren't running the get_queryset logic every time
-        facetable_q = self.get_queryset().all().distinct()
+        facetable_queryset = self.get_queryset().all().distinct()
+        # manifests = IIIFResource.objects.filter(contexts__associated_iiif__madoc_id__in=facetable_queryset,
+        #                                         contexts__type__iexact="manifest",
+        #                                         type__iexact="manifest").distinct()
+        # print("Manifests resources", manifests)
+        if facet_on_manifests:
+            """
+            Facet on IIIF objects where:
+            
+             1. They are associated (via the reverse relationship on `contexts`) with the queryset, and where
+                the associated context is a manifest
+             2. The object type is manifest
+             
+             In other words, give me all the manifests where they are associated with a manifest context that is
+             related to the objects in the queryset. This manifest context should/will be themselves as manifests
+             are associated with themselves as context.
+            """
+            facetable_q = IIIFResource.objects.filter(
+                contexts__associated_iiif__madoc_id__in=facetable_queryset,
+                contexts__type__iexact="manifest",
+                type__iexact="manifest",
+            ).distinct()
+        else:
+            """
+            Otherwise, just create the facets on the objects that are in the queryset, rather than their
+            containing manifest contexts.
+            """
+            facetable_q = facetable_queryset
         if not facet_fields:
             facet_fields = []
             for t in (
