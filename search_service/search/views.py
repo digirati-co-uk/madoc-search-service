@@ -187,13 +187,17 @@ class IIIFList(generics.ListCreateAPIView):
             parent_object = None
             if (child is True) and (parent is not None):
                 parent_object = IIIFResource.objects.get(madoc_id=parent)
+            """
+            To Do: We potentially need something here to replace the
+            perform_create with a perform_update in the event that the object exists, and then we can 
+            have the operation be idempotent as a POST will update rather than error
+            """
             serializer = self.get_serializer(data=local_dict)  # Serialize the data
             serializer.is_valid(raise_exception=True)  # Check it's valid
             self.perform_create(serializer)  # Create the object
             instance = IIIFResource.objects.get(
                 madoc_id=local_dict["madoc_id"]
             )  # Get the object created
-
             if resource_contexts:
                 local_contexts = deepcopy(resource_contexts)
             else:
