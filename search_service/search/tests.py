@@ -255,12 +255,34 @@ def test_contexts_query():
         print(json.dumps(j, indent=2, ensure_ascii=False))
 
 
+def test_nested_faceted_query():
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+    query = {
+        "fulltext": "bridges",
+        "facet_fields": [
+            "title",
+            "attribution"
+        ],
+        "contexts": ["urn:madoc:site:2"],
+        "facets": [
+            {"type": "metadata", "subtype": "title", "value": "Galileo :"},
+        ],
+    }
+    print(json.dumps(query, indent=2))
+    r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
+    if r.status_code == requests.codes.ok:
+        j = r.json()
+        print(json.dumps(j, indent=2, ensure_ascii=False))
+
+
 if __name__ == "__main__":
     # test_ingest()
     # test_ocr()
-    test_capturemodel()
+    # test_capturemodel()
     # # test_ocr_query()
     # test_model_query()
     # test_contexts_query()
+    test_nested_faceted_query()
 
 

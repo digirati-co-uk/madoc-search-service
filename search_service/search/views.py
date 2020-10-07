@@ -584,10 +584,6 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         # just generate the list by querying the unique list of metadata subtypes
         # Make a copy of the query so we aren't running the get_queryset logic every time
         facetable_queryset = self.get_queryset().all().distinct()
-        # manifests = IIIFResource.objects.filter(contexts__associated_iiif__madoc_id__in=facetable_queryset,
-        #                                         contexts__type__iexact="manifest",
-        #                                         type__iexact="manifest").distinct()
-        # print("Manifests resources", manifests)
         if facet_on_manifests:
             """
             Facet on IIIF objects where:
@@ -688,8 +684,23 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             if type(self.postfilter_kwargs[0]) == Q:
                 # This is also a chainging operation but the filters being
                 # chained might contain "OR"s rather than ANDs
-                for f in self.postfilter_kwargs:
-                    queryset = queryset.filter(*(f,))
+                if facet_on_manifests:
+                    """
+                    Create a list of manifests where the facets apply
+                    and then filter the queryset to just those objects where their context
+                    is one of those
+                    """
+                    manifests = IIIFResource.objects.filter(
+                        contexts__associated_iiif__madoc_id__in=queryset,
+                        contexts__type__iexact="manifest",
+                        type__iexact="manifest",
+                    ).distinct()
+                    for f in self.postfilter_kwargs:
+                        manifests = manifests.filter(*(f,))
+                    queryset = queryset.filter(**{"contexts__id__in": manifests})
+                else:
+                    for f in self.postfilter_kwargs:
+                        queryset = queryset.filter(*(f,))
             else:  # GET requests (i.e. without the fancy Q reduction)
                 for filter_dict in self.postfilter_kwargs:
                     # This is a chaining operation
