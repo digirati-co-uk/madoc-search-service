@@ -348,6 +348,11 @@ def parse_search(req):
     """
     Function to parse incoming search data (from request params or incoming json)
     into a set of filter kwargs that can be passed to the list and hits methods.
+
+    The pre-filters (applied before the fulltext query is run) and the postfilters
+    (applied to generate the facet counts) are lists of Q() objects. These may be
+    combined together using _reduce_ and the 'or' or 'and' operators to create complex
+    boolean queries.
     """
     if req.method == "POST":
         prefilter_kwargs = []
