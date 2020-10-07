@@ -268,6 +268,7 @@ def test_nested_faceted_query():
         "facets": [
             {"type": "metadata", "subtype": "title", "value": "Galileo :"},
         ],
+        "facet_on_manifests": True
     }
     print(json.dumps(query, indent=2))
     r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
