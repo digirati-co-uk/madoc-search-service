@@ -592,7 +592,7 @@ class Facets(viewsets.ModelViewSet, RetrieveModelMixin):
         ):
             for _, v in t.items():
                 facet_fields.append(v)
-        response.data = list(set([x for x in facet_fields if x and x != ""]))
+        response.data = sorted(list(set([x for x in facet_fields if x and x != ""])))
         return response
 
     def get_serializer_context(self):
