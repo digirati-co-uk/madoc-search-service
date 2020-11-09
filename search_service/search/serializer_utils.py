@@ -312,21 +312,22 @@ def recurse_properties(properties, indexables=None, doc_subtype=None, target=Non
     if not indexables:
         indexables = []
     if properties:
-        if properties.get("properties"):
+        if properties.get("properties"):  # This is a nested model so recurse into that
             indexables += recurse_properties(
                 properties=properties.get("properties"),
                 doc_subtype=simplify_label(
                     ".".join([doc_subtype, slugify(properties.get("type", ""))])
                 ),
             )
-        if properties.get("value"):  # This is just the content of a list of values
-            d = {  # What do we do with the subtype? Should this really be a unique list?
+        if properties.get("value"):  # This is just the content of a list of values so index them
+            d = {
                 "subtype": simplify_label(doc_subtype),
                 "indexable": properties.get("value"),
                 "original_content": properties.get("value"),
                 "content_id": properties["id"],
                 "resource_id": target,
             }
+            # Check for selector
             if properties.get("selector"):
                 d["selector"] = {
                     k: [v]
@@ -334,15 +335,22 @@ def recurse_properties(properties, indexables=None, doc_subtype=None, target=Non
                     if simplify_selector(properties.get("selector")) is not None
                 }
             indexables.append(d)
-        else:
+        else:  # Iterate through the keys in the dictionary
             for property_key, property_value in properties.items():
+                # It's a list, so we should extract the indexables from each one
                 if isinstance(property_value, list):
                     for x in property_value:
                         indexables += recurse_properties(
                             properties=x,
                             doc_subtype=simplify_label(".".join([doc_subtype, slugify(property_key)])),
                         )
+                # It's a dictionary
                 if isinstance(property_value, dict):
+                    # To Do: Work out why this isn't working (some sort of simple nesting issue)
+                    # indexables += recurse_properties(
+                    #         properties=property_value,
+                    #         doc_subtype=simplify_label(".".join([doc_subtype, slugify(property_key)])),
+                    #     )
                     if property_value.get("value"):
                         d = {
                             "subtype": simplify_label(".".join(
@@ -384,7 +392,7 @@ def simplify_capturemodel(capturemodel):
         else:
             target = None
         if document.get("properties"):
-            # This is an OCR type capture model? Or transcription task?
+            # This has regions of interest
             if (regions := document["properties"].get("region")) is not None:
                 for region in regions:
                     if region.get("value"):
@@ -404,7 +412,8 @@ def simplify_capturemodel(capturemodel):
                             }
                         )
             else:
-                # This is some sort of entity type tagging task, so we are going to recurse into the nest
+                # This is some sort of entity type tagging task, or other non region of interest
+                # so we are going to recurse into the nesting
                 indexables += recurse_properties(
                     properties=document.get("properties"), doc_subtype=doc_subtype, target=target
                 )
