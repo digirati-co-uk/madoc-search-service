@@ -559,7 +559,6 @@ class Facets(viewsets.ModelViewSet, RetrieveModelMixin):
         if facet_on_manifests:
             setattr(self, "facet_on_manifests", facet_on_manifests)
         response = super(Facets, self).list(request, args, kwargs)
-        facet_summary = {"metadata": {}}
         # If we haven't been provided a list of facet fields via a POST
         # just generate the list by querying the unique list of metadata subtypes
         # Make a copy of the query so we aren't running the get_queryset logic every time
@@ -593,7 +592,7 @@ class Facets(viewsets.ModelViewSet, RetrieveModelMixin):
         ):
             for _, v in t.items():
                 facet_fields.append(v)
-        response.data = facet_fields
+        response.data = [x for x in facet_fields if x and x != ""]
         return response
 
     def get_serializer_context(self):
