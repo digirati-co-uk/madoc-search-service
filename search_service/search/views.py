@@ -16,7 +16,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, filters, status
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
-from rest_framework.mixins import ListModelMixin
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -529,6 +529,100 @@ def parse_search(req):
             sort_order,
             global_facet_on_manifests
         )
+
+
+class Facets(viewsets.ModelViewSet, RetrieveModelMixin):
+    """
+    Simple read only view to return a list of facet fields
+    """
+
+    queryset = IIIFResource.objects.all()
+    serializer_class = IIIFSearchSummarySerializer
+
+    def list(self, request, *args, **kwargs):
+        """
+        Return a simple list of facet fields when the (optional) query is passed in.
+
+        """
+        # Call a function to set the prefilter_kwargs based on incoming request
+        (
+            prefilter_kwargs,
+            _,
+            _,
+            _,
+            _,
+            _,
+            facet_on_manifests
+        ) = parse_search(req=request)
+        if prefilter_kwargs:
+            setattr(self, "prefilter_kwargs", prefilter_kwargs)
+        if facet_on_manifests:
+            setattr(self, "facet_on_manifests", facet_on_manifests)
+        response = super(Facets, self).list(request, args, kwargs)
+        facet_summary = {"metadata": {}}
+        # If we haven't been provided a list of facet fields via a POST
+        # just generate the list by querying the unique list of metadata subtypes
+        # Make a copy of the query so we aren't running the get_queryset logic every time
+        facetable_queryset = self.get_queryset().all().distinct()
+        if facet_on_manifests:
+            """
+            Facet on IIIF objects where:
+
+             1. They are associated (via the reverse relationship on `contexts`) with the queryset, and where
+                the associated context is a manifest
+             2. The object type is manifest
+
+             In other words, give me all the manifests where they are associated with a manifest context that is
+             related to the objects in the queryset. This manifest context should/will be themselves as manifests
+             are associated with themselves as context.
+            """
+            facetable_q = IIIFResource.objects.filter(
+                contexts__associated_iiif__madoc_id__in=facetable_queryset,
+                contexts__type__iexact="manifest",
+                type__iexact="manifest",
+            ).distinct()
+        else:
+            """
+            Otherwise, just create the facets on the objects that are in the queryset, rather than their
+            containing manifest contexts.
+            """
+            facetable_q = facetable_queryset
+        facet_fields = []
+        for t in (
+            facetable_q.filter(indexables__type__iexact="metadata").values("indexables__subtype").distinct()
+        ):
+            for _, v in t.items():
+                facet_fields.append(v)
+        response.data = facet_fields
+        return response
+
+    def get_serializer_context(self):
+        """
+        Pass the request into the serializer context so it is available
+        in the serializer method(s), e.g. the get_hits method used to
+        populate each manifest with a list of hits that match the query
+        parameters
+        """
+        context = super(Facets, self).get_serializer_context()
+        context.update({"request": self.request})
+        return context
+
+    def get_queryset(self):
+        """
+        Look for
+
+            self.prefilter_kwargs: filters to execute before the fulltext search
+
+        Apply these and return distinct objects
+        """
+        queryset = IIIFResource.objects.all()
+        if hasattr(self, "prefilter_kwargs"):
+            # Just check if this thing is all nested Q() objects
+            if all([type(k) == Q for k in self.prefilter_kwargs]):
+                # This is a chaining operation
+                for f in self.prefilter_kwargs:
+                    queryset = queryset.filter(*(f,))
+        return queryset.distinct()
 
 
 class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
