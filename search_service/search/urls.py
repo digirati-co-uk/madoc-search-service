@@ -26,7 +26,7 @@ urlpatterns = [
     ),
     path(
         "api/search/autocomplete",
-        views.MetadataAutocomplete.as_view({"get": "list", "post": "list"}),
+        views.Autocomplete.as_view({"get": "list", "post": "list"}),
         name="autocomplete",
     ),
     path(
