@@ -619,7 +619,7 @@ class Facets(viewsets.ModelViewSet, RetrieveModelMixin):
         return queryset.distinct()
 
 
-class MetadataAutocomplete(viewsets.ModelViewSet, ListModelMixin):
+class Autocomplete(viewsets.ModelViewSet, ListModelMixin):
     queryset = Indexables.objects.all()
     serializer_class = AutocompleteSerializer
 
