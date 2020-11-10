@@ -659,7 +659,7 @@ class Autocomplete(viewsets.ModelViewSet, ListModelMixin):
             setattr(self, "postfilter_kwargs", postfilter_kwargs)
         if facet_on_manifests:
             setattr(self, "facet_on_manifests", facet_on_manifests)
-        response = super(MetadataAutocomplete, self).list(request, args, kwargs)
+        response = super(Autocomplete, self).list(request, args, kwargs)
         facetable_queryset = self.get_queryset().all()
         raw_data = (
             facetable_queryset.values("indexable")
@@ -679,7 +679,7 @@ class Autocomplete(viewsets.ModelViewSet, ListModelMixin):
         populate each manifest with a list of hits that match the query
         parameters
         """
-        context = super(MetadataAutocomplete, self).get_serializer_context()
+        context = super(Autocomplete, self).get_serializer_context()
         context.update({"request": self.request})
         return context
 
