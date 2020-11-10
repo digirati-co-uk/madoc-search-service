@@ -184,6 +184,17 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
+class AutocompleteSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Indexables for autocompletion
+    """
+    class Meta:
+        model = Indexables
+        fields = [
+            "indexable",
+        ]
+
+
 class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for the Indexables, i.e. the indexed objects that are used to
