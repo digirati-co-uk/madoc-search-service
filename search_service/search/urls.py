@@ -25,6 +25,11 @@ urlpatterns = [
         name="search",
     ),
     path(
+        "api/search/autocomplete",
+        views.MetadataAutocomplete.as_view({"get": "list", "post": "list"}),
+        name="autocomplete",
+    ),
+    path(
         "api/search/facets",
         views.Facets.as_view({"get": "list", "post": "list"}),
         name="facets",
