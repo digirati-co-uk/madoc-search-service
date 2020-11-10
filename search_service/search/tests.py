@@ -76,7 +76,7 @@ test_model = {
 
 def test_ingest():
     collections = [
-        "https://iiif.ub.uni-leipzig.de/static/collections/Drucke17/collection.json",
+        # "https://iiif.ub.uni-leipzig.de/static/collections/Drucke17/collection.json",
         "https://iiif.hab.de/collection/project/mssox.json",
         "https://www.e-codices.unifr.ch/metadata/iiif/collection/sl.json",
         "https://digital.library.villanova.edu/Collection/vudl:294849/IIIF",
@@ -278,12 +278,12 @@ def test_nested_faceted_query():
 
 
 if __name__ == "__main__":
-    # test_ingest()
+    test_ingest()
     # test_ocr()
     # test_capturemodel()
     # # test_ocr_query()
     # test_model_query()
     # test_contexts_query()
-    test_nested_faceted_query()
+    # test_nested_faceted_query()
 
 

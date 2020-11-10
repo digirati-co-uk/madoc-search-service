@@ -1,0 +1,1639 @@
+{
+  "01-nested-model.json": [],
+  "02-nested-mixed.json": [],
+  "03-deeply-nested-subset.json": [],
+  "04-deeply-nested-mixed-instance.json": [
+    {
+      "subtype": "entity.depth1.second.third.name",
+      "indexable": "One instance at the depth",
+      "original_content": "One instance at the depth",
+      "content_id": "e3a2be45-88f9-476b-b7de-7a089cdf104f",
+      "resource_id": null
+    },
+    {
+      "subtype": "entity.depth1.second.third.name",
+      "indexable": "two instances at second level (first)",
+      "original_content": "two instances at second level (first)",
+      "content_id": "ccf79c5c-b7ff-4e90-9811-90e3ce3c7fd6",
+      "resource_id": null
+    },
+    {
+      "subtype": "entity.depth1.second.third.name",
+      "indexable": "two instances at second level (second)",
+      "original_content": "two instances at second level (second)",
+      "content_id": "45e19d0c-354a-456b-858b-37f1ade18744",
+      "resource_id": null
+    },
+    {
+      "subtype": "entity.depth1.second.third.name",
+      "indexable": "two instances at second level (third)",
+      "original_content": "two instances at second level (third)",
+      "content_id": "a616e598-2443-43e7-9b4a-56b05d4b9345",
+      "resource_id": null
+    },
+    {
+      "subtype": "entity.depth1.second.third.name",
+      "indexable": "two instance at third depth (first)",
+      "original_content": "two instance at third depth (first)",
+      "content_id": "a9814af8-8dc3-4cdb-9e34-c7ecb4f76d68",
+      "resource_id": null
+    },
+    {
+      "subtype": "entity.depth1.second.third.name",
+      "indexable": "two instance at third depth (second)",
+      "original_content": "two instance at third depth (second)",
+      "content_id": "3ed870a8-5b66-4259-93e6-6a2e4a952463",
+      "resource_id": null
+    },
+    {
+      "subtype": "entity.depth1.second.third.name",
+      "indexable": "2x2 at second and third levels (first 1-1)",
+      "original_content": "2x2 at second and third levels (first 1-1)",
+      "content_id": "e3e37449-aa19-43ec-93fe-7a41f296c215",
+      "resource_id": null
+    },
+    {
+      "subtype": "entity.depth1.second.third.name",
+      "indexable": "2x2 at second and third levels (second 1-2)",
+      "original_content": "2x2 at second and third levels (second 1-2)",
+      "content_id": "54e8e65c-de36-4f26-bdb1-21da73a2054d",
+      "resource_id": null
+    },
+    {
+      "subtype": "entity.depth1.second.third.name",
+      "indexable": "2x2 at second and third levels (third 2-1)",
+      "original_content": "2x2 at second and third levels (third 2-1)",
+      "content_id": "c9616dc5-8204-421d-8bbf-86824d67c1ec",
+      "resource_id": null
+    },
+    {
+      "subtype": "entity.depth1.second.third.name",
+      "indexable": "2x2 at second and third levels (fourth 2-2)",
+      "original_content": "2x2 at second and third levels (fourth 2-2)",
+      "content_id": "6ff7d593-4f5f-4cdc-8a7d-9712f8ac5291",
+      "resource_id": null
+    }
+  ],
+  "05-nested-model-multiple.json": [
+    {
+      "subtype": "entity.person.firstname",
+      "indexable": "first first name",
+      "original_content": "first first name",
+      "content_id": "1da67423-f4a1-49e6-8561-55c40be47c00",
+      "resource_id": null
+    },
+    {
+      "subtype": "entity.person.lastname",
+      "indexable": "first last name",
+      "original_content": "first last name",
+      "content_id": "6b7ce0c3-2a13-4ea3-a190-822fee80176b",
+      "resource_id": null
+    },
+    {
+      "subtype": "entity.person.firstname",
+      "indexable": "second first name",
+      "original_content": "second first name",
+      "content_id": "f8678b43-f803-40b2-8e2e-fcc014631e1a",
+      "resource_id": null
+    },
+    {
+      "subtype": "entity.person.lastname",
+      "indexable": "second last name",
+      "original_content": "second last name",
+      "content_id": "12e92ef6-6ebc-49af-95b3-42718ac92c26",
+      "resource_id": null
+    }
+  ],
+  "06-ocr.json": [
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Von",
+      "original_content": "Von",
+      "content_id": "a910c803-a0f8-4c7e-963b-a046e04311ed",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            314,
+            2257,
+            99,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Eugen",
+      "original_content": "Eugen",
+      "content_id": "001edf22-8ae8-4825-b480-b2b18320db45",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            442,
+            2258,
+            186,
+            47
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Sc",
+      "original_content": "Sc",
+      "content_id": "fa149bdb-1238-40a1-8ec8-db18b2e4c868",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            660,
+            2256,
+            61,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "huh",
+      "original_content": "huh",
+      "content_id": "6ee985e8-bee2-4fcc-9b32-8b54008e74c9",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            735,
+            2255,
+            109,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "m",
+      "original_content": "m",
+      "content_id": "fbedf83a-f10d-4b03-8884-1045b81fa1cc",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            857,
+            2265,
+            42,
+            28
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "ach",
+      "original_content": "ach",
+      "content_id": "18a8883f-c2fc-489d-bdf8-816dc16dd047",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            918,
+            2253,
+            102,
+            39
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "er",
+      "original_content": "er",
+      "content_id": "ad4d2037-a3ff-42f6-93c6-2625398e4388",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1037,
+            2264,
+            54,
+            28
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "-",
+      "original_content": "-",
+      "content_id": "c25ad11f-3b88-445b-82f5-c5bae8631431",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1120,
+            2273,
+            17,
+            8
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "96",
+      "original_content": "96",
+      "content_id": "4fec4f93-b1b0-498b-bc30-b4b2d234bf18",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1167,
+            2253,
+            50,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Seiten",
+      "original_content": "Seiten",
+      "content_id": "12cf6554-07fd-46e3-aee1-5543033adafe",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1239,
+            2253,
+            151,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Text",
+      "original_content": "Text",
+      "content_id": "21eb4bac-950b-4430-aecb-362050487689",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1412,
+            2253,
+            105,
+            36
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "mit",
+      "original_content": "mit",
+      "content_id": "456556c9-96f6-4def-8ebc-155b931c6cb1",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1537,
+            2251,
+            78,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "124",
+      "original_content": "124",
+      "content_id": "38212dfe-9379-454c-a688-de7b12b41c83",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1642,
+            2251,
+            72,
+            36
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Bildern",
+      "original_content": "Bildern",
+      "content_id": "6a79a9ed-aeb4-4bfe-b400-79f3e56726e0",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1734,
+            2249,
+            177,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "aut",
+      "original_content": "aut",
+      "content_id": "92fff73e-e5fd-4386-beda-e65a7d6bf0a1",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1933,
+            2252,
+            75,
+            33
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "64",
+      "original_content": "64",
+      "content_id": "a5279d47-e2f6-4c22-877e-9ab22d56dac2",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            314,
+            2327,
+            50,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Taieln",
+      "original_content": "Taieln",
+      "content_id": "fef17132-f12e-47a7-8522-9360a34b4ee0",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            385,
+            2325,
+            152,
+            39
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "-",
+      "original_content": "-",
+      "content_id": "07273699-5749-4afd-9c55-6e44cb2842c7",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            559,
+            2343,
+            16,
+            9
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "In",
+      "original_content": "In",
+      "content_id": "4a6d32a9-0d11-494f-9d75-bb92caa480fb",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            593,
+            2327,
+            48,
+            36
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Ganzleinen^",
+      "original_content": "Ganzleinen^",
+      "content_id": "9b5c9f65-c21c-4280-95c6-e4577c0193b5",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            665,
+            2325,
+            295,
+            44
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "mit",
+      "original_content": "mit",
+      "content_id": "9c57c6b0-369e-4aa8-83d6-7a0454d89202",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            983,
+            2325,
+            79,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "prächtigem",
+      "original_content": "prächtigem",
+      "content_id": "5bfba1d0-c7ed-4544-aedf-8919a3ea98c4",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1082,
+            2324,
+            270,
+            47
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Schutzumschlag",
+      "original_content": "Schutzumschlag",
+      "content_id": "f4a23b10-a773-4d44-a2ef-49a6bae1b6f7",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1371,
+            2319,
+            388,
+            49
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "DM",
+      "original_content": "DM",
+      "content_id": "49c9dd77-d9fe-44b7-b04a-91c7a86ea2bb",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1780,
+            2319,
+            85,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "12.80",
+      "original_content": "12.80",
+      "content_id": "9bf6b827-3220-49f5-96d3-1e8430bfaeaa",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1890,
+            2319,
+            117,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "oDas",
+      "original_content": "oDas",
+      "content_id": "669a0265-3c60-48ab-a2e0-ecf76234514d",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            317,
+            2434,
+            113,
+            45
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Buch",
+      "original_content": "Buch",
+      "content_id": "0fe73c4c-62eb-4ffb-bc0b-9f0e19bb0a25",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            454,
+            2433,
+            116,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "wird",
+      "original_content": "wird",
+      "content_id": "875961bb-11da-49a3-80e3-3e7eecaa9444",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            602,
+            2433,
+            111,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "jeden",
+      "original_content": "jeden",
+      "content_id": "e52f1a32-fbcc-4f49-9a05-0917ccd149f2",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            740,
+            2433,
+            144,
+            47
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Tierfreund",
+      "original_content": "Tierfreund",
+      "content_id": "ced3b9f4-88cd-4c1a-bf11-63845dff8d27",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            915,
+            2431,
+            264,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "—",
+      "original_content": "—",
+      "content_id": "7b70dc5c-513c-493a-8519-455f16ed2f32",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1211,
+            2452,
+            52,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "und",
+      "original_content": "und",
+      "content_id": "a338770f-0477-4136-af26-c52c843803af",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1304,
+            2431,
+            90,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "wer",
+      "original_content": "wer",
+      "content_id": "bbbbbb8a-e177-424d-956c-9eb9353e2386",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1424,
+            2440,
+            92,
+            28
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "wäre",
+      "original_content": "wäre",
+      "content_id": "84740ca6-0849-4be9-8224-313949207f86",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1546,
+            2430,
+            121,
+            36
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "das",
+      "original_content": "das",
+      "content_id": "0dc623fe-9f79-48ff-be11-5f5219cacc96",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1699,
+            2428,
+            79,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "nicht",
+      "original_content": "nicht",
+      "content_id": "8b87744a-b091-4103-9a39-93562a8cbbf2",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1808,
+            2427,
+            117,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "—",
+      "original_content": "—",
+      "content_id": "df398d8a-13a9-4b56-a13a-de2e6418b47b",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1957,
+            2446,
+            51,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "bereidiern",
+      "original_content": "bereidiern",
+      "content_id": "09332a38-935a-401e-8123-833c2829efda",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            312,
+            2503,
+            262,
+            39
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "und",
+      "original_content": "und",
+      "content_id": "4ce0a61a-9bdc-4d98-8a98-f3d588c6b665",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            617,
+            2504,
+            92,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "beglücken.",
+      "original_content": "beglücken.",
+      "content_id": "a29eb861-a893-4f2d-a3d2-e420ea405e4a",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            746,
+            2504,
+            265,
+            48
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Man",
+      "original_content": "Man",
+      "content_id": "e938c21b-6835-47ab-9893-84d78d45fc1b",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1065,
+            2504,
+            111,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "lernt,",
+      "original_content": "lernt,",
+      "content_id": "de15ae27-8f64-4c7d-b8d9-f56dfbfd486f",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1216,
+            2504,
+            126,
+            43
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "indem",
+      "original_content": "indem",
+      "content_id": "922f4711-8fbd-4d12-920b-fcd2f6266de8",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1394,
+            2503,
+            153,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "man",
+      "original_content": "man",
+      "content_id": "06c88890-384f-4168-bb67-f984c5250c2e",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1595,
+            2512,
+            105,
+            27
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "aufs",
+      "original_content": "aufs",
+      "content_id": "42822e09-3835-4ef6-9dfa-a332bbf2f7f4",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1739,
+            2499,
+            99,
+            40
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "beste",
+      "original_content": "beste",
+      "content_id": "0df27cd9-ad27-49f6-9e85-e800772785d8",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1876,
+            2500,
+            131,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "unterhalten",
+      "original_content": "unterhalten",
+      "content_id": "fc1588c3-8083-49ce-a20b-a6649f589db1",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            316,
+            2574,
+            290,
+            39
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "wird.\"",
+      "original_content": "wird.\"",
+      "content_id": "22882ecc-c2cb-4036-a3f2-a0ed083c7569",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            647,
+            2575,
+            149,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Schwäbische",
+      "original_content": "Schwäbische",
+      "content_id": "67099757-ce9a-4f70-a70b-a248f7d96648",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1580,
+            2572,
+            307,
+            40
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Post",
+      "original_content": "Post",
+      "content_id": "9338c880-c525-42a1-bc70-45f56c9a2ece",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1906,
+            2572,
+            103,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Unsere",
+      "original_content": "Unsere",
+      "content_id": "01867639-a6e6-41ef-a13b-7138dab91ae2",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            452,
+            2682,
+            171,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Prospekte",
+      "original_content": "Prospekte",
+      "content_id": "7dbc8d21-9188-43d8-85ef-a460d3e80006",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            638,
+            2682,
+            244,
+            46
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "„Schuhmacher,",
+      "original_content": "„Schuhmacher,",
+      "content_id": "67a3a37b-0c6c-4792-ab88-c87951b650fa",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            895,
+            2680,
+            361,
+            45
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Filmtiere\"",
+      "original_content": "Filmtiere\"",
+      "content_id": "617b76f5-0965-4cc3-9a2c-5d22e05b13c3",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1272,
+            2680,
+            246,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "sowie",
+      "original_content": "sowie",
+      "content_id": "316f4942-b3ac-41cf-a6e8-5a1511ec7995",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1538,
+            2681,
+            140,
+            36
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "„Natur-",
+      "original_content": "„Natur-",
+      "content_id": "c31c6ff0-baba-40be-9093-85de6394f617",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1693,
+            2679,
+            185,
+            43
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "und",
+      "original_content": "und",
+      "content_id": "4359db2a-7214-4d4d-bc5c-2f3ed8ff011a",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            451,
+            2734,
+            92,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Heimatbücher",
+      "original_content": "Heimatbücher",
+      "content_id": "0e0e0f1c-333c-44bc-9b7d-5f4ef6e5d24e",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            559,
+            2734,
+            346,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "bei",
+      "original_content": "bei",
+      "content_id": "9e7329ad-7cc3-4992-86d0-24824e9da77b",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            922,
+            2732,
+            70,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Bruckmann\"",
+      "original_content": "Bruckmann\"",
+      "content_id": "b3150904-8ae4-4ea0-b738-c4397d97cb60",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1010,
+            2732,
+            298,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "liegen",
+      "original_content": "liegen",
+      "content_id": "18aa3d60-54bd-4740-ac42-6ee5b3c3979e",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1328,
+            2733,
+            150,
+            47
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "bei",
+      "original_content": "bei",
+      "content_id": "468fff96-6847-4c21-a795-e1e3a109cb01",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1497,
+            2732,
+            71,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Ihrem",
+      "original_content": "Ihrem",
+      "content_id": "9a29022d-b3f5-4d6d-827f-db2cee1f9683",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1584,
+            2732,
+            143,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Buch¬",
+      "original_content": "Buch¬",
+      "content_id": "9ce299ce-f2ec-4ac6-90bc-b33c476eb751",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1744,
+            2732,
+            134,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "händlerbereit.",
+      "original_content": "händlerbereit.",
+      "content_id": "3121c3c4-deb0-46f0-8e94-327dbe6bad31",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            455,
+            2787,
+            356,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Sollten",
+      "original_content": "Sollten",
+      "content_id": "016d82a4-7370-4cd4-aaf9-a9589dcc121c",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            829,
+            2786,
+            167,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "sie",
+      "original_content": "sie",
+      "content_id": "5e9b5e54-2eaa-4a81-99e6-fb7eb7320686",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1016,
+            2787,
+            69,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "dort",
+      "original_content": "dort",
+      "content_id": "e532ec14-1e63-4435-a820-8d03762da072",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1101,
+            2786,
+            97,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "nicht",
+      "original_content": "nicht",
+      "content_id": "0c805291-fb50-443e-87e7-de8df73645c7",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1211,
+            2785,
+            117,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "veriügbar",
+      "original_content": "veriügbar",
+      "content_id": "59a2c9c6-6904-44c1-aa2a-837d82801d2e",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1344,
+            2786,
+            241,
+            48
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "sein,",
+      "original_content": "sein,",
+      "content_id": "faf1eeb6-16fb-41a1-922e-5839f883b53f",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1601,
+            2786,
+            117,
+            43
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "gehen",
+      "original_content": "gehen",
+      "content_id": "e598bc72-b9e0-4896-baca-b8e25566f35d",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1731,
+            2784,
+            148,
+            49
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "sie",
+      "original_content": "sie",
+      "content_id": "7807ddc7-3815-4f2a-bfc3-404ff799720f",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            450,
+            2841,
+            68,
+            36
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Ihnen",
+      "original_content": "Ihnen",
+      "content_id": "3564426f-7976-4974-8456-fe5b154d198c",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            537,
+            2839,
+            141,
+            39
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "aui",
+      "original_content": "aui",
+      "content_id": "3e6a91af-79de-4df8-93ca-3351eacad492",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            701,
+            2840,
+            77,
+            37
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Verlangen",
+      "original_content": "Verlangen",
+      "content_id": "27dcc7b3-7a91-4fe6-843c-223edee81a14",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            799,
+            2839,
+            253,
+            48
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "kostenlos",
+      "original_content": "kostenlos",
+      "content_id": "6629e6fe-7fa1-4a51-acee-122c7291e5a9",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1075,
+            2839,
+            235,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "direkt",
+      "original_content": "direkt",
+      "content_id": "28f84498-3e99-4344-ad7a-f19e4355fe8d",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1332,
+            2838,
+            144,
+            38
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "vom",
+      "original_content": "vom",
+      "content_id": "17af623e-7e6c-4bf7-a9e8-bd3f5e7fe533",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1498,
+            2848,
+            104,
+            28
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Verlag",
+      "original_content": "Verlag",
+      "content_id": "22bf505a-c8f6-41a2-af95-a3dc2e9049c0",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1621,
+            2837,
+            164,
+            47
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "zu.",
+      "original_content": "zu.",
+      "content_id": "4101db98-bd35-4970-a870-1632276b61eb",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1805,
+            2847,
+            68,
+            27
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "VEELAG",
+      "original_content": "VEELAG",
+      "content_id": "7beb6728-54ad-4a1a-9d36-af8e8e3f6458",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            318,
+            2986,
+            378,
+            62
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "F.",
+      "original_content": "F.",
+      "content_id": "066abf69-9007-41bd-bc77-877934e9cba9",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            732,
+            2986,
+            72,
+            60
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "BRUCKMANN",
+      "original_content": "BRUCKMANN",
+      "content_id": "1fa43532-b397-4d45-a2ea-b7a82543ffd2",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            842,
+            2986,
+            596,
+            62
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "•",
+      "original_content": "•",
+      "content_id": "2d5a0353-9973-4ede-a1ec-89d7142678c5",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1486,
+            3014,
+            16,
+            16
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "MÜNCHEN",
+      "original_content": "MÜNCHEN",
+      "content_id": "fbaa50df-d74e-4ef7-8dbd-7bb25d2fe483",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1550,
+            2976,
+            464,
+            70
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Postanschrift:",
+      "original_content": "Postanschrift:",
+      "content_id": "1f90ff08-c109-428f-ad54-aecdb124cb27",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            452,
+            3085,
+            518,
+            40
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "München",
+      "original_content": "München",
+      "content_id": "2b7bcd38-7480-44a5-ae31-50bf3bb59c8b",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1023,
+            3085,
+            314,
+            39
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "20,",
+      "original_content": "20,",
+      "content_id": "7e7dd4d3-ac59-4ce6-a28b-0c82a633d266",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1381,
+            3084,
+            87,
+            42
+          ]
+        ]
+      }
+    },
+    {
+      "subtype": "entity.transcription.lines.text",
+      "indexable": "Abholfach",
+      "original_content": "Abholfach",
+      "content_id": "267ed104-ed49-4a15-b3ec-4c11c5d1f6b3",
+      "resource_id": null,
+      "selector": {
+        "box-selector": [
+          [
+            1520,
+            3082,
+            362,
+            40
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -448,13 +448,27 @@ def calc_offsets(obj):
 if __name__ == "__main__":
     import requests
 
-    from search_service.search.tests import test_model
-
-    bar = simplify_capturemodel(capturemodel=test_model)
-    print(json.dumps(bar, indent=2, ensure_ascii=False))
-    foo = requests.get(
-        "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/"
-        "05-nested-model-multiple.json"
-    ).json()
-    bar = simplify_capturemodel(foo)
-    print(json.dumps(bar, indent=2, ensure_ascii=False))
+    # from search_service.search.tests import test_model
+    model_list = [
+        "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/01-nested-model.json",
+        "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/02-nested-mixed.json",
+        "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/03-deeply-nested-subset.json",
+        "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/04-deeply-nested-mixed-instance.json",
+        "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/05-nested-model-multiple.json",
+        "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/06-ocr.json"
+    ]
+    test_results = {}
+    for m in model_list:
+        k = m.split("/")[-1]
+        j = requests.get(m).json()
+        test_results[k] = simplify_capturemodel(j)
+    with open("/Volumes/MMcG_SSD/Github/madoc_search_proto/capturemodels.json", "w") as f:
+        json.dump(test_results, f, indent=2, ensure_ascii=False)
+    # bar = simplify_capturemodel(capturemodel=test_model)
+    # print(json.dumps(bar, indent=2, ensure_ascii=False))
+    # foo = requests.get(
+    #     "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/"
+    #     "05-nested-model-multiple.json"
+    # ).json()
+    # bar = simplify_capturemodel(foo)
+    # print(json.dumps(bar, indent=2, ensure_ascii=False))
