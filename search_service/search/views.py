@@ -40,10 +40,13 @@ from .indexable_utils import gen_indexables
 
 from django.conf import settings
 
+from collections import defaultdict
+
 # Globals
 default_lang = get_language()
 upgrader = Upgrader(flags={"default_lang": default_lang})
 global_facet_on_manifests = settings.FACET_ON_MANIFESTS_ONLY
+global_facet_types = ["metadata"]
 
 
 @api_view(["GET"])
@@ -374,6 +377,7 @@ def parse_search(req):
         iiif_identifiers = req.data.get("iiif_identifiers", None)
         facet_queries = req.data.get("facets", None)
         facet_on_manifests = req.data.get("facet_on_manifests", global_facet_on_manifests)
+        facet_types = req.data.get("facet_types", global_facet_types)
         if contexts:
             prefilter_kwargs.append(Q(**{f"contexts__id__in": contexts}))
         if contexts_all:
@@ -470,6 +474,7 @@ def parse_search(req):
             hits_filter_kwargs,
             sort_order,
             facet_on_manifests,
+            facet_types,
         )
     elif req.method == "GET":
         search_string = req.query_params.get("fulltext", None)
@@ -529,6 +534,7 @@ def parse_search(req):
             hits_filter_kwargs,
             sort_order,
             global_facet_on_manifests,
+            global_facet_types,
         )
 
 
@@ -546,7 +552,9 @@ class Facets(viewsets.ModelViewSet, RetrieveModelMixin):
 
         """
         # Call a function to set the prefilter_kwargs based on incoming request
-        (prefilter_kwargs, _, _, _, _, _, facet_on_manifests) = parse_search(req=request)
+        (prefilter_kwargs, _, _, _, _, _, facet_on_manifests, facet_types) = parse_search(
+            req=request
+        )
         if prefilter_kwargs:
             setattr(self, "prefilter_kwargs", prefilter_kwargs)
         if facet_on_manifests:
@@ -636,6 +644,7 @@ class Autocomplete(viewsets.ModelViewSet, ListModelMixin):
             _,
             _,
             facet_on_manifests,
+            facet_types,
         ) = parse_search(req=request)
         if request.method == "POST":
             autocomplete_type = request.data.get("autocomplete_type", None)
@@ -659,7 +668,9 @@ class Autocomplete(viewsets.ModelViewSet, ListModelMixin):
             setattr(self, "postfilter_kwargs", postfilter_kwargs)
         if facet_on_manifests:
             setattr(self, "facet_on_manifests", facet_on_manifests)
-        response = super(Autocomplete, self).list(request, args, kwargs)
+        if facet_types:
+            setattr(self, "facet_types", facet_types)
+        # response = super(Autocomplete, self).list(request, args, kwargs)
         facetable_queryset = self.get_queryset().all()
         raw_data = (
             facetable_queryset.values("indexable")
@@ -789,9 +800,11 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             hits_filter_kwargs,
             sort_order,
             facet_on_manifests,
+            facet_types,
         ) = parse_search(req=request)
         if facet_fields:
             setattr(self, "facet_fields", facet_fields)
+            print("Facet fields are: ", facet_fields)
         if prefilter_kwargs:
             setattr(self, "prefilter_kwargs", prefilter_kwargs)
         if filter_kwargs:
@@ -801,9 +814,12 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         if hits_filter_kwargs:
             setattr(self, "hits_filter_kwargs", hits_filter_kwargs)
         if facet_on_manifests:
+            print("Facet on manifests", facet_on_manifests)
             setattr(self, "facet_on_manifests", facet_on_manifests)
+        if facet_types:
+            setattr(self, "facet_types", facet_types)
         response = super(IIIFSearch, self).list(request, args, kwargs)
-        facet_summary = {"metadata": {}}
+        facet_summary = defaultdict(dict)
         # If we haven't been provided a list of facet fields via a POST
         # just generate the list by querying the unique list of metadata subtypes
         # Make a copy of the query so we aren't running the get_queryset logic every time
@@ -831,26 +847,30 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             containing manifest contexts.
             """
             facetable_q = facetable_queryset
-        if not facet_fields:
-            facet_fields = []
-            for t in (
-                facetable_q.filter(indexables__type__iexact="metadata")
-                .values("indexables__subtype")
-                .distinct()
-            ):
-                for _, v in t.items():
-                    facet_fields.append(v)
-        for v in facet_fields:
-            facet_summary["metadata"][v] = {
-                x["indexables__indexable"]: x["n"]
-                for x in facetable_q.filter(
-                    indexables__type__iexact="metadata", indexables__subtype__iexact=v
+        if not facet_types:
+            facet_types = ["metadata"]
+        for facet_type in facet_types:
+            if not facet_fields:
+                facet_fields = []
+                facet_field_labels = (
+                    facetable_q.filter(indexables__type__iexact=facet_type)
+                    .values("indexables__subtype")
+                    .distinct()
                 )
-                .values("indexables__indexable")
-                .distinct()
-                .annotate(n=models.Count("pk", distinct=True))
-                .order_by("-n")[:10]
-            }
+                for t in facet_field_labels:
+                    for _, v in t.items():
+                        facet_fields.append(v)
+            for v in facet_fields:
+                facet_summary[facet_type][v] = {
+                    x["indexables__indexable"]: x["n"]
+                    for x in facetable_q.filter(
+                        indexables__type__iexact=facet_type, indexables__subtype__iexact=v
+                    )
+                    .values("indexables__indexable")
+                    .distinct()
+                    .annotate(n=models.Count("pk", distinct=True))
+                    .order_by("-n")[:10]
+                }
         response.data["facets"] = facet_summary
         if sort_order:
             if "rank" in sort_order:
