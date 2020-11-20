@@ -858,8 +858,7 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         if not facet_types:
             facet_types = ["metadata"]
         for facet_type in facet_types:
-            if not facet_fields:
-                facet_fields = []
+            current_facet_fields = facet_fields if facet_fields else []
             facet_field_labels = (
                 facetable_q.filter(indexables__type__iexact=facet_type)
                 .values("indexables__subtype")
@@ -868,7 +867,7 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             for t in facet_field_labels:
                 for _, v in t.items():
                     facet_fields.append(v)
-            for v in facet_fields:
+            for v in current_facet_fields:
                 facet_summary[facet_type][v] = {
                     x["indexables__indexable"]: x["n"]
                     for x in facetable_q.filter(
