@@ -588,14 +588,22 @@ class Facets(viewsets.ModelViewSet, RetrieveModelMixin):
             """
             facetable_q = facetable_queryset
         facet_fields = []
-        for t in (
-            facetable_q.filter(indexables__type__iexact="metadata")
-            .values("indexables__subtype")
-            .distinct()
-        ):
-            for _, v in t.items():
-                facet_fields.append(v)
-        response.data = sorted(list(set([x for x in facet_fields if x and x != ""])))
+        if not facet_types:
+            facet_types = ["metadata"]
+        for facet_type in facet_types:
+            for t in (
+                facetable_q.filter(indexables__type__iexact=facet_type)
+                .values("indexables__subtype")
+                .distinct()
+            ):
+                for _, v in t.items():
+                    if v and v != "":
+                        facet_fields.append((facet_type, v))
+        facet_dict = defaultdict(list)
+        facet_l = sorted(list(set(facet_fields)))
+        for i in facet_l:
+            facet_dict[i[0]].append(i[1])
+        response.data = facet_dict
         return response
 
     def get_serializer_context(self):
