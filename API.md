@@ -53,6 +53,47 @@ Querying for a facet:
 * `?facet_type=metadata&facet_subtype=material&facet_value=paper&fulltext=Abbey`: filter the existing search results (for "Abbey") on metadata, where the metadata field "material" equals "paper"
 
 
+# Get a list of facets
+
+POST to `/api/search/facets`
+
+```json
+{}
+```
+
+Will return a list of facets for all contexts.
+
+POST to `/api/search/facets`
+
+```json
+{"contexts":["https://iiif.ub.uni-leipzig.de/static/collections/Drucke17/collection.json"]}
+```
+
+Will return just the facet fields for objects within that list of contexts.
+
+# Autocomplete against a facet
+
+This will provide a list of values for a specific facet field that can be used to populate an autocomplete and 
+can be constrainted to a particular context.
+
+Example 1:
+
+All of the publishers starting with "g", for objects within a given context.
+
+POST to `/api/search/autocomplete`
+
+
+```json
+{
+  "contexts": [
+    "https://iiif.ub.uni-leipzig.de/static/collections/Drucke17/collection.json"
+  ],
+  "autocomplete_type": "metadata",
+  "autocomplete_subtype": "publisher",
+  "autocomplete_query": "g"
+}
+```
+
 # JSON Query API
 
 The accepted fields are as follows:
