@@ -96,7 +96,8 @@ class Indexables(TimeStampedModel):
         IIIFResource, related_name="indexables", blank=True, on_delete=models.CASCADE
     )
     indexable = models.TextField()
-    indexable_date = models.DateTimeField(blank=True, null=True)
+    indexable_date_range_start = models.DateTimeField(blank=True, null=True)
+    indexable_date_range_end = models.DateTimeField(blank=True, null=True)
     indexable_int = models.IntegerField(blank=True, null=True)
     indexable_json = models.JSONField(blank=True, null=True)
     indexable_float = models.FloatField(blank=True, null=True)
