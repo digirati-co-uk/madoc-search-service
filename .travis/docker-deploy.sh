@@ -39,10 +39,12 @@ COMMIT_HASH="$(git rev-parse --short ${TRAVIS_COMMIT})"
 docker tag ${REPO_NAME} ${REPO_NAME}:${COMMIT_HASH}
 docker tag ${REPO_NAME} ${REPO_NAME}:${TRAVIS_BRANCH}
 
+# ..and push
+docker push ${REPO_NAME}:${COMMIT_HASH}
+docker push ${REPO_NAME}:${TRAVIS_BRANCH}
+
 # Only tag latest on master.
 if [[ "$TRAVIS_BRANCH" = "master" ]] && [[ "$TRAVIS_PULL_REQUEST" = "false" ]]; then
     docker tag ${REPO_NAME} ${REPO_NAME}:latest
+    docker push ${REPO_NAME}:latest
 fi;
-
-# ..and push
-docker push ${REPO_NAME}

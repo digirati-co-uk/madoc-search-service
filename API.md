@@ -61,7 +61,7 @@ POST to `/api/search/facets`
 {}
 ```
 
-Will return a list of facets for all contexts.
+Will return a list of facets grouped by type for all contexts.
 
 POST to `/api/search/facets`
 
@@ -69,7 +69,25 @@ POST to `/api/search/facets`
 {"contexts":["https://iiif.ub.uni-leipzig.de/static/collections/Drucke17/collection.json"]}
 ```
 
-Will return just the facet fields for objects within that list of contexts.
+Will return just the facet fields for objects within that list of contexts. 
+
+The API accepts an optional list of facet types, e.g.
+
+```json
+{
+"contexts":["https://iiif.ub.uni-leipzig.de/static/collections/Drucke17/collection.json"],
+"facet_types":["metadata","descriptive"]}
+```
+
+The facets will be returned grouped by type, e.g.
+
+```json
+{
+	"descriptive": ["attribution", "label"],
+	"metadata": ["about", "alternate title", "attribution", "author", "author(s)", "call number", "century", "collection", "collection name", "comment", "date", "date added", "date of origin (english)", "date of publication", "dated", "description", "digitization project", "digitization sponsor", "digitized by", "dimensions", "disclaimers", "document type", "doi", "format", "full conditions of use", "full title", "holding institution", "katalogeintrag", "kitodo", "language", "liturgica christiana", "location", "manifest type", "material", "materials", "number of pages", "online since", "owner", "part of", "part reference", "persons", "physical description", "place of origin", "place of origin (english)", "place of publication", "provenance", "publication date", "publisher", "record created", "related", "repository", "rights/license", "series", "shelfmark", "source", "source ppn (swb)", "sponsored by", "summary", "summary (english)", "text language", "title", "title (english)", "topic", "urn", "vd16", "vd17"]
+}
+```
+If no type is provided, the API will default to just `["metadata"]`.
 
 # Autocomplete against a facet
 
@@ -110,6 +128,7 @@ The accepted fields are as follows:
 * __madoc_identifiers__: _Optional_ an array of identifiers (these should be the `madoc id`s for the objects), the query will filter to just these objects before it runs any fulltext or facet filters.
 * __contexts__: _Optional_ an array of identifiers (these should be the ids for the relevant site, project, collection, etc), the query will filter to just those objects associated with those _any_ of those contexts before it runs any fulltext or facet filters.
 * __facet_fields__: _Optional_ an array of strings which represent the fields which will have facet counts provided in the result output. These are assumed to be _labels_ in the resource _metadata_ (and otherwise have no semantics).
+* __facet_types__: _Optional_ an array of string which represent the type of the indexables the facets will be generated from. Defaults to ["metadata"] but, for example, if you also wanted to facet on fields in the IIIF descriptive properties, you could use ["metadata", "descriptive"]
 * __facets__: _Optional_ an array of facet queries (see below) which are applied as filters to the query output.
 
 Facet queries have the following format:
