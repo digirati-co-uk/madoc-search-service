@@ -184,6 +184,17 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
+class AutocompleteSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Indexables for autocompletion
+    """
+    class Meta:
+        model = Indexables
+        fields = [
+            "indexable",
+        ]
+
+
 class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for the Indexables, i.e. the indexed objects that are used to
@@ -200,7 +211,8 @@ class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
             "content_id",
             "original_content",
             "indexable",
-            "indexable_date",
+            "indexable_date_range_start",
+            "indexable_date_range_end",
             "indexable_int",
             "indexable_float",
             "indexable_json",
@@ -261,7 +273,8 @@ class CaptureModelSerializer(serializers.HyperlinkedModelSerializer):
             "content_id",
             "original_content",
             "indexable",
-            "indexable_date",
+            "indexable_date_range_start",
+            "indexable_date_range_end",
             "indexable_int",
             "indexable_float",
             "indexable_json",

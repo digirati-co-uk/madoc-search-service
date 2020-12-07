@@ -76,7 +76,7 @@ test_model = {
 
 def test_ingest():
     collections = [
-        "https://iiif.ub.uni-leipzig.de/static/collections/Drucke17/collection.json",
+        # "https://iiif.ub.uni-leipzig.de/static/collections/Drucke17/collection.json",
         "https://iiif.hab.de/collection/project/mssox.json",
         "https://www.e-codices.unifr.ch/metadata/iiif/collection/sl.json",
         "https://digital.library.villanova.edu/Collection/vudl:294849/IIIF",
@@ -192,22 +192,25 @@ def test_model_query():
 
 
 def test_ocr():
-    # m = "https://wellcomelibrary.org/iiif/b28034831/manifest"
-    # j = requests.get(m).json()
-    # if j:
-    #     post_json = {
-    #         "contexts": [  # List of contexts with their id and type
-    #             {"id": "urn:madoc:site:2", "type": "Site"},
-    #         ],
-    #         "resource": j,  # this is the JSON for the IIIF resource
-    #         "id": f"urn:madoc:manifest:{j['@id'].split('/')[-2]}",  # Madoc ID for the subject/object
-    #         "thumbnail": f"http://madoc.foo/thumbnail/{j['@id'].split('/')[-2]}/fake.jpg",  # Thumbnail URL
-    #         "cascade": True,
-    #     }
-    # else:
-    #     post_json = None
+    m = "https://wellcomelibrary.org/iiif/b28034831/manifest"
+    j = requests.get(m).json()
+    if j:
+        post_json = {
+            "contexts": [  # List of contexts with their id and type
+                {"id": "urn:madoc:site:2", "type": "Site"},
+            ],
+            "resource": j,  # this is the JSON for the IIIF resource
+            "id": f"urn:madoc:manifest:{j['@id'].split('/')[-2]}",  # Madoc ID for the subject/object
+            "thumbnail": f"http://madoc.foo/thumbnail/{j['@id'].split('/')[-2]}/fake.jpg",  # Thumbnail URL
+            "cascade": True,
+        }
+    else:
+        post_json = None
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
-    post_json = {
+    # p = requests.post(url="http://localhost:8000/api/search/iiif", json=post_json, headers=headers)
+    # print(p.status_code)
+    # print(json.dumps(p.json(), indent=2, ensure_ascii=False))
+    post_json2 = {
         "resource_id": "urn:madoc:manifest:b28034831:canvas:11",
         # "content_id": "urn:madoc:manifest:b28034831:canvas:11:ocr",
         "resource": requests.get(
@@ -215,7 +218,7 @@ def test_ocr():
         ).json(),
     }
     print(post_json)
-    p = requests.post(url="http://localhost:8000/api/search/model", json=post_json, headers=headers)
+    p = requests.post(url="http://localhost:8000/api/search/model", json=post_json2, headers=headers)
     print(p.status_code)
     print(json.dumps(p.json(), indent=2, ensure_ascii=False))
 
@@ -232,11 +235,55 @@ def test_capturemodel():
     print(json.dumps(p.json(), indent=2, ensure_ascii=False))
 
 
+def test_contexts_query():
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+    query = {
+        # "fulltext": "Abbey",
+        "contexts_all": ["urn:madoc:site:2",
+                     "urn:madoc:manifest:0000000856"
+                     ],
+        # "iiif_identifiers": [
+        #     "https://iiif.ub.uni-leipzig.de/0000000856/manifest.json"
+        # ]
+    }
+    print(json.dumps(query, indent=2))
+    r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
+    if r.status_code == requests.codes.ok:
+        j = r.json()
+        # assert j["pagination"]["totalResults"] != 4
+        print(json.dumps(j, indent=2, ensure_ascii=False))
+
+
+def test_nested_faceted_query():
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+    query = {
+        "fulltext": "bridges",
+        "facet_fields": [
+            "title",
+            "attribution"
+        ],
+        "contexts": ["urn:madoc:site:2"],
+        "facets": [
+            {"type": "metadata", "subtype": "title", "value": "Galileo :"},
+        ],
+        "facet_on_manifests": True
+    }
+    print(json.dumps(query, indent=2))
+    r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
+    if r.status_code == requests.codes.ok:
+        j = r.json()
+        print(json.dumps(j, indent=2, ensure_ascii=False))
+
+
 if __name__ == "__main__":
     test_ingest()
-    test_ocr()
-    test_capturemodel()
+    # test_ocr()
+    # test_capturemodel()
     # # test_ocr_query()
     # test_model_query()
+    # test_contexts_query()
+    # test_nested_faceted_query()
 
 

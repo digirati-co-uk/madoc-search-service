@@ -4,6 +4,8 @@ from django.utils.text import slugify
 import json
 from bs4 import BeautifulSoup
 from collections import defaultdict
+from ordered_set import OrderedSet
+
 
 pg_languages = [
     "danish",
@@ -302,6 +304,82 @@ def simplify_ocr(ocr):
     return [simplified]
 
 
+def simplify_label(s):
+    return ".".join(OrderedSet(s.split(".")))
+
+
+def recurse_properties(properties, indexables=None, doc_subtype=None, target=None):
+    if not indexables:
+        indexables = []
+    if properties:
+        if properties.get("properties"):  # This is a nested model so recurse into that
+            indexables += recurse_properties(
+                properties=properties.get("properties"),
+                doc_subtype=simplify_label(
+                    ".".join([doc_subtype, slugify(properties.get("type", ""))])
+                ),
+            )
+        if properties.get("value"):  # This is just the content of a list of values so index them
+            d = {
+                "subtype": simplify_label(doc_subtype),
+                "indexable": properties.get("value"),
+                "original_content": properties.get("value"),
+                "content_id": properties["id"],
+                "resource_id": target,
+            }
+            # Check for selector
+            if properties.get("selector"):
+                d["selector"] = {
+                    k: [v]
+                    for k, v in simplify_selector(properties.get("selector")).items()
+                    if simplify_selector(properties.get("selector")) is not None
+                }
+            indexables.append(d)
+        else:  # Iterate through the keys in the dictionary
+            for property_key, property_value in properties.items():
+                # It's a list, so we should extract the indexables from each one
+                if isinstance(property_value, list):
+                    for x in property_value:
+                        indexables += recurse_properties(
+                            properties=x,
+                            doc_subtype=simplify_label(".".join([doc_subtype, slugify(property_key)])),
+                        )
+                # It's a dictionary
+                if isinstance(property_value, dict):
+                    # To Do: Work out why this isn't working (some sort of simple nesting issue)
+                    # indexables += recurse_properties(
+                    #         properties=property_value,
+                    #         doc_subtype=simplify_label(".".join([doc_subtype, slugify(property_key)])),
+                    #     )
+                    if property_value.get("value"):
+                        d = {
+                            "subtype": simplify_label(".".join(
+                                [doc_subtype, slugify(property_value.get("label", ""))]
+                            )),
+                            "indexable": property_value.get("value"),
+                            "original_content": property_value.get("value"),
+                            "content_id": property_value["id"],
+                            "resource_id": target,
+                        }
+                        if property_value.get("selector"):
+                            d["selector"] = {
+                                k: [v]
+                                for k, v in simplify_selector(
+                                    property_value.get("selector")
+                                ).items()
+                                if simplify_selector(property_value.get("selector")) is not None
+                            }
+                        indexables.append(d)
+                    if property_value.get("properties"):
+                        indexables += recurse_properties(
+                            properties=property_value.get("properties"),
+                            doc_subtype=simplify_label(".".join(
+                                [doc_subtype, slugify(property_value.get("type", ""))]
+                            )),
+                        )
+    return indexables
+
+
 def simplify_capturemodel(capturemodel):
     """
     Function for parsing a capture model into indexables
@@ -313,7 +391,8 @@ def simplify_capturemodel(capturemodel):
             target = targets[-1].get("id")
         else:
             target = None
-        if document.get("properties") and target is not None:
+        if document.get("properties"):
+            # This has regions of interest
             if (regions := document["properties"].get("region")) is not None:
                 for region in regions:
                     if region.get("value"):
@@ -332,7 +411,13 @@ def simplify_capturemodel(capturemodel):
                                 "resource_id": target,
                             }
                         )
-            return indexables
+            else:
+                # This is some sort of entity type tagging task, or other non region of interest
+                # so we are going to recurse into the nesting
+                indexables += recurse_properties(
+                    properties=document.get("properties"), doc_subtype=doc_subtype, target=target
+                )
+        return indexables
     return
 
 
@@ -361,6 +446,29 @@ def calc_offsets(obj):
 
 
 if __name__ == "__main__":
-    from search_service.search.tests import test_model
-    bar = simplify_capturemodel(capturemodel=test_model)
-    print(json.dumps(bar, indent=2, ensure_ascii=False))
+    import requests
+
+    # from search_service.search.tests import test_model
+    model_list = [
+        "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/01-nested-model.json",
+        "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/02-nested-mixed.json",
+        "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/03-deeply-nested-subset.json",
+        "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/04-deeply-nested-mixed-instance.json",
+        "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/05-nested-model-multiple.json",
+        "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/06-ocr.json"
+    ]
+    test_results = {}
+    for m in model_list:
+        k = m.split("/")[-1]
+        j = requests.get(m).json()
+        test_results[k] = simplify_capturemodel(j)
+    with open("/Volumes/MMcG_SSD/Github/madoc_search_proto/capturemodels.json", "w") as f:
+        json.dump(test_results, f, indent=2, ensure_ascii=False)
+    # bar = simplify_capturemodel(capturemodel=test_model)
+    # print(json.dumps(bar, indent=2, ensure_ascii=False))
+    # foo = requests.get(
+    #     "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/"
+    #     "05-nested-model-multiple.json"
+    # ).json()
+    # bar = simplify_capturemodel(foo)
+    # print(json.dumps(bar, indent=2, ensure_ascii=False))

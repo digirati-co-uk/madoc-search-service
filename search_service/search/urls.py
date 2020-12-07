@@ -24,6 +24,16 @@ urlpatterns = [
         views.IIIFSearch.as_view({"get": "list", "post": "list"}),
         name="search",
     ),
+    path(
+        "api/search/autocomplete",
+        views.Autocomplete.as_view({"get": "list", "post": "list"}),
+        name="autocomplete",
+    ),
+    path(
+        "api/search/facets",
+        views.Facets.as_view({"get": "list", "post": "list"}),
+        name="facets",
+    ),
     path("api/search/iiif", views.IIIFList.as_view(), name="iiifresource-list"),
     path("api/search/iiif/<str:pk>", views.IIIFDetail.as_view(), name="iiifresource-detail"),
     path("api/search/contexts", views.ContextList.as_view(), name="context-list"),
