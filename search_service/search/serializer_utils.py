@@ -5,6 +5,7 @@ import json
 from bs4 import BeautifulSoup
 from collections import defaultdict
 from ordered_set import OrderedSet
+from dateutil import parser
 
 
 pg_languages = [
@@ -156,8 +157,14 @@ def get_language_data(lang_code=None, langbase=None):
     }
 
 
-def process_field(field_instance, key, default_language, lang_base, field_type="descriptive",
-                  field_indexable_type="text"):
+def process_field(
+    field_instance,
+    key,
+    default_language,
+    lang_base,
+    field_type="descriptive",
+    field_indexable_type="text",
+):
     val = None
     lang = default_language
     subtype = key
@@ -187,22 +194,28 @@ def process_field(field_instance, key, default_language, lang_base, field_type="
                             This assumes a single navDate, but we translate this into a datetime
                             range via adding two indexables.
                             """
-                            field_data.append(
-                                {
-                                    "type": field_type,
-                                    "subtype": subtype.lower(),
-                                    "indexable_date_range_start": v,
-                                    "original_content": {subtype: v},
-                                }
-                            )
-                            field_data.append(
-                                {
-                                    "type": field_type,
-                                    "subtype": subtype.lower(),
-                                    "indexable_date_range_end": v,
-                                    "original_content": {subtype: v},
-                                }
-                            )
+                            print("Got a date!!!!!")
+                            try:
+                                parsed_date = parser.parse(v)
+                            except ValueError:
+                                parsed_date = None
+                            if parsed_date:
+                                field_data.append(
+                                    {
+                                        "type": field_type,
+                                        "subtype": subtype.lower(),
+                                        "indexable_date_range_start": parsed_date,
+                                        "original_content": {subtype: v},
+                                    }
+                                )
+                                field_data.append(
+                                    {
+                                        "type": field_type,
+                                        "subtype": subtype.lower(),
+                                        "indexable_date_range_end": parsed_date,
+                                        "original_content": {subtype: v},
+                                    }
+                                )
         else:
             for label_lang, label_val in field_instance.get("label").items():
                 if label_val:
@@ -229,22 +242,28 @@ def process_field(field_instance, key, default_language, lang_base, field_type="
                         This assumes a single navDate, but we translate this into a datetime
                         range via adding two indexables.
                         """
-                        field_data.append(
-                            {
-                                "type": field_type,
-                                "subtype": subtype.lower(),
-                                "indexable_date_range_start": v,
-                                "original_content": {subtype: v},
-                            }
-                        )
-                        field_data.append(
-                            {
-                                "type": field_type,
-                                "subtype": subtype.lower(),
-                                "indexable_date_range_end": v,
-                                "original_content": {subtype: v},
-                            }
-                        )
+                        print("Got a date!!!!!")
+                        try:
+                            parsed_date = parser.parse(v)
+                        except ValueError:
+                            parsed_date = None
+                        if parsed_date:
+                            field_data.append(
+                                {
+                                    "type": field_type,
+                                    "subtype": subtype.lower(),
+                                    "indexable_date_range_start": parsed_date,
+                                    "original_content": {subtype: v},
+                                }
+                            )
+                            field_data.append(
+                                {
+                                    "type": field_type,
+                                    "subtype": subtype.lower(),
+                                    "indexable_date_range_end": parsed_date,
+                                    "original_content": {subtype: v},
+                                }
+                            )
         return field_data
     return
 
@@ -260,25 +279,30 @@ def flatten_iiif_descriptive(iiif, default_language=None, lang_base=None):
         ("requiredStatement", "descriptive", "text"),
         ("summary", "descriptive", "text"),
         ("metadata", "metadata", "text"),
-        ("navDate", "descriptive", "date")
+        ("navDate", "descriptive", "date"),
     ]
     for d in dict_fields:
         if iiif.get(d[0]):
+            print(f"Got {d[0]}")
             if isinstance(iiif[d[0]], dict):
                 field_instances = [iiif[d[0]]]
             elif isinstance(iiif[d[0]], list):
                 field_instances = iiif[d[0]]
             else:
-                field_instances = None
+                # This might be just a string, e.g. navDate
+                # There is no language or label, so we just pass it through with the language set to None
+                field_instances = [{"none": [iiif[d[0]]]}]
             if field_instances:
                 for field_instance in field_instances:
+                    print("Field instance")
+                    print(field_instance)
                     returned_data = process_field(
                         field_instance=field_instance,
                         lang_base=lang_base,
                         default_language=default_language,
                         key=d[0],
                         field_type=d[1],
-                        field_indexable_type=d[2]
+                        field_indexable_type=d[2],
                     )
                     if returned_data:
                         field_data += returned_data
@@ -388,7 +412,9 @@ def recurse_properties(properties, indexables=None, doc_subtype=None, target=Non
                     for x in property_value:
                         indexables += recurse_properties(
                             properties=x,
-                            doc_subtype=simplify_label(".".join([doc_subtype, slugify(property_key)])),
+                            doc_subtype=simplify_label(
+                                ".".join([doc_subtype, slugify(property_key)])
+                            ),
                         )
                 # It's a dictionary
                 if isinstance(property_value, dict):
@@ -399,9 +425,9 @@ def recurse_properties(properties, indexables=None, doc_subtype=None, target=Non
                     #     )
                     if property_value.get("value"):
                         d = {
-                            "subtype": simplify_label(".".join(
-                                [doc_subtype, slugify(property_value.get("label", ""))]
-                            )),
+                            "subtype": simplify_label(
+                                ".".join([doc_subtype, slugify(property_value.get("label", ""))])
+                            ),
                             "indexable": property_value.get("value"),
                             "original_content": property_value.get("value"),
                             "content_id": property_value["id"],
@@ -419,9 +445,9 @@ def recurse_properties(properties, indexables=None, doc_subtype=None, target=Non
                     if property_value.get("properties"):
                         indexables += recurse_properties(
                             properties=property_value.get("properties"),
-                            doc_subtype=simplify_label(".".join(
-                                [doc_subtype, slugify(property_value.get("type", ""))]
-                            )),
+                            doc_subtype=simplify_label(
+                                ".".join([doc_subtype, slugify(property_value.get("type", ""))])
+                            ),
                         )
     return indexables
 
@@ -501,7 +527,7 @@ if __name__ == "__main__":
         "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/03-deeply-nested-subset.json",
         "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/04-deeply-nested-mixed-instance.json",
         "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/05-nested-model-multiple.json",
-        "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/06-ocr.json"
+        "https://raw.githubusercontent.com/digirati-co-uk/capture-models/master/fixtures/02-nesting/06-ocr.json",
     ]
     test_results = {}
     for m in model_list:

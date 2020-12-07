@@ -74,15 +74,43 @@ test_model = {
 }
 
 
+def test_individual_manifests(manifest_uri):
+    r = requests.get(manifest_uri)
+    if r.status_code == requests.codes.ok:
+        j = r.json()
+    else:
+        j = None
+    if j:
+        if "bodleian" in manifest_uri:
+            id = manifest_uri.split('/')[-1].replace(".json", "")
+        else:
+            id = manifest_uri.split('/')[-2]
+        post_json = {
+            "contexts": [  # List of contexts with their id and type
+                {"id": "urn:madoc:site:2", "type": "Site"},
+                # {"id": coll, "type": "Collection"},
+            ],
+            "resource": j,  # this is the JSON for the IIIF resource
+            "id": f"urn:madoc:manifest:{id}",  # Madoc ID for the subject/object
+            "thumbnail": f"http://madoc.foo/thumbnail/{manifest_uri.split('/')[-2]}/fake.jpg",  # Thumbnail URL
+            "cascade": False,
+        }
+        headers = {"Content-Type": "application/json", "Accept": "application/json"}
+        p = requests.post(
+            url="http://localhost:8000/api/search/iiif", json=post_json, headers=headers
+        )
+        print(p.status_code)
+
+
 def test_ingest():
     collections = [
         # "https://iiif.ub.uni-leipzig.de/static/collections/Drucke17/collection.json",
-        "https://iiif.hab.de/collection/project/mssox.json",
-        "https://www.e-codices.unifr.ch/metadata/iiif/collection/sl.json",
-        "https://digital.library.villanova.edu/Collection/vudl:294849/IIIF",
-        "https://view.nls.uk/collections/7446/74466699.json",
-        "https://wellcomelibrary.org/service/collections/topics/Alcoholism/",
-        "https://wellcomelibrary.org/service/collections/topics/Antisocial%20Personality%20Disorder/",
+        # "https://iiif.hab.de/collection/project/mssox.json",
+        # "https://www.e-codices.unifr.ch/metadata/iiif/collection/sl.json",
+        # "https://digital.library.villanova.edu/Collection/vudl:294849/IIIF",
+        # "https://view.nls.uk/collections/7446/74466699.json",
+        "https://wellcomelibrary.org/service/collections/topics/Pasella/",
+        # "https://wellcomelibrary.org/service/collections/topics/Antisocial%20Personality%20Disorder/",
     ]
     for coll in collections:
         collection = requests.get(coll).json()
@@ -278,7 +306,8 @@ def test_nested_faceted_query():
 
 
 if __name__ == "__main__":
-    test_ingest()
+    # test_ingest()
+    test_individual_manifests(manifest_uri="https://iiif.bodleian.ox.ac.uk/iiif/manifest/0df0371f-b0fb-4cb7-9c4d-8d108c06a694.json")
     # test_ocr()
     # test_capturemodel()
     # # test_ocr_query()
