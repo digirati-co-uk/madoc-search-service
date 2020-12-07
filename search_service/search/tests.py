@@ -305,14 +305,38 @@ def test_nested_faceted_query():
         print(json.dumps(j, indent=2, ensure_ascii=False))
 
 
+def test_date_query():
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+    query = {
+        "date_start": "1200",
+        "date_end": "1202"
+        # "fulltext": "bridges",
+        # "type": "capturemodel",
+        # "subtype": "entity.region-of-interest",
+        # "facet_fields": [
+        #     "Title",
+        #     "Publication date"
+        # ],
+        # "contexts": ["urn:madoc:manifest:b28034831"],
+    }
+    print(json.dumps(query, indent=2))
+    r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
+    if r.status_code == requests.codes.ok:
+        j = r.json()
+        print(json.dumps(j, indent=2, ensure_ascii=False))
+    print(r.status_code)
+
+
 if __name__ == "__main__":
     # test_ingest()
-    test_individual_manifests(manifest_uri="https://iiif.bodleian.ox.ac.uk/iiif/manifest/0df0371f-b0fb-4cb7-9c4d-8d108c06a694.json")
+    # test_individual_manifests(manifest_uri="https://iiif.bodleian.ox.ac.uk/iiif/manifest/383be809-5c27-4e3a-a26b-a0137c49d02b.json")
     # test_ocr()
     # test_capturemodel()
     # # test_ocr_query()
     # test_model_query()
     # test_contexts_query()
     # test_nested_faceted_query()
+    test_date_query()
 
 

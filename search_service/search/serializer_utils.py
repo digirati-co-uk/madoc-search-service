@@ -205,13 +205,6 @@ def process_field(
                                         "type": field_type,
                                         "subtype": subtype.lower(),
                                         "indexable_date_range_start": parsed_date,
-                                        "original_content": {subtype: v},
-                                    }
-                                )
-                                field_data.append(
-                                    {
-                                        "type": field_type,
-                                        "subtype": subtype.lower(),
                                         "indexable_date_range_end": parsed_date,
                                         "original_content": {subtype: v},
                                     }
