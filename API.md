@@ -142,8 +142,31 @@ Facet queries have the following format:
 
 * __type__: The indexed text type, e.g. "metadata" or "descriptive", etc
 * __subtype__: The subtype, e.g. "place of publication", "label", etc.
-* __value__: The value to match, e.g. "Berlin"
+* __value__: The value to match, e.g. "Berlin" (N.B. this matches only against the `indexables` field)
 * __field_lookup__: _Optional_ The method to use when matching. This defaults to `iexact` (case insensitive exact match) but the query parser will accept any of the standard field_lookup types. N.B. this applies to all of type, subtype and value. See: https://docs.djangoproject.com/en/3.1/ref/models/querysets/#field-lookups
+
+Recently added, you can also facet against the `indexable_int` and `indexable_float` field (do not use `value` here).
+
+e.g. 
+
+```json
+{
+...
+  "facets": [
+    {
+      "type": "metadata",
+      "subtype": "place of publication",
+      "value": "Hamburg"
+    },
+      {
+      "type": "metadata",
+      "subtype": "weight_in_kg",
+      "indexable_int": 50,
+      "field_lookup": "gte"
+    }
+  ]
+}
+
 
 N.B. types and subtypes have no semantics, they are just organising labels applied to incoming content. The ingest code will default to storing all data from the IIIF metadata block with: type = "metadata" and subtype = the label for the field.
 
