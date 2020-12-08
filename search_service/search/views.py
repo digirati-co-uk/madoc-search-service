@@ -525,7 +525,7 @@ def parse_search(req):
             hits_filter_kwargs["language"] = language
         if search_type:
             hits_filter_kwargs["search_type"] = search_type
-        sort_order = req.data.get("ordering", "-rank")
+        sort_order = req.data.get("ordering", {"ordering": "descending"})
         return (
             prefilter_kwargs,
             filter_kwargs,
@@ -585,7 +585,7 @@ def parse_search(req):
             hits_filter_kwargs["language"] = language
         if search_type:
             hits_filter_kwargs["search_type"] = search_type
-        sort_order = req.query_params.get("ordering", "-rank")
+        sort_order = req.data.get("ordering", {"ordering": "descending"})
         return (
             prefilter_kwargs,
             filter_kwargs,

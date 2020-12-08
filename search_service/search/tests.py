@@ -311,7 +311,7 @@ def test_date_query():
     query = {
         "date_start": "1100",
         "date_end": "1202",
-        "ordering": {"type": "metadata", "subtype": "title", "direction": "descending"}
+        # "ordering": {"type": "metadata", "subtype": "title", "direction": "descending"}
     }
     print(json.dumps(query, indent=2))
     r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
