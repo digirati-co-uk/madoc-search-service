@@ -136,6 +136,34 @@ The accepted fields are as follows:
 * __facet_fields__: _Optional_ an array of strings which represent the fields which will have facet counts provided in the result output. These are assumed to be _labels_ in the resource _metadata_ (and otherwise have no semantics).
 * __facet_types__: _Optional_ an array of string which represent the type of the indexables the facets will be generated from. Defaults to ["metadata"] but, for example, if you also wanted to facet on fields in the IIIF descriptive properties, you could use ["metadata", "descriptive"]
 * __facets__: _Optional_ an array of facet queries (see below) which are applied as filters to the query output.
+* __ordering__: _Optional_ an object which specifies how the objects are ordered in the results, if not provided, defaults to rank
+
+Ordering has the following format:
+
+* __type__: The indexed text type, e.g. "metadata" or "descriptive", etc
+* __subtype__: The subtype, e.g. "place of publication", "label", etc.
+* __value_for_sort__: _Optional_ the field in the Indexables model which provided the value for sorting
+* __direction__: _Optional_ defaults to descending (choices are ascending or descending)
+
+Example:
+
+```json
+
+        "date_start": "1100",
+        "date_end": "1202",
+        "ordering": {"type": "descriptive", "subtype": "navDate", "direction": "ascending",
+                     "value_for_sort": "indexable_date_range_start"}}
+```
+
+Example:
+
+```json
+{
+        "date_start": "1100",
+        "date_end": "1202",
+        "ordering": {"type": "metadata", "subtype": "title", "direction": "descending"}
+    }
+```
 
 
 Facet queries have the following format:
