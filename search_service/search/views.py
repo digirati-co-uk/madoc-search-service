@@ -3,6 +3,8 @@
 from copy import deepcopy
 from functools import reduce
 from operator import or_, and_
+from dateutil import parser
+import pytz
 
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchQuery
@@ -354,6 +356,29 @@ class ContextFilterSet(df_filters.FilterSet):
         fields = ["cont"]
 
 
+def date_q(value, date_query_type=None):
+    date_types = {
+        "start": ["indexables__indexable_date_range_end__gte"],
+        "end": ["indexables__indexable_date_range_start__lte"],
+        "exact": [
+            "indexables__indexable_date_range_start",
+            "indexables__indexable_date_range_end",
+        ],
+    }
+    if value and date_query_type and date_query_type in date_types.keys():
+        try:
+            parsed_date = parser.parse(value)
+            if parsed_date.tzinfo is None or parsed_date.tzinfo.utcoffset(parsed_date) is None:
+                query_date = parsed_date.replace(tzinfo=pytz.utc)
+            else:
+                query_date = parsed_date
+        except ValueError:
+            query_date = None
+        if query_date:
+            return {x: query_date for x in date_types[date_query_type]}
+    return
+
+
 def parse_search(req):
     """
     Function to parse incoming search data (from request params or incoming json)
@@ -368,6 +393,12 @@ def parse_search(req):
         prefilter_kwargs = []
         filter_kwargs = {}
         search_string = req.data.get("fulltext", None)
+        date_start = req.data.get("date_start", None)
+        date_end = req.data.get("date_end", None)
+        date_exact = req.data.get("date_exact", None)
+        query_integer = req.data.get("integer", None)
+        query_float = req.data.get("float", None)
+        query_raw = req.data.get("raw", None)
         language = req.data.get("search_language", None)
         search_type = req.data.get("search_type", "websearch")
         facet_fields = req.data.get("facet_fields", None)
@@ -406,6 +437,34 @@ def parse_search(req):
         ]:
             if req.data.get(p, None):
                 filter_kwargs[f"indexables__{p}__iexact"] = req.data[p]
+        if query_raw and isinstance(query_raw, dict):
+            for raw_k, raw_v in query_raw.items():
+                if raw_k.startswith("indexables__"):
+                    filter_kwargs[raw_k] = raw_v
+        if query_float:
+            if query_float.get("value"):
+                if query_float.get('operator', 'exact') in ["exact", "gt", "lt", "gte", "lte"]:
+                    filter_kwargs[
+                        f"indexables__indexable_float__{query_float.get('operator', 'exact')}"
+                    ] = query_float["value"]
+        if query_integer:
+            if query_integer.get("value"):
+                if query_integer.get('operator', 'exact') in ["exact", "gt", "lt", "gte", "lte"]:
+                    filter_kwargs[
+                        f"indexables__indexable_integer__{query_integer.get('operator', 'exact')}"
+                    ] = query_integer["value"]
+        if date_start:
+            date_kwargs = date_q(value=date_start, date_query_type="start")
+            if date_kwargs:
+                filter_kwargs.update(date_kwargs)
+        if date_end:
+            date_kwargs = date_q(value=date_end, date_query_type="end")
+            if date_kwargs:
+                filter_kwargs.update(date_kwargs)
+        if date_exact:
+            date_kwargs = date_q(value=date_exact, date_query_type="exact")
+            if date_kwargs:
+                filter_kwargs.update(date_kwargs)
         postfilter_q = []
         if facet_queries:  # *** This code really needs a refactor for elegance/speed ***
             # Generate a list of keys concatenated from type and subtype
@@ -464,7 +523,6 @@ def parse_search(req):
             hits_filter_kwargs["language"] = language
         if search_type:
             hits_filter_kwargs["search_type"] = search_type
-
         sort_order = req.data.get("ordering", "-rank")
         return (
             prefilter_kwargs,

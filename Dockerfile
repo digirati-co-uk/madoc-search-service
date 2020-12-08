@@ -22,12 +22,8 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY ./search_service /app
 COPY ./requirements.txt /app
 WORKDIR /app
+RUN python3 -m pip install --upgrade pip
 RUN pip3 install -r requirements.txt
-
-
-# If there are any additional python requirements to be installed, they could be installed here
-# Most/all of the dependencies are installed in the original based image digirati/geodjango-spacy ...
-# pip3 install -r requirements.txt
 
 COPY ./entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
