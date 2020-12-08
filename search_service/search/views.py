@@ -962,33 +962,13 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
                     return 0.0
                 elif isinstance(obj["sortk"], str):
                     return ""
+            return 0.0
 
         response.data["results"] = sorted(
             response.data["results"],
             key=lambda k: (k.get("sortk", get_sort_default(k)),),
             reverse=reverse_sort,
         )
-        # if sort_order:
-        #     reverse = True
-        #     if "rank" in sort_order:
-        #         sort_default = 0
-        #     else:
-        #         sort_default = ""
-        #     response.data["results"] = sorted(
-        #         response.data["results"],
-        #         key=lambda k: (k.get(sort_order.replace("-", ""), sort_default),),
-        #         reverse=True,
-        #     )
-        #     if "-" in sort_order:
-        #         response.data["results"] = sorted(
-        #             response.data["results"],
-        #             key=lambda k: (k.get(sort_order.replace("-", ""), sort_default),),
-        #             reverse=True,
-        #         )
-        #     else:
-        #         response.data["results"] = sorted(
-        #             response.data["results"], key=lambda k: (k.get(sort_order, sort_default),)
-        #         )
         return response
 
     def get_serializer_context(self):
