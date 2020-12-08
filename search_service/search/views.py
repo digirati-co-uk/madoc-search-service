@@ -505,6 +505,8 @@ def parse_search(req):
                                         "subtype",
                                         "indexable",
                                         "value",
+                                        "indexable_int",
+                                        "ndexable_float"
                                     ]  # These are the fields to query
                                 ),
                             )
