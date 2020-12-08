@@ -398,6 +398,7 @@ def parse_search(req):
         date_exact = req.data.get("date_exact", None)
         query_integer = req.data.get("integer", None)
         query_float = req.data.get("float", None)
+        query_raw = req.data.get("raw", None)
         language = req.data.get("search_language", None)
         search_type = req.data.get("search_type", "websearch")
         facet_fields = req.data.get("facet_fields", None)
@@ -436,6 +437,10 @@ def parse_search(req):
         ]:
             if req.data.get(p, None):
                 filter_kwargs[f"indexables__{p}__iexact"] = req.data[p]
+        if query_raw and isinstance(query_raw, dict):
+            for raw_k, raw_v in query_raw.items():
+                if raw_k.startswith("indexables__"):
+                    filter_kwargs[raw_k] = raw_v
         if query_float:
             if query_float.get("value"):
                 if query_float.get('operator', 'exact') in ["exact", "gt", "lt", "gte", "lte"]:

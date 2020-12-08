@@ -126,6 +126,7 @@ The accepted fields are as follows:
 * __date_end__: _Optional_ Search for just objects with an end date less than or equal to
 * __integer__: _Optional_ Search for an integer (this is an object with value and operator)
 * __float__: _Optional_ Search for a float (this is an object with value and operator)
+* __raw__: _Optional_ Provide an object with explicit "raw" query parameters.
 * __language_display__: _Optional_ only search fields where the display language is, e.g. "english".
 * __language_iso639_1__: _Optional_ only search fields where the iso639_1 language code is, e.g. "en" 
 * __language_iso639_2__: _Optional_ only search fields where the iso639_2 language code is, e.g. "eng" 
@@ -162,6 +163,34 @@ e.g.
     }
  }
 ```
+
+Raw queries allow you to pass in standard Django filters as an object/dict. These __must__ target the indexables model.
+
+THe general form is:
+
+```json
+{
+	"raw": {
+		"indexables__$FIELD__$FIELD_LOOKUP": "value"
+	}
+}
+```
+
+Where `$FIELD` is the field name in the Indexables model, and `$FIELDLOOKUP` corresponds to one of the standard
+field lookup options in: [https://docs.djangoproject.com/en/3.1/ref/models/querysets/#field-lookups](https://docs.djangoproject.com/en/3.1/ref/models/querysets/#field-lookups)
+
+For example:
+
+```json
+{
+	"raw": {
+		"indexables__subtype__iexact": "title",
+        "indexables__original_content__icontains": "bible"
+	}
+}
+```
+
+
 
 The query is constructed in the following order:
 

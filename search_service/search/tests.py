@@ -328,6 +328,20 @@ def test_date_query():
     print(r.status_code)
 
 
+def test_raw_query():
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+    query = {
+        "raw": {"indexables__original_content__icontains": "bible"}
+    }
+    print(json.dumps(query, indent=2))
+    r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
+    if r.status_code == requests.codes.ok:
+        j = r.json()
+        print(json.dumps(j, indent=2, ensure_ascii=False))
+    print(r.status_code)
+
+
 if __name__ == "__main__":
     # test_ingest()
     # test_individual_manifests(manifest_uri="https://iiif.bodleian.ox.ac.uk/iiif/manifest/383be809-5c27-4e3a-a26b-a0137c49d02b.json")
@@ -338,5 +352,7 @@ if __name__ == "__main__":
     # test_contexts_query()
     # test_nested_faceted_query()
     test_date_query()
+    test_raw_query()
+
 
 
