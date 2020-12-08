@@ -105,6 +105,32 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
     resource_id = serializers.CharField(source="madoc_id")
     resource_type = serializers.CharField(source="type")
     rank = serializers.SerializerMethodField("get_rank")
+    sortk = serializers.SerializerMethodField("get_sortk")
+
+    def get_sortk(self, iiif):
+        """
+        Generate a sort key to associate with the object.
+        """
+        # This will always just default to rank
+        sortk = self.get_rank(iiif=iiif)
+        if (order_key := self.context.get("sort_order", None)) is not None:
+            print("Got a sort order", order_key)
+            if isinstance(order_key, str):
+                order_key = order_key.replace("-", "")
+                if order_key == "rank":
+                    sortk = self.get_rank(iiif=iiif)
+                else:
+                    sortk = self.fields.get(order_key)
+                return sortk
+            elif isinstance(order_key, dict) and order_key.get("type") and order_key.get("subtype"):
+                val = order_key.get("value_for_sort", "indexable")
+                sort_qs = Indexables.objects.filter(
+                    iiif=iiif, type__iexact=order_key.get("type"), subtype__iexact=order_key.get("subtype")
+                ).values(val).first()
+                if sort_qs:
+                    sort_keys = list(sort_qs.values())[0]
+                    return sort_keys
+        return sortk
 
     def get_rank(self, iiif):
         """
@@ -181,6 +207,7 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
             "label",
             "contexts",
             "hits",
+            "sortk",
         ]
 
 
@@ -188,6 +215,7 @@ class AutocompleteSerializer(serializers.ModelSerializer):
     """
     Serializer for the Indexables for autocompletion
     """
+
     class Meta:
         model = Indexables
         fields = [
