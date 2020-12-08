@@ -144,8 +144,11 @@ Facet queries have the following format:
 * __subtype__: The subtype, e.g. "place of publication", "label", etc.
 * __value__: The value to match, e.g. "Berlin" (N.B. this matches only against the `indexables` field)
 * __field_lookup__: _Optional_ The method to use when matching. This defaults to `iexact` (case insensitive exact match) but the query parser will accept any of the standard field_lookup types. N.B. this applies to all of type, subtype and value. See: https://docs.djangoproject.com/en/3.1/ref/models/querysets/#field-lookups
+* __indexable_int__: _Optional_ Match against the int field
+* __indexable_float__: _Optional_ Match against the float field
 
 Recently added, you can also facet against the `indexable_int` and `indexable_float` field (do not use `value` here).
+
 
 e.g. 
 
