@@ -287,14 +287,17 @@ def test_nested_faceted_query():
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
     query = {
-        "fulltext": "bridges",
+        "fulltext": "bible",
         "facet_fields": [
             "title",
-            "attribution"
+            "attribution",
+            "navDate"
         ],
-        "contexts": ["urn:madoc:site:2"],
+        # "contexts": ["urn:madoc:site:2"],
         "facets": [
-            {"type": "metadata", "subtype": "title", "value": "Galileo :"},
+            {"type": "metadata", "subtype": "title", "value": "terence", "field_lookup": "icontains"},
+            {"type": "descriptive", "subtype": "navdate", "indexable_date_range_start": "1100", "field_lookup": "gte"},
+
         ],
         "facet_on_manifests": True
     }
@@ -346,8 +349,8 @@ if __name__ == "__main__":
     # # test_ocr_query()
     # test_model_query()
     # test_contexts_query()
-    # test_nested_faceted_query()
-    test_date_query()
+    test_nested_faceted_query()
+    # test_date_query()
     # test_raw_query()
 
 

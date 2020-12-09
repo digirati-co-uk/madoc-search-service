@@ -356,6 +356,41 @@ class ContextFilterSet(df_filters.FilterSet):
         fields = ["cont"]
 
 
+def facet_operator(q_key, field_lookup):
+    """
+    sorted_facet_query.get('field_lookup', 'iexact')
+    """
+    if q_key in ["type", "subtype"]:
+        return "iexact"
+    elif q_key in ["value"]:
+        if field_lookup in [
+            "exact",
+            "iexact",
+            "icontains",
+            "contains",
+            "in",
+            "startswith",
+            "istartswith",
+            "endswith",
+            "iendswith",
+        ]:
+            return field_lookup
+        else:
+            return "iexact"
+    elif q_key in ["indexable_int", "indexable_float"]:
+        if field_lookup in ["exact", "gt", "gte", "lt", "lte"]:
+            return field_lookup
+        else:
+            return "exact"
+    elif q_key in ["indexable_date_range_start", "indexable_date_range_year"]:
+        if field_lookup in ["day", "month", "year", "iso_year", "gt", "gte", "lt", "lte", "exact"]:
+            return field_lookup
+        else:
+            return "exact"
+    else:
+        return "iexact"
+
+
 def date_query_value(q_key, value):
     """
     To aid in the faceting, if you get a query type that is date, return a datetime parsed using dateutil,
@@ -500,6 +535,7 @@ def parse_search(req):
             # {"metadata|author": ["John Smith", "Mary Jones"]}
             for f in facet_queries:
                 sorted_facets["|".join([f.get("type", ""), f.get("subtype", "")])].append(f)
+            print("Sorted facets", sorted_facets)
             for sorted_facet_key, sorted_facet_queries in sorted_facets.items():
                 # For each combination of type/subtype
                 # 1. Concatenate all of the queries into an AND
@@ -516,7 +552,7 @@ def parse_search(req):
                                     Q(  # Iterate the keys in the facet dict to generate the Q()
                                         **{
                                             f"indexables__{(lambda k: 'indexable' if k == 'value' else k)(k)}__"
-                                            f"{sorted_facet_query.get('field_lookup', 'iexact')}": date_query_value(
+                                            f"{facet_operator(k, sorted_facet_query.get('field_lookup', 'iexact'))}": date_query_value(
                                                 q_key=k, value=v
                                             )
                                         }  # You can pass in something other than iexact using the field_lookup key
@@ -531,7 +567,7 @@ def parse_search(req):
                                         "indexable_int",
                                         "ndexable_float",
                                         "indexable_date_range_start",
-                                        "indexable_date_range_end"
+                                        "indexable_date_range_end",
                                     ]  # These are the fields to query
                                 ),
                             )
@@ -539,6 +575,7 @@ def parse_search(req):
                         ],
                     )
                 )
+                print("Postfilter", postfilter_q)
         hits_filter_kwargs = {
             k.replace("indexables__", ""): v
             for k, v in filter_kwargs.items()
