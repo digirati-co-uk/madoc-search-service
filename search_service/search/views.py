@@ -356,6 +356,27 @@ class ContextFilterSet(df_filters.FilterSet):
         fields = ["cont"]
 
 
+def date_query_value(q_key, value):
+    """
+    To aid in the faceting, if you get a query type that is date, return a datetime parsed using dateutil,
+    otherwise, just return the thing that came in
+    """
+    if "date" in q_key:
+        try:
+            parsed_date = parser.parse(value)
+            if parsed_date.tzinfo is None or parsed_date.tzinfo.utcoffset(parsed_date) is None:
+                query_date = parsed_date.replace(tzinfo=pytz.utc)
+            else:
+                query_date = parsed_date
+        except ValueError:
+            query_date = None
+        if query_date:
+            return query_date
+        else:
+            return value
+    return value
+
+
 def date_q(value, date_query_type=None):
     date_types = {
         "start": ["indexables__indexable_date_range_end__gte"],
@@ -443,13 +464,13 @@ def parse_search(req):
                     filter_kwargs[raw_k] = raw_v
         if query_float:
             if query_float.get("value"):
-                if query_float.get('operator', 'exact') in ["exact", "gt", "lt", "gte", "lte"]:
+                if query_float.get("operator", "exact") in ["exact", "gt", "lt", "gte", "lte"]:
                     filter_kwargs[
                         f"indexables__indexable_float__{query_float.get('operator', 'exact')}"
                     ] = query_float["value"]
         if query_integer:
             if query_integer.get("value"):
-                if query_integer.get('operator', 'exact') in ["exact", "gt", "lt", "gte", "lte"]:
+                if query_integer.get("operator", "exact") in ["exact", "gt", "lt", "gte", "lte"]:
                     filter_kwargs[
                         f"indexables__indexable_integer__{query_integer.get('operator', 'exact')}"
                     ] = query_integer["value"]
@@ -495,7 +516,9 @@ def parse_search(req):
                                     Q(  # Iterate the keys in the facet dict to generate the Q()
                                         **{
                                             f"indexables__{(lambda k: 'indexable' if k == 'value' else k)(k)}__"
-                                            f"{sorted_facet_query.get('field_lookup', 'iexact')}": v
+                                            f"{sorted_facet_query.get('field_lookup', 'iexact')}": date_query_value(
+                                                q_key=k, value=v
+                                            )
                                         }  # You can pass in something other than iexact using the field_lookup key
                                     )
                                     for k, v in sorted_facet_query.items()
@@ -506,7 +529,9 @@ def parse_search(req):
                                         "indexable",
                                         "value",
                                         "indexable_int",
-                                        "ndexable_float"
+                                        "ndexable_float",
+                                        "indexable_date_range_start",
+                                        "indexable_date_range_end"
                                     ]  # These are the fields to query
                                 ),
                             )
