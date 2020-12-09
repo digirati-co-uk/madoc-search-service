@@ -168,6 +168,7 @@ Example:
 
 Facet queries have the following format:
 
+
 * __type__: The indexed text type, e.g. "metadata" or "descriptive", etc
 * __subtype__: The subtype, e.g. "place of publication", "label", etc.
 * __value__: The value to match, e.g. "Berlin" (N.B. this matches only against the `indexables` field)
