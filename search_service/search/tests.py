@@ -293,9 +293,8 @@ def test_nested_faceted_query():
             "attribution",
             "navDate"
         ],
-        # "contexts": ["urn:madoc:site:2"],
         "facets": [
-            {"type": "metadata", "subtype": "title", "value": "terence", "field_lookup": "icontains"},
+            {"type": "metadata", "subtype": "language", "value": ["Latin"], "field_lookup": "in"},
             {"type": "descriptive", "subtype": "navdate", "indexable_date_range_start": "1100", "field_lookup": "gte"},
 
         ],
