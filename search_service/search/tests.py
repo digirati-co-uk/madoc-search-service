@@ -287,14 +287,17 @@ def test_nested_faceted_query():
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
     query = {
-        "fulltext": "bridges",
+        "fulltext": "bible",
         "facet_fields": [
             "title",
-            "attribution"
+            "attribution",
+            "navDate"
         ],
-        "contexts": ["urn:madoc:site:2"],
+        # "contexts": ["urn:madoc:site:2"],
         "facets": [
-            {"type": "metadata", "subtype": "title", "value": "Galileo :"},
+            {"type": "metadata", "subtype": "title", "value": "terence", "field_lookup": "icontains"},
+            {"type": "descriptive", "subtype": "navdate", "indexable_date_range_start": "1100", "field_lookup": "gte"},
+
         ],
         "facet_on_manifests": True
     }
@@ -309,16 +312,9 @@ def test_date_query():
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
     query = {
-        "date_start": "1200",
-        "date_end": "1202"
-        # "fulltext": "bridges",
-        # "type": "capturemodel",
-        # "subtype": "entity.region-of-interest",
-        # "facet_fields": [
-        #     "Title",
-        #     "Publication date"
-        # ],
-        # "contexts": ["urn:madoc:manifest:b28034831"],
+        "date_start": "1100",
+        "date_end": "1202",
+        # "ordering": {"type": "metadata", "subtype": "title", "direction": "descending"}
     }
     print(json.dumps(query, indent=2))
     r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
@@ -332,7 +328,10 @@ def test_raw_query():
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
     query = {
-        "raw": {"indexables__original_content__icontains": "bible"}
+        "type": "koha",
+        "subtype": "inches",
+        "raw": {"indexables__indexable_int__gte": 50,
+                "indexables__indexable_int__lte": 100}
     }
     print(json.dumps(query, indent=2))
     r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
@@ -350,9 +349,9 @@ if __name__ == "__main__":
     # # test_ocr_query()
     # test_model_query()
     # test_contexts_query()
-    # test_nested_faceted_query()
-    test_date_query()
-    test_raw_query()
+    test_nested_faceted_query()
+    # test_date_query()
+    # test_raw_query()
 
 
 

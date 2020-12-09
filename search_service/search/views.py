@@ -356,6 +356,62 @@ class ContextFilterSet(df_filters.FilterSet):
         fields = ["cont"]
 
 
+def facet_operator(q_key, field_lookup):
+    """
+    sorted_facet_query.get('field_lookup', 'iexact')
+    """
+    if q_key in ["type", "subtype"]:
+        return "iexact"
+    elif q_key in ["value"]:
+        if field_lookup in [
+            "exact",
+            "iexact",
+            "icontains",
+            "contains",
+            "in",
+            "startswith",
+            "istartswith",
+            "endswith",
+            "iendswith",
+        ]:
+            return field_lookup
+        else:
+            return "iexact"
+    elif q_key in ["indexable_int", "indexable_float"]:
+        if field_lookup in ["exact", "gt", "gte", "lt", "lte"]:
+            return field_lookup
+        else:
+            return "exact"
+    elif q_key in ["indexable_date_range_start", "indexable_date_range_year"]:
+        if field_lookup in ["day", "month", "year", "iso_year", "gt", "gte", "lt", "lte", "exact"]:
+            return field_lookup
+        else:
+            return "exact"
+    else:
+        return "iexact"
+
+
+def date_query_value(q_key, value):
+    """
+    To aid in the faceting, if you get a query type that is date, return a datetime parsed using dateutil,
+    otherwise, just return the thing that came in
+    """
+    if "date" in q_key:
+        try:
+            parsed_date = parser.parse(value)
+            if parsed_date.tzinfo is None or parsed_date.tzinfo.utcoffset(parsed_date) is None:
+                query_date = parsed_date.replace(tzinfo=pytz.utc)
+            else:
+                query_date = parsed_date
+        except ValueError:
+            query_date = None
+        if query_date:
+            return query_date
+        else:
+            return value
+    return value
+
+
 def date_q(value, date_query_type=None):
     date_types = {
         "start": ["indexables__indexable_date_range_end__gte"],
@@ -443,13 +499,13 @@ def parse_search(req):
                     filter_kwargs[raw_k] = raw_v
         if query_float:
             if query_float.get("value"):
-                if query_float.get('operator', 'exact') in ["exact", "gt", "lt", "gte", "lte"]:
+                if query_float.get("operator", "exact") in ["exact", "gt", "lt", "gte", "lte"]:
                     filter_kwargs[
                         f"indexables__indexable_float__{query_float.get('operator', 'exact')}"
                     ] = query_float["value"]
         if query_integer:
             if query_integer.get("value"):
-                if query_integer.get('operator', 'exact') in ["exact", "gt", "lt", "gte", "lte"]:
+                if query_integer.get("operator", "exact") in ["exact", "gt", "lt", "gte", "lte"]:
                     filter_kwargs[
                         f"indexables__indexable_integer__{query_integer.get('operator', 'exact')}"
                     ] = query_integer["value"]
@@ -479,6 +535,7 @@ def parse_search(req):
             # {"metadata|author": ["John Smith", "Mary Jones"]}
             for f in facet_queries:
                 sorted_facets["|".join([f.get("type", ""), f.get("subtype", "")])].append(f)
+            print("Sorted facets", sorted_facets)
             for sorted_facet_key, sorted_facet_queries in sorted_facets.items():
                 # For each combination of type/subtype
                 # 1. Concatenate all of the queries into an AND
@@ -495,7 +552,9 @@ def parse_search(req):
                                     Q(  # Iterate the keys in the facet dict to generate the Q()
                                         **{
                                             f"indexables__{(lambda k: 'indexable' if k == 'value' else k)(k)}__"
-                                            f"{sorted_facet_query.get('field_lookup', 'iexact')}": v
+                                            f"{facet_operator(k, sorted_facet_query.get('field_lookup', 'iexact'))}": date_query_value(
+                                                q_key=k, value=v
+                                            )
                                         }  # You can pass in something other than iexact using the field_lookup key
                                     )
                                     for k, v in sorted_facet_query.items()
@@ -505,6 +564,10 @@ def parse_search(req):
                                         "subtype",
                                         "indexable",
                                         "value",
+                                        "indexable_int",
+                                        "ndexable_float",
+                                        "indexable_date_range_start",
+                                        "indexable_date_range_end",
                                     ]  # These are the fields to query
                                 ),
                             )
@@ -512,6 +575,7 @@ def parse_search(req):
                         ],
                     )
                 )
+                print("Postfilter", postfilter_q)
         hits_filter_kwargs = {
             k.replace("indexables__", ""): v
             for k, v in filter_kwargs.items()
@@ -523,7 +587,7 @@ def parse_search(req):
             hits_filter_kwargs["language"] = language
         if search_type:
             hits_filter_kwargs["search_type"] = search_type
-        sort_order = req.data.get("ordering", "-rank")
+        sort_order = req.data.get("ordering", {"ordering": "descending"})
         return (
             prefilter_kwargs,
             filter_kwargs,
@@ -583,7 +647,7 @@ def parse_search(req):
             hits_filter_kwargs["language"] = language
         if search_type:
             hits_filter_kwargs["search_type"] = search_type
-        sort_order = req.query_params.get("ordering", "-rank")
+        sort_order = req.data.get("ordering", {"ordering": "descending"})
         return (
             prefilter_kwargs,
             filter_kwargs,
@@ -884,6 +948,8 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             setattr(self, "facet_on_manifests", facet_on_manifests)
         if facet_types:
             setattr(self, "facet_types", facet_types)
+        if sort_order:
+            setattr(self, "sort_order", sort_order)
         response = super(IIIFSearch, self).list(request, args, kwargs)
         facet_summary = defaultdict(dict)
         # If we haven't been provided a list of facet fields via a POST
@@ -942,21 +1008,29 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
                     .order_by("-n")[:10]
                 }
         response.data["facets"] = facet_summary
+        reverse_sort = True
         if sort_order:
-            if "rank" in sort_order:
-                sort_default = 0
-            else:
-                sort_default = ""
-            if "-" in sort_order:
-                response.data["results"] = sorted(
-                    response.data["results"],
-                    key=lambda k: (k.get(sort_order.replace("-", ""), sort_default),),
-                    reverse=True,
-                )
-            else:
-                response.data["results"] = sorted(
-                    response.data["results"], key=lambda k: (k.get(sort_order, sort_default),)
-                )
+            if (direction := sort_order.get("direction")) is not None:
+                if direction == "descending":
+                    print("Descending")
+                    reverse_sort = True
+                else:
+                    print("Ascending")
+                    reverse_sort = False
+
+        def get_sort_default(obj):
+            if obj.get("sortk"):
+                if isinstance(obj["sortk"], float):
+                    return 0.0
+                elif isinstance(obj["sortk"], str):
+                    return ""
+            return 0.0
+
+        response.data["results"] = sorted(
+            response.data["results"],
+            key=lambda k: (k.get("sortk", get_sort_default(k)),),
+            reverse=reverse_sort,
+        )
         return response
 
     def get_serializer_context(self):
@@ -970,6 +1044,8 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
         context.update({"request": self.request})
         if hasattr(self, "hits_filter_kwargs"):
             context.update({"hits_filter_kwargs": self.hits_filter_kwargs})
+        if hasattr(self, "sort_order"):
+            context.update({"sort_order": self.sort_order})
         # if hasattr(self, "hits_postfilter_kwargs"):
         #     context.update({"hits_postfilter_kwargs": self.hits_postfilter_kwargs})
         return context
