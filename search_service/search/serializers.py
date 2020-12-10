@@ -115,15 +115,18 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
         """
         Generate a sort key to associate with the object.
         """
-        if (order_key := self.context.get("sort_order", None)) is not None:
-            if isinstance(order_key, dict) and order_key.get("type") and order_key.get("subtype"):
-                val = order_key.get("value_for_sort", "indexable")
-                sort_qs = Indexables.objects.filter(
-                    iiif=iiif, type__iexact=order_key.get("type"), subtype__iexact=order_key.get("subtype")
-                ).values(val).first()
-                if sort_qs:
-                    sort_keys = list(sort_qs.values())[0]
-                    return sort_keys
+        order_key = self.context.get("sort_order", None)
+        if not order_key:
+            return self.get_rank(iiif=iiif)
+
+        if isinstance(order_key, dict) and order_key.get("type") and order_key.get("subtype"):
+            val = order_key.get("value_for_sort", "indexable")
+            sort_qs = Indexables.objects.filter(
+                iiif=iiif, type__iexact=order_key.get("type"), subtype__iexact=order_key.get("subtype")
+            ).values(val).first()
+            if sort_qs:
+                sort_keys = list(sort_qs.values())[0]
+                return sort_keys
 
         return self.get_sort_default(order_key)
 

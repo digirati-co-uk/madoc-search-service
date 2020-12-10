@@ -1018,17 +1018,9 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
                     print("Ascending")
                     reverse_sort = False
 
-        def get_sort_default(obj):
-            if obj.get("sortk"):
-                if isinstance(obj["sortk"], float):
-                    return 0.0
-                elif isinstance(obj["sortk"], str):
-                    return ""
-            return 0.0
-
         response.data["results"] = sorted(
             response.data["results"],
-            key=lambda k: (k.get("sortk", get_sort_default(k)),),
+            key=lambda k: (k.get("sortk"),),
             reverse=reverse_sort,
         )
         return response
