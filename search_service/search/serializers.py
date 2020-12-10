@@ -1,9 +1,13 @@
+import pytz
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Indexables, IIIFResource, Context
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchHeadline
 from django.db.models import F
+from datetime import datetime
 from .serializer_utils import simplify_ocr, calc_offsets
+
+utc = pytz.UTC
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -111,8 +115,6 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
         """
         Generate a sort key to associate with the object.
         """
-        # This will always just default to rank
-        sortk = self.get_rank(iiif=iiif)
         if (order_key := self.context.get("sort_order", None)) is not None:
             if isinstance(order_key, dict) and order_key.get("type") and order_key.get("subtype"):
                 val = order_key.get("value_for_sort", "indexable")
@@ -122,7 +124,24 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
                 if sort_qs:
                     sort_keys = list(sort_qs.values())[0]
                     return sort_keys
-        return sortk
+
+        return self.get_sort_default(order_key)
+
+    def get_sort_default(self, order_key):
+        if value_for_sort := order_key.get("value_for_sort"):
+            if value_for_sort.startswith("indexable_int"):
+                return 0
+            elif value_for_sort.startswith("indexable_float"):
+                return 0.0
+            elif value_for_sort.startswith("indexable_date"):
+                return datetime.min.replace(tzinfo=utc)
+            else:
+                return ""
+
+        if order_key.get("type") and order_key.get("subtype"):
+            return ""
+
+        return 0.0
 
     def get_rank(self, iiif):
         """
