@@ -8,6 +8,8 @@ Run:
 
 `docker-compose -f local.yml up`
 
+Which will make search api available on `http://localhost:8000`
+
 ## Using a .env file
 
 The local.yml file expects to load env variables from a .env file.
@@ -23,12 +25,13 @@ USE_DOCKER=yes
 IPYTHONDIR=/app/.ipython
 MIGRATE=True
 LOAD=True
-DJANGO_DEBUG=False
+DJANGO_DEBUG=True
 WAITRESS=False
 DJANGO_ADMIN=SOME NAME
 DJANGO_ADMIN_PASSWORD=SOME PASSWORD
-DJANGO_ADMIN_EMAIL=SOME PASSWORD
+DJANGO_ADMIN_EMAIL=SOME EMAIL
 INIT_SUPERUSER=True  # If True, create a superuser using above credentials
+BROWSABLE=True
 
 # PostgreSQL
 # ------------------------------------------------------------------------------

@@ -159,10 +159,10 @@ Example:
 
 ```json
 {
-        "date_start": "1100",
-        "date_end": "1202",
-        "ordering": {"type": "metadata", "subtype": "title", "direction": "descending"}
-    }
+    "date_start": "1100",
+    "date_end": "1202",
+    "ordering": {"type": "metadata", "subtype": "title", "direction": "descending"}
+}
 ```
 
 
@@ -583,7 +583,8 @@ POST to `/api/search/indexables`
     "content_id": "https://example.org/foo/bar",
     "original_content": "<html>Whooo!</html>",
     "indexable": "Whooo!",
-    "indexable_date": null,
+    "indexable_date_range_start": null,
+    "indexable_date_range_end": null,
     "indexable_int": null,
     "indexable_float": null,
     "indexable_json": null,
