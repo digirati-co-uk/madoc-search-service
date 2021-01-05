@@ -310,11 +310,15 @@ class MadocPagination(PageNumberPagination):
       }
     """
 
+    page_size_query_param = "page_size"
+    max_page_size = settings.MAX_PAGE_SIZE
+
     def get_paginated_response(self, data):
         return Response(
             {
                 "pagination": {
                     "page": self.page.number,
+                    "pageSize": self.page.paginator.per_page,
                     "totalPages": self.page.paginator.num_pages,
                     "totalResults": self.page.paginator.count,
                 },
