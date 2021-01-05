@@ -505,7 +505,13 @@ def calc_offsets(obj):
             if offsets:
                 if obj.selector:
                     if (boxes := obj.selector.get("box-selector")) is not None:
-                        return [boxes[x] for x in offsets if boxes[x]]
+                        box_list = []
+                        for x in offsets:
+                            try:
+                                box_list.append(boxes[x])
+                            except (IndexError, ValueError):
+                                pass
+                        return box_list  # [boxes[x] for x in offsets if boxes[x]]
     return
 
 
