@@ -511,7 +511,10 @@ def calc_offsets(obj):
                                 box_list.append(boxes[x])
                             except (IndexError, ValueError):
                                 pass
-                        return box_list  # [boxes[x] for x in offsets if boxes[x]]
+                        if box_list:
+                            return box_list  # [boxes[x] for x in offsets if boxes[x]]
+                        else:
+                            return
     return
 
 
