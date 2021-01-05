@@ -93,11 +93,12 @@ WSGI_APPLICATION = "search_service.wsgi.application"
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 25,
+    "PAGE_SIZE": env.int("PAGE_SIZE", 25)
 }
 
-BROWSABLE = strtobool(env("BROWSABLE", default="False"))
+MAX_PAGE_SIZE = env.int("MAX_PAGE_SIZE", None)
 
+BROWSABLE = strtobool(env("BROWSABLE", default="False"))
 
 if not BROWSABLE:
     REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = ("rest_framework.renderers.JSONRenderer",)

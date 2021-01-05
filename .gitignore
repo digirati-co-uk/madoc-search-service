@@ -130,3 +130,5 @@ dmypy.json
 
 # Custom
 var/shared-database
+
+.idea/
