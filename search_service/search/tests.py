@@ -74,15 +74,43 @@ test_model = {
 }
 
 
+def test_individual_manifests(manifest_uri):
+    r = requests.get(manifest_uri)
+    if r.status_code == requests.codes.ok:
+        j = r.json()
+    else:
+        j = None
+    if j:
+        if "bodleian" in manifest_uri:
+            id = manifest_uri.split('/')[-1].replace(".json", "")
+        else:
+            id = manifest_uri.split('/')[-2]
+        post_json = {
+            "contexts": [  # List of contexts with their id and type
+                {"id": "urn:madoc:site:2", "type": "Site"},
+                # {"id": coll, "type": "Collection"},
+            ],
+            "resource": j,  # this is the JSON for the IIIF resource
+            "id": f"urn:madoc:manifest:{id}",  # Madoc ID for the subject/object
+            "thumbnail": f"http://madoc.foo/thumbnail/{manifest_uri.split('/')[-2]}/fake.jpg",  # Thumbnail URL
+            "cascade": False,
+        }
+        headers = {"Content-Type": "application/json", "Accept": "application/json"}
+        p = requests.post(
+            url="http://localhost:8000/api/search/iiif", json=post_json, headers=headers
+        )
+        print(p.status_code)
+
+
 def test_ingest():
     collections = [
         # "https://iiif.ub.uni-leipzig.de/static/collections/Drucke17/collection.json",
-        "https://iiif.hab.de/collection/project/mssox.json",
-        "https://www.e-codices.unifr.ch/metadata/iiif/collection/sl.json",
-        "https://digital.library.villanova.edu/Collection/vudl:294849/IIIF",
-        "https://view.nls.uk/collections/7446/74466699.json",
-        "https://wellcomelibrary.org/service/collections/topics/Alcoholism/",
-        "https://wellcomelibrary.org/service/collections/topics/Antisocial%20Personality%20Disorder/",
+        # "https://iiif.hab.de/collection/project/mssox.json",
+        # "https://www.e-codices.unifr.ch/metadata/iiif/collection/sl.json",
+        # "https://digital.library.villanova.edu/Collection/vudl:294849/IIIF",
+        # "https://view.nls.uk/collections/7446/74466699.json",
+        "https://wellcomelibrary.org/service/collections/topics/Pasella/",
+        # "https://wellcomelibrary.org/service/collections/topics/Antisocial%20Personality%20Disorder/",
     ]
     for coll in collections:
         collection = requests.get(coll).json()
@@ -259,14 +287,17 @@ def test_nested_faceted_query():
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
     query = {
-        "fulltext": "bridges",
+        "fulltext": "bible",
         "facet_fields": [
             "title",
-            "attribution"
+            "attribution",
+            "navDate"
         ],
-        "contexts": ["urn:madoc:site:2"],
+        # "contexts": ["urn:madoc:site:2"],
         "facets": [
-            {"type": "metadata", "subtype": "title", "value": "Galileo :"},
+            {"type": "metadata", "subtype": "title", "value": "terence", "field_lookup": "icontains"},
+            {"type": "descriptive", "subtype": "navdate", "indexable_date_range_start": "1100", "field_lookup": "gte"},
+
         ],
         "facet_on_manifests": True
     }
@@ -277,13 +308,50 @@ def test_nested_faceted_query():
         print(json.dumps(j, indent=2, ensure_ascii=False))
 
 
+def test_date_query():
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+    query = {
+        "date_start": "1100",
+        "date_end": "1202",
+        # "ordering": {"type": "metadata", "subtype": "title", "direction": "descending"}
+    }
+    print(json.dumps(query, indent=2))
+    r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
+    if r.status_code == requests.codes.ok:
+        j = r.json()
+        print(json.dumps(j, indent=2, ensure_ascii=False))
+    print(r.status_code)
+
+
+def test_raw_query():
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+    query = {
+        "type": "koha",
+        "subtype": "inches",
+        "raw": {"indexables__indexable_int__gte": 50,
+                "indexables__indexable_int__lte": 100}
+    }
+    print(json.dumps(query, indent=2))
+    r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
+    if r.status_code == requests.codes.ok:
+        j = r.json()
+        print(json.dumps(j, indent=2, ensure_ascii=False))
+    print(r.status_code)
+
+
 if __name__ == "__main__":
-    test_ingest()
+    # test_ingest()
+    # test_individual_manifests(manifest_uri="https://iiif.bodleian.ox.ac.uk/iiif/manifest/383be809-5c27-4e3a-a26b-a0137c49d02b.json")
     # test_ocr()
     # test_capturemodel()
     # # test_ocr_query()
     # test_model_query()
     # test_contexts_query()
-    # test_nested_faceted_query()
+    test_nested_faceted_query()
+    # test_date_query()
+    # test_raw_query()
+
 
 

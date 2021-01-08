@@ -121,6 +121,12 @@ The accepted fields are as follows:
 * __search_type__: _Optional_ This is the type of search to use in constructing the query, e.g. 'websearch', 'plaintext', 'raw' - see https://docs.djangoproject.com/en/3.1/ref/contrib/postgres/search/#searchquery
 * __type__: _Optional_ Search againsts just textual data with this type, e.g. metadata (to only search metadata)
 * __subtype__: _Optional_ Search against just textual data with this subtype, e.g. a specific metadata field.
+* __date_exact__: _Optional_ Search for just objects with a start and end date that exactly matches this
+* __date_start__: _Optional_ Search for just objects with a start date that is great than or equal to
+* __date_end__: _Optional_ Search for just objects with an end date less than or equal to
+* __integer__: _Optional_ Search for an integer (this is an object with value and operator)
+* __float__: _Optional_ Search for a float (this is an object with value and operator)
+* __raw__: _Optional_ Provide an object with explicit "raw" query parameters.
 * __language_display__: _Optional_ only search fields where the display language is, e.g. "english".
 * __language_iso639_1__: _Optional_ only search fields where the iso639_1 language code is, e.g. "en" 
 * __language_iso639_2__: _Optional_ only search fields where the iso639_2 language code is, e.g. "eng" 
@@ -130,15 +136,119 @@ The accepted fields are as follows:
 * __facet_fields__: _Optional_ an array of strings which represent the fields which will have facet counts provided in the result output. These are assumed to be _labels_ in the resource _metadata_ (and otherwise have no semantics).
 * __facet_types__: _Optional_ an array of string which represent the type of the indexables the facets will be generated from. Defaults to ["metadata"] but, for example, if you also wanted to facet on fields in the IIIF descriptive properties, you could use ["metadata", "descriptive"]
 * __facets__: _Optional_ an array of facet queries (see below) which are applied as filters to the query output.
+* __ordering__: _Optional_ an object which specifies how the objects are ordered in the results, if not provided, defaults to rank
 
-Facet queries have the following format:
+Ordering has the following format:
 
 * __type__: The indexed text type, e.g. "metadata" or "descriptive", etc
 * __subtype__: The subtype, e.g. "place of publication", "label", etc.
-* __value__: The value to match, e.g. "Berlin"
+* __value_for_sort__: _Optional_ the field in the Indexables model which provided the value for sorting
+* __direction__: _Optional_ defaults to descending (choices are ascending or descending)
+
+Example:
+
+```json
+
+        "date_start": "1100",
+        "date_end": "1202",
+        "ordering": {"type": "descriptive", "subtype": "navDate", "direction": "ascending",
+                     "value_for_sort": "indexable_date_range_start"}}
+```
+
+Example:
+
+```json
+{
+    "date_start": "1100",
+    "date_end": "1202",
+    "ordering": {"type": "metadata", "subtype": "title", "direction": "descending"}
+}
+```
+
+
+Facet queries have the following format:
+
+
+* __type__: The indexed text type, e.g. "metadata" or "descriptive", etc
+* __subtype__: The subtype, e.g. "place of publication", "label", etc.
+* __value__: The value to match, e.g. "Berlin" (N.B. this matches only against the `indexables` field)
 * __field_lookup__: _Optional_ The method to use when matching. This defaults to `iexact` (case insensitive exact match) but the query parser will accept any of the standard field_lookup types. N.B. this applies to all of type, subtype and value. See: https://docs.djangoproject.com/en/3.1/ref/models/querysets/#field-lookups
+* __indexable_int__: _Optional_ Match against the int field
+* __indexable_float__: _Optional_ Match against the float field
+* __indexable_date_range_start__: _Optional_ Date
+* __indexable_date_range_end__: _Optional_ Date
+
+
+Recently added, you can also facet against the `indexable_int` and `indexable_float` field (do not use `value` here).
+
+
+e.g. 
+
+```json
+{
+...
+  "facets": [
+    {
+      "type": "metadata",
+      "subtype": "place of publication",
+      "value": "Hamburg"
+    },
+      {
+      "type": "metadata",
+      "subtype": "weight_in_kg",
+      "indexable_int": 50,
+      "field_lookup": "gte"
+    }
+  ]
+}
+
 
 N.B. types and subtypes have no semantics, they are just organising labels applied to incoming content. The ingest code will default to storing all data from the IIIF metadata block with: type = "metadata" and subtype = the label for the field.
+
+Numeric queries (integers or floats) have the following format:
+
+* __value__: the value to match
+* __operator__: One of "exact", "lt", "gt", "lte", "gte"
+
+e.g.
+
+```json
+{
+  "integer": 
+    {
+       "value": 100,
+        "operator": "gte"
+    }
+ }
+```
+
+Raw queries allow you to pass in standard Django filters as an object/dict. These __must__ target the indexables model.
+
+THe general form is:
+
+```json
+{
+	"raw": {
+		"indexables__$FIELD__$FIELD_LOOKUP": "value"
+	}
+}
+```
+
+Where `$FIELD` is the field name in the Indexables model, and `$FIELDLOOKUP` corresponds to one of the standard
+field lookup options in: [https://docs.djangoproject.com/en/3.1/ref/models/querysets/#field-lookups](https://docs.djangoproject.com/en/3.1/ref/models/querysets/#field-lookups)
+
+For example:
+
+```json
+{
+	"raw": {
+		"indexables__subtype__iexact": "title",
+        "indexables__original_content__icontains": "bible"
+	}
+}
+```
+
+
 
 The query is constructed in the following order:
 
@@ -473,7 +583,8 @@ POST to `/api/search/indexables`
     "content_id": "https://example.org/foo/bar",
     "original_content": "<html>Whooo!</html>",
     "indexable": "Whooo!",
-    "indexable_date": null,
+    "indexable_date_range_start": null,
+    "indexable_date_range_end": null,
     "indexable_int": null,
     "indexable_float": null,
     "indexable_json": null,

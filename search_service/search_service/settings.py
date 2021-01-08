@@ -96,7 +96,8 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 25,
 }
 
-BROWSABLE = strtobool(env("BROWSABLE"))
+BROWSABLE = strtobool(env("BROWSABLE", default="False"))
+
 
 if not BROWSABLE:
     REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = ("rest_framework.renderers.JSONRenderer",)
