@@ -650,7 +650,6 @@ def parse_search(req):
         if search_type:
             hits_filter_kwargs["search_type"] = search_type
         sort_order = req.data.get("ordering", {"ordering": "descending"})
-        # num_facets = 10
         return (
             prefilter_kwargs,
             filter_kwargs,
@@ -1026,7 +1025,6 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
                     .annotate(n=models.Count("pk", distinct=True))
                     .order_by("-n")[:num_facets]
                 }
-        print("Facet summary", facet_summary)
         response.data["facets"] = facet_summary
         reverse_sort = True
         if sort_order:
