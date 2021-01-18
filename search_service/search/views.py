@@ -650,7 +650,7 @@ def parse_search(req):
         if search_type:
             hits_filter_kwargs["search_type"] = search_type
         sort_order = req.data.get("ordering", {"ordering": "descending"})
-        num_facets = 10
+        # num_facets = 10
         return (
             prefilter_kwargs,
             filter_kwargs,
@@ -660,7 +660,7 @@ def parse_search(req):
             sort_order,
             global_facet_on_manifests,
             global_facet_types,
-            num_facets,
+            10,
         )
 
 
@@ -1002,7 +1002,6 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             facetable_q = facetable_queryset
         if not facet_types:
             facet_types = ["metadata"]
-
         for facet_type in facet_types:
             current_facet_fields = []
             if facet_fields:
@@ -1016,7 +1015,6 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
                 for t in facet_field_labels:
                     for _, v in t.items():
                         current_facet_fields.append(v)
-
             for v in current_facet_fields:
                 facet_summary[facet_type][v] = {
                     x["indexables__indexable"]: x["n"]
@@ -1028,6 +1026,7 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
                     .annotate(n=models.Count("pk", distinct=True))
                     .order_by("-n")[:num_facets]
                 }
+        print("Facet summary", facet_summary)
         response.data["facets"] = facet_summary
         reverse_sort = True
         if sort_order:
