@@ -313,7 +313,8 @@ def test_date_query():
 
     query = {
         "date_start": "1100",
-        "date_end": "1202",
+        "date_end": "1802",
+        "number_of_facets": 20
         # "ordering": {"type": "metadata", "subtype": "title", "direction": "descending"}
     }
     print(json.dumps(query, indent=2))
@@ -349,8 +350,8 @@ if __name__ == "__main__":
     # # test_ocr_query()
     # test_model_query()
     # test_contexts_query()
-    test_nested_faceted_query()
-    # test_date_query()
+    # test_nested_faceted_query()
+    test_date_query()
     # test_raw_query()
 
 
