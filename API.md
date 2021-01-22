@@ -136,6 +136,7 @@ The accepted fields are as follows:
 * __facet_fields__: _Optional_ an array of strings which represent the fields which will have facet counts provided in the result output. These are assumed to be _labels_ in the resource _metadata_ (and otherwise have no semantics).
 * __facet_types__: _Optional_ an array of string which represent the type of the indexables the facets will be generated from. Defaults to ["metadata"] but, for example, if you also wanted to facet on fields in the IIIF descriptive properties, you could use ["metadata", "descriptive"]
 * __facets__: _Optional_ an array of facet queries (see below) which are applied as filters to the query output.
+* __number_of_facets__: _Optional_ an integer which sets how many facets to return, defaults to 10. If effectively unlimited facets are required, provide an arbitrarily high integer.
 * __ordering__: _Optional_ an object which specifies how the objects are ordered in the results, if not provided, defaults to rank
 
 Ordering has the following format:
@@ -159,10 +160,10 @@ Example:
 
 ```json
 {
-        "date_start": "1100",
-        "date_end": "1202",
-        "ordering": {"type": "metadata", "subtype": "title", "direction": "descending"}
-    }
+    "date_start": "1100",
+    "date_end": "1202",
+    "ordering": {"type": "metadata", "subtype": "title", "direction": "descending"}
+}
 ```
 
 
@@ -583,7 +584,8 @@ POST to `/api/search/indexables`
     "content_id": "https://example.org/foo/bar",
     "original_content": "<html>Whooo!</html>",
     "indexable": "Whooo!",
-    "indexable_date": null,
+    "indexable_date_range_start": null,
+    "indexable_date_range_end": null,
     "indexable_int": null,
     "indexable_float": null,
     "indexable_json": null,
