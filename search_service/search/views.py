@@ -465,6 +465,7 @@ def parse_search(req):
         facet_queries = req.data.get("facets", None)
         facet_on_manifests = req.data.get("facet_on_manifests", global_facet_on_manifests)
         facet_types = req.data.get("facet_types", global_facet_types)
+        num_facets = req.data.get("number_of_facets", 10)
         if contexts:
             prefilter_kwargs.append(Q(**{f"contexts__id__in": contexts}))
         if contexts_all:
@@ -597,6 +598,7 @@ def parse_search(req):
             sort_order,
             facet_on_manifests,
             facet_types,
+            num_facets,
         )
     elif req.method == "GET":
         search_string = req.query_params.get("fulltext", None)
@@ -657,6 +659,7 @@ def parse_search(req):
             sort_order,
             global_facet_on_manifests,
             global_facet_types,
+            10,
         )
 
 
@@ -674,9 +677,17 @@ class Facets(viewsets.ModelViewSet, RetrieveModelMixin):
 
         """
         # Call a function to set the prefilter_kwargs based on incoming request
-        (prefilter_kwargs, _, _, _, _, _, facet_on_manifests, facet_types) = parse_search(
-            req=request
-        )
+        (
+            prefilter_kwargs,
+            _,
+            _,
+            _,
+            _,
+            _,
+            facet_on_manifests,
+            facet_types,
+            num_facets,
+        ) = parse_search(req=request)
         if prefilter_kwargs:
             setattr(self, "prefilter_kwargs", prefilter_kwargs)
         if facet_on_manifests:
@@ -775,6 +786,7 @@ class Autocomplete(viewsets.ModelViewSet, ListModelMixin):
             _,
             facet_on_manifests,
             facet_types,
+            num_facets,
         ) = parse_search(req=request)
         if request.method == "POST":
             autocomplete_type = request.data.get("autocomplete_type", None)
@@ -800,6 +812,8 @@ class Autocomplete(viewsets.ModelViewSet, ListModelMixin):
             setattr(self, "facet_on_manifests", facet_on_manifests)
         if facet_types:
             setattr(self, "facet_types", facet_types)
+        if num_facets:
+            setattr(self, "num_facets", num_facets)
         # response = super(Autocomplete, self).list(request, args, kwargs)
         facetable_queryset = self.get_queryset().all()
         raw_data = (
@@ -931,6 +945,7 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             sort_order,
             facet_on_manifests,
             facet_types,
+            num_facets,
         ) = parse_search(req=request)
         if facet_fields:
             setattr(self, "facet_fields", facet_fields)
@@ -950,6 +965,11 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             setattr(self, "facet_types", facet_types)
         if sort_order:
             setattr(self, "sort_order", sort_order)
+        if num_facets:
+            setattr(self, "num_facets", num_facets)
+        else:
+            num_facets = 10
+            setattr(self, "num_facets", 10)
         response = super(IIIFSearch, self).list(request, args, kwargs)
         facet_summary = defaultdict(dict)
         # If we haven't been provided a list of facet fields via a POST
@@ -981,7 +1001,6 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
             facetable_q = facetable_queryset
         if not facet_types:
             facet_types = ["metadata"]
-
         for facet_type in facet_types:
             current_facet_fields = []
             if facet_fields:
@@ -995,7 +1014,6 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
                 for t in facet_field_labels:
                     for _, v in t.items():
                         current_facet_fields.append(v)
-
             for v in current_facet_fields:
                 facet_summary[facet_type][v] = {
                     x["indexables__indexable"]: x["n"]
@@ -1005,7 +1023,7 @@ class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
                     .values("indexables__indexable")
                     .distinct()
                     .annotate(n=models.Count("pk", distinct=True))
-                    .order_by("-n")[:10]
+                    .order_by("-n")[:num_facets]
                 }
         response.data["facets"] = facet_summary
         reverse_sort = True
