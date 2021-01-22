@@ -124,7 +124,6 @@ class Indexables(TimeStampedModel):
         # Add a postgres index for the search_vector
         indexes = [
             GinIndex(fields=["search_vector"]),
-            models.Index(fields=["original_content"]),
             models.Index(fields=["content_id"]),
             models.Index(fields=["language_iso639_2", "language_iso639_1", "language_display"]),
             models.Index(fields=["type"]),
