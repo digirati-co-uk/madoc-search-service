@@ -1,9 +1,11 @@
 import copy
+from typing import List, Optional
 
 
-def gen_key(context, separator):
+def gen_key(context: List[str], separator: str) -> Optional[str]:
     """
-    Generate the key that
+    Generate the key that is used to identify the scope of the object.
+
     :param context: list of config context elements, ordered from most specific to least specific
     :param separator: separator that should be used to generate the key
     :return:
