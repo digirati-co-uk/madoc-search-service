@@ -1,11 +1,15 @@
+import logging
 import pytz
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Indexables, IIIFResource, Context
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchHeadline
-from django.db.models import F
+from django.db.models.functions import Concat
+from django.db.models import F, Value, CharField
 from datetime import datetime
 from .serializer_utils import simplify_ocr, calc_offsets
+
+logger = logging.getLogger(__name__)
 
 utc = pytz.UTC
 
@@ -51,6 +55,8 @@ class IIIFSerializer(serializers.HyperlinkedModelSerializer):
             "provider",
             "requiredStatement",
             "navDate",
+            "first_canvas_id",
+            "first_canvas_json",
             "contexts",
         ]
 
@@ -65,7 +71,16 @@ class IIIFSummary(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = IIIFResource
-        fields = ["url", "madoc_id", "madoc_thumbnail", "id", "type", "label", "contexts"]
+        fields = [
+            "url",
+            "madoc_id",
+            "madoc_thumbnail",
+            "id",
+            "type",
+            "label",
+            "first_canvas_id",
+            "contexts",
+        ]
 
 
 class ContextSummarySerializer(serializers.HyperlinkedModelSerializer):
@@ -96,7 +111,14 @@ class IndexablesSummarySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Indexables
-        fields = ["type", "subtype", "snippet", "language", "rank", "bounding_boxes"]
+        fields = [
+            "type",
+            "subtype",
+            "snippet",
+            "language",
+            "rank",
+            "bounding_boxes",
+        ]
 
 
 class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
@@ -110,27 +132,38 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
     resource_type = serializers.CharField(source="type")
     rank = serializers.SerializerMethodField("get_rank")
     sortk = serializers.SerializerMethodField("get_sortk")
+    metadata = serializers.SerializerMethodField("get_metadata")
 
     def get_sortk(self, iiif):
         """
         Generate a sort key to associate with the object.
         """
-        order_key = self.context.get("sort_order", None)
+        order_key = None
+        if self.context.get("request"):
+            order_key = self.context["request"].data.get("sort_order", None)
         if not order_key:
             return self.get_rank(iiif=iiif)
-
+        logger.debug(f"Order key {order_key}")
         if isinstance(order_key, dict) and order_key.get("type") and order_key.get("subtype"):
             val = order_key.get("value_for_sort", "indexable")
-            sort_qs = Indexables.objects.filter(
-                iiif=iiif, type__iexact=order_key.get("type"), subtype__iexact=order_key.get("subtype")
-            ).values(val).first()
+            sort_qs = (
+                Indexables.objects.filter(
+                    iiif=iiif,
+                    type__iexact=order_key.get("type"),
+                    subtype__iexact=order_key.get("subtype"),
+                )
+                .values(val)
+                .first()
+            )
             if sort_qs:
                 sort_keys = list(sort_qs.values())[0]
                 return sort_keys
+        else:
+            logger.debug("We have no type or subtype on order key")
+        return self.get_sort_default(order_key=order_key)
 
-        return self.get_sort_default(order_key)
-
-    def get_sort_default(self, order_key):
+    @staticmethod
+    def get_sort_default(order_key):
         if value_for_sort := order_key.get("value_for_sort"):
             if value_for_sort.startswith("indexable_int"):
                 return 0
@@ -153,7 +186,7 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
         """
         try:
             return max([h["rank"] for h in self.get_hits(iiif=iiif)])
-        except TypeError:
+        except TypeError or ValueError:
             return 1.0
 
     def get_hits(self, iiif):
@@ -165,34 +198,42 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
         filter_kwargs = {"rank__gt": 0.0}
         # Filter the indexables to query against to just those associated with this IIIF resource
         qs = Indexables.objects.filter(iiif=iiif)
-        if self.context.get("hits_filter_kwargs"):
-            # We have a dictionary of queries to use, so we use that
-            search_query = self.context["hits_filter_kwargs"].get("search_vector", None)
-        else:
-            # Otherwise, this is probably a simple GET request, so we construct the queries from params
-            search_string = self.context["request"].query_params.get("fulltext", None)
-            language = self.context["request"].query_params.get("search_language", None)
-            search_type = self.context["request"].query_params.get("search_type", "websearch")
-            if search_string:
-                if language:
-                    search_query = SearchQuery(
-                        search_string, config=language, search_type=search_type
-                    )
-                else:
-                    search_query = SearchQuery(search_string, search_type=search_type)
+        search_query = None
+        if self.context.get("request"):
+            if self.context["request"].data.get("hits_filter_kwargs"):
+                # We have a dictionary of queries to use, so we use that
+                search_query = (
+                    self.context["request"].data["hits_filter_kwargs"].get("search_vector", None)
+                )
             else:
-                search_query = None
+                # Otherwise, this is probably a simple GET request, so we construct the queries from params
+                search_string = self.context["request"].query_params.get("fulltext", None)
+                language = self.context["request"].query_params.get("search_language", None)
+                search_type = self.context["request"].query_params.get("search_type", "websearch")
+                if search_string:
+                    if language:
+                        search_query = SearchQuery(
+                            search_string, config=language, search_type=search_type
+                        )
+                    else:
+                        search_query = SearchQuery(search_string, search_type=search_type)
+                else:
+                    search_query = None
         if search_query:
             # Annotate the results in the queryset with rank, and with a snippet
             qs = (
                 qs.annotate(
                     rank=SearchRank(F("search_vector"), search_query, cover_density=True),
-                    snippet=SearchHeadline(
-                        "original_content",
-                        search_query,
-                        max_words=50,
-                        min_words=25,
-                        max_fragments=3,
+                    snippet=Concat(
+                        Value("'"),
+                        SearchHeadline(
+                            "original_content",
+                            search_query,
+                            max_words=50,
+                            min_words=25,
+                            max_fragments=3,
+                        ),
+                        output_field=CharField(),
                     ),
                     fullsnip=SearchHeadline(
                         "indexable",
@@ -205,9 +246,36 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
                 .filter(search_vector=search_query, **filter_kwargs)
                 .order_by("-rank")
             )
+        else:
+            return
         # Use the Indexables summary serializer to return the hit list
         serializer = IndexablesSummarySerializer(instance=qs, many=True)
         return serializer.data
+
+    def get_metadata(self, iiif):
+        """If the context has had the `metadata_fields` property set
+        by the calling view's `get_serializer_context`, then return only
+        the metdata items defined by this configuration. The metadata_fields
+        config object should be as follows:
+        metadata_fields = {lang_code: [label1, label2]}
+        e.g.
+        metadata_fields = {'en': ['Author', 'Collection']}
+
+        If metadata_fields has not been set, then all the metadata associated
+        with the iiif object is returned.
+        """
+        if self.context.get("request"):
+            if metadata_fields := self.context["request"].data.get("metadata_fields"):
+                logger.debug("We have metadata fields on the incoming request")
+                logger.debug(f"{metadata_fields}")
+                filtered_metadata = []
+                for metadata_item in iiif.metadata:
+                    for lang, labels in metadata_fields.items():
+                        for label in labels:
+                            if label in metadata_item.get("label", {}).get(lang, []):
+                                filtered_metadata.append(metadata_item)
+                return filtered_metadata
+        return iiif.metadata
 
     class Meta:
         model = IIIFResource
@@ -216,12 +284,15 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
             "resource_id",
             "resource_type",
             "madoc_thumbnail",
+            "thumbnail",
             "id",
             "rank",
             "label",
             "contexts",
             "hits",
             "sortk",
+            "metadata",
+            "first_canvas_id",
         ]
 
 
@@ -267,24 +338,6 @@ class IndexablesSerializer(serializers.HyperlinkedModelSerializer):
             "language_pg",
             "iiif",
         ]
-
-    # def to_internal_value(self, data):
-    #     if data.get("resource"):
-    #         # To Do: Add something here that wraps the configuration for how it should parse
-    #         # and index the data? Currently, if it gets a resource, it just assumes it's OCR
-    #         if not data.get("type"):  # Only set this if not set
-    #             data["type"] = "capturemodel"
-    #         if not data.get("subtype"):  # Only set this if not set
-    #             data["subtype"] = "ocr"
-    #         # Assumption that this is OCR
-    #         simplified = simplify_ocr(data["resource"])
-    #         if simplified.get("indexable"):
-    #             data["indexable"] = simplified["indexable"]
-    #             data["original_content"] = simplified["indexable"]
-    #         if simplified.get("selectors"):
-    #             data["selector"] = simplified["selectors"]
-    #         print("Internal value")
-    #     return super(IndexablesSerializer, self).to_internal_value(data)
 
     def create(self, validated_data):
         # On create, associate the resource with the relevant IIIF resource

@@ -7,44 +7,44 @@ from . import views
 
 urlpatterns = [
     path("", views.api_root),
-    path("api/search/indexables", views.IndexablesList.as_view(), name="indexables-list"),
+    path("indexables", views.IndexablesList.as_view(), name="indexables-list"),
     path(
-        "api/search/indexables/<int:pk>",
+        "indexables/<int:pk>",
         views.IndexablesDetail.as_view(),
         name="indexables-detail",
     ),
-    path("api/search/model", views.ModelList.as_view(), name="model-list"),
+    path("model", views.ModelList.as_view(), name="model-list"),
     path(
-        "api/search/model/<int:pk>",
+        "model/<int:pk>",
         views.ModelDetail.as_view(),
         name="model-detail",
     ),
     path(
-        "api/search/search",
+        "search",
         views.IIIFSearch.as_view({"get": "list", "post": "list"}),
         name="search",
     ),
     path(
-        "api/search/autocomplete",
+        "autocomplete",
         views.Autocomplete.as_view({"get": "list", "post": "list"}),
         name="autocomplete",
     ),
     path(
-        "api/search/facets",
+        "facets",
         views.Facets.as_view({"get": "list", "post": "list"}),
         name="facets",
     ),
-    path("api/search/iiif", views.IIIFList.as_view(), name="iiifresource-list"),
-    path("api/search/iiif/<str:pk>", views.IIIFDetail.as_view(), name="iiifresource-detail"),
-    path("api/search/contexts", views.ContextList.as_view(), name="context-list"),
-    path("api/search/contexts/<slug:slug>", views.ContextDetail.as_view(), name="context-detail"),
+    path("iiif", views.IIIFList.as_view(), name="iiifresource-list"),
+    path("iiif/<str:pk>", views.IIIFDetail.as_view(), name="iiifresource-detail"),
+    path("contexts", views.ContextList.as_view(), name="context-list"),
+    path("contexts/<slug:slug>", views.ContextDetail.as_view(), name="context-detail"),
     path(
-        "api/search/openapi",
+        "openapi",
         get_schema_view(
             title="Madoc Search", description="API for searching Madoc resources", version="0.0.1"
         ),
         name="openapi-schema",
-    ),
+    )
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
