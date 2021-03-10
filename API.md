@@ -1,5 +1,7 @@
 # Madoc Search Service API
 
+The Madoc saerch service is a IIIF-aware wrapper around PostgreSQL, written as a Django Rest Framework application. The default behaviour is for the application to index incoming data as fulltext, using PostgreSQL's fulltext search capabilities, and to use these in query parsing. Additional behaviour is available via the APIs below.
+
 ## POSTing data
 
 The service accepts a JSON POSTrequest at `iiif/` with headers:
