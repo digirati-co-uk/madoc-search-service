@@ -1,15 +1,13 @@
 # Django Imports
 
+import itertools
+import logging
+from collections import defaultdict
 from copy import deepcopy
-from functools import reduce
-from operator import or_, and_
-from dateutil import parser
-import pytz
 
+from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.postgres.search import SearchQuery
 from django.db import models
-from django.db.models import Q
 from django.utils.translation import get_language
 from django_filters import rest_framework as df_filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -18,17 +16,19 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, filters, status
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.exceptions import ValidationError, ParseError
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.exceptions import ValidationError, ParseError
+
+from .filters import IIIFSearchFilter, FacetListFilter, AutoCompleteFilter
+from .indexable_utils import gen_indexables
 
 # Local imports
 from .langbase import LANGBASE
 from .models import Indexables, IIIFResource, Context
+from .parsers import IIIFSearchParser
 from .prezi_upgrader import Upgrader
-from .serializer_utils import flatten_iiif_descriptive
+from .serializer_utils import flatten_iiif_descriptive, resources_by_type
 from .serializers import (
     UserSerializer,
     IndexablesSerializer,
@@ -38,17 +38,15 @@ from .serializers import (
     CaptureModelSerializer,
     AutocompleteSerializer,
 )
-from .indexable_utils import gen_indexables
-
-from django.conf import settings
-
-from collections import defaultdict
 
 # Globals
 default_lang = get_language()
 upgrader = Upgrader(flags={"default_lang": default_lang})
 global_facet_on_manifests = settings.FACET_ON_MANIFESTS_ONLY
 global_facet_types = ["metadata"]
+
+
+logger = logging.getLogger(__name__)
 
 
 @api_view(["GET"])
@@ -112,6 +110,10 @@ class IIIFDetail(generics.RetrieveUpdateDestroyAPIView):
                 "navDate",
             ]:
                 data_dict[k] = iiif3.get(k, getattr(instance, k, None))
+            first_canvas_json = next(iter(resources_by_type(iiif=iiif3)), None)
+            if first_canvas_json:
+                data_dict["first_canvas_json"] = first_canvas_json
+                data_dict["first_canvas_id"] = first_canvas_json.get("id")
         if iiif3:
             indexable_list = flatten_iiif_descriptive(
                 iiif=iiif3, default_language=default_lang, lang_base=LANGBASE
@@ -190,12 +192,16 @@ class IIIFList(generics.ListCreateAPIView):
                     "navDate",
                 ]:
                     local_dict[k] = iiif3_resource.get(k)
+                first_canvas_json = next(iter(resources_by_type(iiif=iiif3_resource)), None)
+                if first_canvas_json:
+                    local_dict["first_canvas_json"] = first_canvas_json
+                    local_dict["first_canvas_id"] = first_canvas_json.get("id")
             parent_object = None
             if (child is True) and (parent is not None):
                 parent_object = IIIFResource.objects.get(madoc_id=parent)
             """
             To Do: We potentially need something here to replace the
-            perform_create with a perform_update in the event that the object exists, and then we can 
+            perform_create with a perform_update in the event that the object exists, and then we can
             have the operation be idempotent as a POST will update rather than error
             """
             serializer = self.get_serializer(data=local_dict)  # Serialize the data
@@ -237,10 +243,16 @@ class IIIFList(generics.ListCreateAPIView):
                         indexable_obj.save()
             return serializer.data, self.get_success_headers(serializer.data)
 
-        d = request.data
+        if (overridden := request.parser_context.get("kwargs").get("data_override")) is not None:
+            logger.debug(
+                "Using a data object passed in from an external view, rather than the request"
+            )
+            d = overridden
+        else:
+            d = request.data
         # Cascade
         cascade = d.get("cascade")
-        print("Truth(y) value of cascade", bool(cascade))
+        logger.debug("Truth(y) value of cascade", bool(cascade))
         # Get the contexts from the "context" key in the outer context of the request payload
         contexts = d.get("contexts")
         # We have a IIIF resource to index
@@ -271,8 +283,8 @@ class IIIFList(generics.ListCreateAPIView):
             parent=None,
         )
         if iiif3.get("items"):
-            print(f"Got items, this is where I would cascade: {len(iiif3['items'])} items.")
-            print(f"Cascade is {cascade}")
+            logger.debug(f"Got items, this is where I would cascade: {len(iiif3['items'])} items.")
+            logger.debug(f"Cascade is {cascade}")
             if cascade:
                 for num, item in enumerate(iiif3["items"]):
                     item_data, item_headers = ingest_iiif(
@@ -283,7 +295,7 @@ class IIIFList(generics.ListCreateAPIView):
                         child=True,
                         parent=d["id"],
                     )
-                    print(f"Cascaded: {item_headers}")
+                    logger.debug(f"Cascaded: {item_headers}")
         return Response(manifest_data, status=status.HTTP_201_CREATED, headers=manifest_headers)
 
 
@@ -296,31 +308,6 @@ class ContextDetail(generics.RetrieveUpdateDestroyAPIView):
 class ContextList(generics.ListCreateAPIView):
     queryset = Context.objects.all()
     serializer_class = ContextSerializer
-
-
-class MadocPagination(PageNumberPagination):
-    """
-
-    Pagination class for Madoc results
-
-    "pagination": {
-        "page": 1,
-        "totalPages": 35,
-        "totalResults": 830
-      }
-    """
-
-    def get_paginated_response(self, data):
-        return Response(
-            {
-                "pagination": {
-                    "page": self.page.number,
-                    "totalPages": self.page.paginator.num_pages,
-                    "totalResults": self.page.paginator.count,
-                },
-                "results": data,
-            }
-        )
 
 
 class IndexablesDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -340,7 +327,6 @@ class IndexablesList(generics.ListCreateAPIView):
         "type",
         "subtype",
     ]
-    pagination_class = MadocPagination
 
 
 class ContextFilterSet(df_filters.FilterSet):
@@ -354,765 +340,6 @@ class ContextFilterSet(df_filters.FilterSet):
     class Meta:
         model = Context
         fields = ["cont"]
-
-
-def facet_operator(q_key, field_lookup):
-    """
-    sorted_facet_query.get('field_lookup', 'iexact')
-    """
-    if q_key in ["type", "subtype"]:
-        return "iexact"
-    elif q_key in ["value"]:
-        if field_lookup in [
-            "exact",
-            "iexact",
-            "icontains",
-            "contains",
-            "in",
-            "startswith",
-            "istartswith",
-            "endswith",
-            "iendswith",
-        ]:
-            return field_lookup
-        else:
-            return "iexact"
-    elif q_key in ["indexable_int", "indexable_float"]:
-        if field_lookup in ["exact", "gt", "gte", "lt", "lte"]:
-            return field_lookup
-        else:
-            return "exact"
-    elif q_key in ["indexable_date_range_start", "indexable_date_range_year"]:
-        if field_lookup in ["day", "month", "year", "iso_year", "gt", "gte", "lt", "lte", "exact"]:
-            return field_lookup
-        else:
-            return "exact"
-    else:
-        return "iexact"
-
-
-def date_query_value(q_key, value):
-    """
-    To aid in the faceting, if you get a query type that is date, return a datetime parsed using dateutil,
-    otherwise, just return the thing that came in
-    """
-    if "date" in q_key:
-        try:
-            parsed_date = parser.parse(value)
-            if parsed_date.tzinfo is None or parsed_date.tzinfo.utcoffset(parsed_date) is None:
-                query_date = parsed_date.replace(tzinfo=pytz.utc)
-            else:
-                query_date = parsed_date
-        except ValueError:
-            query_date = None
-        if query_date:
-            return query_date
-        else:
-            return value
-    return value
-
-
-def date_q(value, date_query_type=None):
-    date_types = {
-        "start": ["indexables__indexable_date_range_end__gte"],
-        "end": ["indexables__indexable_date_range_start__lte"],
-        "exact": [
-            "indexables__indexable_date_range_start",
-            "indexables__indexable_date_range_end",
-        ],
-    }
-    if value and date_query_type and date_query_type in date_types.keys():
-        try:
-            parsed_date = parser.parse(value)
-            if parsed_date.tzinfo is None or parsed_date.tzinfo.utcoffset(parsed_date) is None:
-                query_date = parsed_date.replace(tzinfo=pytz.utc)
-            else:
-                query_date = parsed_date
-        except ValueError:
-            query_date = None
-        if query_date:
-            return {x: query_date for x in date_types[date_query_type]}
-    return
-
-
-def parse_search(req):
-    """
-    Function to parse incoming search data (from request params or incoming json)
-    into a set of filter kwargs that can be passed to the list and hits methods.
-
-    The pre-filters (applied before the fulltext query is run) and the postfilters
-    (applied to generate the facet counts) are lists of Q() objects. These may be
-    combined together using _reduce_ and the 'or' or 'and' operators to create complex
-    boolean queries.
-    """
-    if req.method == "POST":
-        prefilter_kwargs = []
-        filter_kwargs = {}
-        search_string = req.data.get("fulltext", None)
-        date_start = req.data.get("date_start", None)
-        date_end = req.data.get("date_end", None)
-        date_exact = req.data.get("date_exact", None)
-        query_integer = req.data.get("integer", None)
-        query_float = req.data.get("float", None)
-        query_raw = req.data.get("raw", None)
-        language = req.data.get("search_language", None)
-        search_type = req.data.get("search_type", "websearch")
-        facet_fields = req.data.get("facet_fields", None)
-        contexts = req.data.get("contexts", None)
-        contexts_all = req.data.get("contexts_all", None)
-        madoc_identifiers = req.data.get("madoc_identifiers", None)
-        iiif_identifiers = req.data.get("iiif_identifiers", None)
-        facet_queries = req.data.get("facets", None)
-        facet_on_manifests = req.data.get("facet_on_manifests", global_facet_on_manifests)
-        facet_types = req.data.get("facet_types", global_facet_types)
-        num_facets = req.data.get("number_of_facets", 10)
-        if contexts:
-            prefilter_kwargs.append(Q(**{f"contexts__id__in": contexts}))
-        if contexts_all:
-            for c in contexts_all:
-                prefilter_kwargs.append(Q(**{"contexts__id__iexact": c}))
-        if madoc_identifiers:
-            prefilter_kwargs.append(Q(**{f"madoc_id__in": madoc_identifiers}))
-        if iiif_identifiers:
-            prefilter_kwargs.append(Q(**{f"id__in": iiif_identifiers}))
-        if search_string:
-            if language:
-                filter_kwargs["indexables__search_vector"] = SearchQuery(
-                    search_string, config=language, search_type=search_type
-                )
-            else:
-                filter_kwargs["indexables__search_vector"] = SearchQuery(
-                    search_string, search_type=search_type
-                )
-        for p in [
-            "type",
-            "subtype",
-            "language_iso639_2",
-            "language_iso639_1",
-            "language_display",
-            "language_pg",
-        ]:
-            if req.data.get(p, None):
-                filter_kwargs[f"indexables__{p}__iexact"] = req.data[p]
-        if query_raw and isinstance(query_raw, dict):
-            for raw_k, raw_v in query_raw.items():
-                if raw_k.startswith("indexables__"):
-                    filter_kwargs[raw_k] = raw_v
-        if query_float:
-            if query_float.get("value"):
-                if query_float.get("operator", "exact") in ["exact", "gt", "lt", "gte", "lte"]:
-                    filter_kwargs[
-                        f"indexables__indexable_float__{query_float.get('operator', 'exact')}"
-                    ] = query_float["value"]
-        if query_integer:
-            if query_integer.get("value"):
-                if query_integer.get("operator", "exact") in ["exact", "gt", "lt", "gte", "lte"]:
-                    filter_kwargs[
-                        f"indexables__indexable_integer__{query_integer.get('operator', 'exact')}"
-                    ] = query_integer["value"]
-        if date_start:
-            date_kwargs = date_q(value=date_start, date_query_type="start")
-            if date_kwargs:
-                filter_kwargs.update(date_kwargs)
-        if date_end:
-            date_kwargs = date_q(value=date_end, date_query_type="end")
-            if date_kwargs:
-                filter_kwargs.update(date_kwargs)
-        if date_exact:
-            date_kwargs = date_q(value=date_exact, date_query_type="exact")
-            if date_kwargs:
-                filter_kwargs.update(date_kwargs)
-        postfilter_q = []
-        if facet_queries:  # *** This code really needs a refactor for elegance/speed ***
-            # Generate a list of keys concatenated from type and subtype
-            # These should be "OR"d together later.
-            # e.g.
-            # {"metadata|author": []}
-            sorted_facets = {
-                "|".join([f.get("type", ""), f.get("subtype", "")]): [] for f in facet_queries
-            }
-            # Copy the query into that lookup so we can get queries against the same type/subtype
-            # e.g.
-            # {"metadata|author": ["John Smith", "Mary Jones"]}
-            for f in facet_queries:
-                sorted_facets["|".join([f.get("type", ""), f.get("subtype", "")])].append(f)
-            print("Sorted facets", sorted_facets)
-            for sorted_facet_key, sorted_facet_queries in sorted_facets.items():
-                # For each combination of type/subtype
-                # 1. Concatenate all of the queries into an AND
-                # e.g. "type" = "metadata" AND "subtype" = "author" AND "indexables" = "John Smith"
-                # 2. Concatenate all of thes einto an OR
-                # so that you get something with the intent of AUTHOR = (A or B)
-                postfilter_q.append(
-                    reduce(  # All of the queries with the same field are OR'd together
-                        or_,
-                        [
-                            reduce(  # All of the fields within a single facet query are AND'd together
-                                and_,
-                                (
-                                    Q(  # Iterate the keys in the facet dict to generate the Q()
-                                        **{
-                                            f"indexables__{(lambda k: 'indexable' if k == 'value' else k)(k)}__"
-                                            f"{facet_operator(k, sorted_facet_query.get('field_lookup', 'iexact'))}": date_query_value(
-                                                q_key=k, value=v
-                                            )
-                                        }  # You can pass in something other than iexact using the field_lookup key
-                                    )
-                                    for k, v in sorted_facet_query.items()
-                                    if k
-                                    in [
-                                        "type",
-                                        "subtype",
-                                        "indexable",
-                                        "value",
-                                        "indexable_int",
-                                        "ndexable_float",
-                                        "indexable_date_range_start",
-                                        "indexable_date_range_end",
-                                    ]  # These are the fields to query
-                                ),
-                            )
-                            for sorted_facet_query in sorted_facet_queries
-                        ],
-                    )
-                )
-                print("Postfilter", postfilter_q)
-        hits_filter_kwargs = {
-            k.replace("indexables__", ""): v
-            for k, v in filter_kwargs.items()
-            if k.startswith("indexables")
-        }
-        if search_string:
-            hits_filter_kwargs["search_string"] = search_string
-        if language:
-            hits_filter_kwargs["language"] = language
-        if search_type:
-            hits_filter_kwargs["search_type"] = search_type
-        sort_order = req.data.get("ordering", {"ordering": "descending"})
-        return (
-            prefilter_kwargs,
-            filter_kwargs,
-            postfilter_q,  # postfilter_kwargs,
-            facet_fields,
-            hits_filter_kwargs,
-            sort_order,
-            facet_on_manifests,
-            facet_types,
-            num_facets,
-        )
-    elif req.method == "GET":
-        search_string = req.query_params.get("fulltext", None)
-        language = req.query_params.get("search_language", None)
-        search_type = req.query_params.get("search_type", "websearch")
-        filter_kwargs = {}
-        postfilter_kwargs = [{}]
-        prefilter_kwargs = []
-        for param in req.query_params:
-            if param in [
-                "type",
-                "subtype",
-                "language_iso639_2",
-                "language_iso639_1",
-                "language_display",
-                "language_pg",
-            ]:
-                filter_kwargs[f"indexables__{param}__iexact"] = req.query_params.get(param, None)
-            elif param == "facet_type":
-                postfilter_kwargs[0][f"indexables__type__iexact"] = req.query_params.get(
-                    param, None
-                )
-            elif param == "facet_subtype":
-                postfilter_kwargs[0][f"indexables__subtype__iexact"] = req.query_params.get(
-                    param, None
-                )
-            elif param == "facet_value":
-                postfilter_kwargs[0][f"indexables__indexable__iexact"] = req.query_params.get(
-                    param, None
-                )
-        if search_string:
-            if language:
-                filter_kwargs["indexables__search_vector"] = SearchQuery(
-                    search_string, config=language, search_type=search_type
-                )
-            else:
-                filter_kwargs["indexables__search_vector"] = SearchQuery(
-                    search_string, search_type=search_type
-                )
-        hits_filter_kwargs = {
-            k.replace("indexables__", ""): v
-            for k, v in filter_kwargs.items()
-            if k.startswith("indexables")
-        }
-        if search_string:
-            hits_filter_kwargs["search_string"] = search_string
-        if language:
-            hits_filter_kwargs["language"] = language
-        if search_type:
-            hits_filter_kwargs["search_type"] = search_type
-        sort_order = req.data.get("ordering", {"ordering": "descending"})
-        return (
-            prefilter_kwargs,
-            filter_kwargs,
-            postfilter_kwargs,
-            None,
-            hits_filter_kwargs,
-            sort_order,
-            global_facet_on_manifests,
-            global_facet_types,
-            10,
-        )
-
-
-class Facets(viewsets.ModelViewSet, RetrieveModelMixin):
-    """
-    Simple read only view to return a list of facet fields
-    """
-
-    queryset = IIIFResource.objects.all()
-    serializer_class = IIIFSearchSummarySerializer
-
-    def list(self, request, *args, **kwargs):
-        """
-        Return a simple list of facet fields when the (optional) query is passed in.
-
-        """
-        # Call a function to set the prefilter_kwargs based on incoming request
-        (
-            prefilter_kwargs,
-            _,
-            _,
-            _,
-            _,
-            _,
-            facet_on_manifests,
-            facet_types,
-            num_facets,
-        ) = parse_search(req=request)
-        if prefilter_kwargs:
-            setattr(self, "prefilter_kwargs", prefilter_kwargs)
-        if facet_on_manifests:
-            setattr(self, "facet_on_manifests", facet_on_manifests)
-        response = super(Facets, self).list(request, args, kwargs)
-        # If we haven't been provided a list of facet fields via a POST
-        # just generate the list by querying the unique list of metadata subtypes
-        # Make a copy of the query so we aren't running the get_queryset logic every time
-        facetable_queryset = self.get_queryset().all().distinct()
-        if facet_on_manifests:
-            """
-            Facet on IIIF objects where:
-
-             1. They are associated (via the reverse relationship on `contexts`) with the queryset, and where
-                the associated context is a manifest
-             2. The object type is manifest
-
-             In other words, give me all the manifests where they are associated with a manifest context that is
-             related to the objects in the queryset. This manifest context should/will be themselves as manifests
-             are associated with themselves as context.
-            """
-            facetable_q = IIIFResource.objects.filter(
-                contexts__associated_iiif__madoc_id__in=facetable_queryset,
-                contexts__type__iexact="manifest",
-                type__iexact="manifest",
-            ).distinct()
-        else:
-            """
-            Otherwise, just create the facets on the objects that are in the queryset, rather than their
-            containing manifest contexts.
-            """
-            facetable_q = facetable_queryset
-        facet_fields = []
-        if not facet_types:
-            facet_types = ["metadata"]
-        for facet_type in facet_types:
-            for t in (
-                facetable_q.filter(indexables__type__iexact=facet_type)
-                .values("indexables__subtype")
-                .distinct()
-            ):
-                for _, v in t.items():
-                    if v and v != "":
-                        facet_fields.append((facet_type, v))
-        facet_dict = defaultdict(list)
-        facet_l = sorted(list(set(facet_fields)))
-        for i in facet_l:
-            facet_dict[i[0]].append(i[1])
-        response.data = facet_dict
-        return response
-
-    def get_serializer_context(self):
-        """
-        Pass the request into the serializer context so it is available
-        in the serializer method(s), e.g. the get_hits method used to
-        populate each manifest with a list of hits that match the query
-        parameters
-        """
-        context = super(Facets, self).get_serializer_context()
-        context.update({"request": self.request})
-        return context
-
-    def get_queryset(self):
-        """
-        Look for
-
-            self.prefilter_kwargs: filters to execute before the fulltext search
-
-        Apply these and return distinct objects
-        """
-        queryset = IIIFResource.objects.all()
-        if hasattr(self, "prefilter_kwargs"):
-            # Just check if this thing is all nested Q() objects
-            if all([type(k) == Q for k in self.prefilter_kwargs]):
-                # This is a chaining operation
-                for f in self.prefilter_kwargs:
-                    queryset = queryset.filter(*(f,))
-        return queryset.distinct()
-
-
-class Autocomplete(viewsets.ModelViewSet, ListModelMixin):
-    queryset = Indexables.objects.all()
-    serializer_class = AutocompleteSerializer
-
-    def list(self, request, *args, **kwargs):
-        """
-        Override the LIST method,
-        """
-        # Call a function to set the filter_kwargs and postfilter_kwargs based on incoming request
-        (
-            prefilter_kwargs,
-            filter_kwargs,
-            postfilter_kwargs,
-            _,
-            _,
-            _,
-            facet_on_manifests,
-            facet_types,
-            num_facets,
-        ) = parse_search(req=request)
-        if request.method == "POST":
-            autocomplete_type = request.data.get("autocomplete_type", None)
-            autocomplete_subtype = request.data.get("autocomplete_subtype", None)
-            autocomplete_query = request.data.get("autocomplete_query", None)
-        else:
-            autocomplete_type = None
-            autocomplete_subtype = None
-            autocomplete_query = None
-        if autocomplete_type:
-            setattr(self, "autocomplete_type", autocomplete_type)
-        if autocomplete_subtype:
-            setattr(self, "autocomplete_subtype", autocomplete_subtype)
-        if autocomplete_query:
-            setattr(self, "autocomplete_query", autocomplete_query)
-        if prefilter_kwargs:
-            setattr(self, "prefilter_kwargs", prefilter_kwargs)
-        if filter_kwargs:
-            setattr(self, "filter_kwargs", filter_kwargs)
-        if postfilter_kwargs:
-            setattr(self, "postfilter_kwargs", postfilter_kwargs)
-        if facet_on_manifests:
-            setattr(self, "facet_on_manifests", facet_on_manifests)
-        if facet_types:
-            setattr(self, "facet_types", facet_types)
-        if num_facets:
-            setattr(self, "num_facets", num_facets)
-        # response = super(Autocomplete, self).list(request, args, kwargs)
-        facetable_queryset = self.get_queryset().all()
-        raw_data = (
-            facetable_queryset.values("indexable")
-            .distinct()
-            .annotate(n=models.Count("pk", distinct=True))
-            .order_by("-n")[:10]
-        )
-        return_data = {
-            "results": [{"id": x.get("indexable"), "text": x.get("indexable")} for x in raw_data]
-        }
-        return Response(data=return_data)
-
-    def get_serializer_context(self):
-        """
-        Pass the request into the serializer context so it is available
-        in the serializer method(s), e.g. the get_hits method used to
-        populate each manifest with a list of hits that match the query
-        parameters
-        """
-        context = super(Autocomplete, self).get_serializer_context()
-        context.update({"request": self.request})
-        return context
-
-    def get_queryset(self):
-        """
-        Look for
-
-            self.prefilter_kwargs: filters to execute before the fulltext search
-            self.filter_kwargs: filters associated with the fulltext search
-            self.postfilter_kwargs: filters to run after the fulltext search
-
-        Apply these and return distinct objects
-        """
-        queryset = Indexables.objects.all()
-        contexts_queryset = IIIFResource.objects.all()
-        if hasattr(self, "prefilter_kwargs"):
-            # Just check if this thing is all nested Q() objects
-            if all([type(k) == Q for k in self.prefilter_kwargs]):
-                # This is a chaining operation
-                for f in self.prefilter_kwargs:
-                    contexts_queryset = contexts_queryset.filter(*(f,))
-        if hasattr(self, "filter_kwargs"):
-            contexts_queryset = contexts_queryset.filter(**self.filter_kwargs)
-        if hasattr(self, "postfilter_kwargs"):
-            # Just check if this thing is nested Q() objects, rather than dicts
-            if type(self.postfilter_kwargs[0]) == Q:
-                # This is also a chainging operation but the filters being
-                # chained might contain "OR"s rather than ANDs
-                if hasattr(self, "facet_on_manifests"):
-                    if self.facet_on_manifests is True:
-                        """
-                        Create a list of manifests where the facets apply
-                        and then filter the queryset to just those objects where their context
-                        is one of those
-                        """
-                        manifests = IIIFResource.objects.filter(
-                            contexts__associated_iiif__madoc_id__in=queryset,
-                            contexts__type__iexact="manifest",
-                            type__iexact="manifest",
-                        ).distinct()
-                        for f in self.postfilter_kwargs:
-                            manifests = manifests.filter(*(f,))
-                        contexts_queryset = contexts_queryset.filter(
-                            **{"contexts__id__in": manifests}
-                        )
-                    else:
-                        print("Facet on manifests is False")
-                        for f in self.postfilter_kwargs:
-                            contexts_queryset = contexts_queryset.filter(*(f,))
-                else:
-                    print("Can't find facet on manifests in context")
-                    for f in self.postfilter_kwargs:
-                        contexts_queryset = contexts_queryset.filter(*(f,))
-            else:  # GET requests (i.e. without the fancy Q reduction)
-                for filter_dict in self.postfilter_kwargs:
-                    # This is a chaining operation
-                    # Appending each filter one at a time
-                    contexts_queryset = contexts_queryset.filter(**filter_dict).values("id")
-        print(contexts_queryset)
-        queryset = queryset.filter(iiif__contexts__id__in=contexts_queryset)
-        if hasattr(self, "autocomplete_type"):
-            queryset = queryset.filter(type__iexact=self.autocomplete_type)
-        if hasattr(self, "autocomplete_subtype"):
-            queryset = queryset.filter(subtype__iexact=self.autocomplete_subtype)
-        if hasattr(self, "autocomplete_query"):
-            queryset = queryset.filter(indexable__istartswith=self.autocomplete_query)
-        return queryset.distinct()
-
-
-class IIIFSearch(viewsets.ModelViewSet, ListModelMixin):
-    """
-    Simple read only view for the IIIF data with methods for
-    adding hits and generating facets for return in the results
-
-    Uses a custom paginator to fit the Madoc model.
-    """
-
-    queryset = IIIFResource.objects.all()
-    serializer_class = IIIFSearchSummarySerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ["madoc_id", "contexts__id"]
-    pagination_class = MadocPagination
-
-    def list(self, request, *args, **kwargs):
-        """
-        Override the LIST method, so we can add some summary data here.
-
-        Possible options:
-
-        1) Accept the facets as a parameter (or blob in JSON)
-        2) Accept the facets via config
-        3) (as per now) facets are generated by a query across the metadata subtypes
-
-        3 is likely the most flexible/future-proof, but is potentially slower.
-
-        Explore:
-
-        Ways of making this query more efficient when the number of objects is high.
-
-        """
-        # Call a function to set the filter_kwargs and postfilter_kwargs based on incoming request
-        (
-            prefilter_kwargs,
-            filter_kwargs,
-            postfilter_kwargs,
-            facet_fields,
-            hits_filter_kwargs,
-            sort_order,
-            facet_on_manifests,
-            facet_types,
-            num_facets,
-        ) = parse_search(req=request)
-        if facet_fields:
-            setattr(self, "facet_fields", facet_fields)
-            print("Facet fields are: ", facet_fields)
-        if prefilter_kwargs:
-            setattr(self, "prefilter_kwargs", prefilter_kwargs)
-        if filter_kwargs:
-            setattr(self, "filter_kwargs", filter_kwargs)
-        if postfilter_kwargs:
-            setattr(self, "postfilter_kwargs", postfilter_kwargs)
-        if hits_filter_kwargs:
-            setattr(self, "hits_filter_kwargs", hits_filter_kwargs)
-        if facet_on_manifests:
-            print("Facet on manifests", facet_on_manifests)
-            setattr(self, "facet_on_manifests", facet_on_manifests)
-        if facet_types:
-            setattr(self, "facet_types", facet_types)
-        if sort_order:
-            setattr(self, "sort_order", sort_order)
-        if num_facets:
-            setattr(self, "num_facets", num_facets)
-        else:
-            num_facets = 10
-            setattr(self, "num_facets", 10)
-        response = super(IIIFSearch, self).list(request, args, kwargs)
-        facet_summary = defaultdict(dict)
-        # If we haven't been provided a list of facet fields via a POST
-        # just generate the list by querying the unique list of metadata subtypes
-        # Make a copy of the query so we aren't running the get_queryset logic every time
-        facetable_queryset = self.get_queryset().all().distinct()
-        if facet_on_manifests:
-            """
-            Facet on IIIF objects where:
-
-             1. They are associated (via the reverse relationship on `contexts`) with the queryset, and where
-                the associated context is a manifest
-             2. The object type is manifest
-
-             In other words, give me all the manifests where they are associated with a manifest context that is
-             related to the objects in the queryset. This manifest context should/will be themselves as manifests
-             are associated with themselves as context.
-            """
-            facetable_q = IIIFResource.objects.filter(
-                contexts__associated_iiif__madoc_id__in=facetable_queryset,
-                contexts__type__iexact="manifest",
-                type__iexact="manifest",
-            ).distinct()
-        else:
-            """
-            Otherwise, just create the facets on the objects that are in the queryset, rather than their
-            containing manifest contexts.
-            """
-            facetable_q = facetable_queryset
-        if not facet_types:
-            facet_types = ["metadata"]
-        for facet_type in facet_types:
-            current_facet_fields = []
-            if facet_fields:
-                current_facet_fields = facet_fields
-            else:
-                facet_field_labels = (
-                    facetable_q.filter(indexables__type__iexact=facet_type)
-                    .values("indexables__subtype")
-                    .distinct()
-                )
-                for t in facet_field_labels:
-                    for _, v in t.items():
-                        current_facet_fields.append(v)
-            for v in current_facet_fields:
-                facet_summary[facet_type][v] = {
-                    x["indexables__indexable"]: x["n"]
-                    for x in facetable_q.filter(
-                        indexables__type__iexact=facet_type, indexables__subtype__iexact=v
-                    )
-                    .values("indexables__indexable")
-                    .distinct()
-                    .annotate(n=models.Count("pk", distinct=True))
-                    .order_by("-n")[:num_facets]
-                }
-        response.data["facets"] = facet_summary
-        reverse_sort = True
-        if sort_order:
-            if (direction := sort_order.get("direction")) is not None:
-                if direction == "descending":
-                    print("Descending")
-                    reverse_sort = True
-                else:
-                    print("Ascending")
-                    reverse_sort = False
-
-        response.data["results"] = sorted(
-            response.data["results"],
-            key=lambda k: (k.get("sortk"),),
-            reverse=reverse_sort,
-        )
-        return response
-
-    def get_serializer_context(self):
-        """
-        Pass the request into the serializer context so it is available
-        in the serializer method(s), e.g. the get_hits method used to
-        populate each manifest with a list of hits that match the query
-        parameters
-        """
-        context = super(IIIFSearch, self).get_serializer_context()
-        context.update({"request": self.request})
-        if hasattr(self, "hits_filter_kwargs"):
-            context.update({"hits_filter_kwargs": self.hits_filter_kwargs})
-        if hasattr(self, "sort_order"):
-            context.update({"sort_order": self.sort_order})
-        # if hasattr(self, "hits_postfilter_kwargs"):
-        #     context.update({"hits_postfilter_kwargs": self.hits_postfilter_kwargs})
-        return context
-
-    def get_queryset(self):
-        """
-        Look for
-
-            self.prefilter_kwargs: filters to execute before the fulltext search
-            self.filter_kwargs: filters associated with the fulltext search
-            self.postfilter_kwargs: filters to run after the fulltext search
-
-        Apply these and return distinct objects
-        """
-        queryset = IIIFResource.objects.all()
-        if hasattr(self, "prefilter_kwargs"):
-            # Just check if this thing is all nested Q() objects
-            if all([type(k) == Q for k in self.prefilter_kwargs]):
-                # This is a chaining operation
-                for f in self.prefilter_kwargs:
-                    queryset = queryset.filter(*(f,))
-        if hasattr(self, "filter_kwargs"):
-            queryset = queryset.filter(**self.filter_kwargs)
-        if hasattr(self, "postfilter_kwargs"):
-            # Just check if this thing is nested Q() objects, rather than dicts
-            if type(self.postfilter_kwargs[0]) == Q:
-                # This is also a chainging operation but the filters being
-                # chained might contain "OR"s rather than ANDs
-                if hasattr(self, "facet_on_manifests"):
-                    if self.facet_on_manifests is True:
-                        """
-                        Create a list of manifests where the facets apply
-                        and then filter the queryset to just those objects where their context
-                        is one of those
-                        """
-                        manifests = IIIFResource.objects.filter(
-                            contexts__associated_iiif__madoc_id__in=queryset,
-                            contexts__type__iexact="manifest",
-                            type__iexact="manifest",
-                        ).distinct()
-                        for f in self.postfilter_kwargs:
-                            manifests = manifests.filter(*(f,))
-                        queryset = queryset.filter(**{"contexts__id__in": manifests})
-                    else:
-                        print("Facet on manifests is False")
-                        for f in self.postfilter_kwargs:
-                            queryset = queryset.filter(*(f,))
-                else:
-                    print("Can't find facet on manifests in context")
-                    for f in self.postfilter_kwargs:
-                        queryset = queryset.filter(*(f,))
-            else:  # GET requests (i.e. without the fancy Q reduction)
-                for filter_dict in self.postfilter_kwargs:
-                    # This is a chaining operation
-                    # Appending each filter one at a time
-                    queryset = queryset.filter(**filter_dict)
-        return queryset.distinct()
 
 
 class ModelDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -1136,7 +363,6 @@ class ModelList(generics.ListCreateAPIView):
         "type",
         "subtype",
     ]
-    pagination_class = MadocPagination
 
     def create(self, request, *args, **kwargs):
         """
@@ -1172,3 +398,199 @@ class ModelList(generics.ListCreateAPIView):
                 )
             raise ValidationError
         raise ParseError
+
+
+class SearchBaseClass(viewsets.ReadOnlyModelViewSet):
+    """
+    BaseClass for Search Service APIs.
+    """
+
+    queryset = IIIFResource.objects.all().distinct()
+    serializer_class = IIIFSearchSummarySerializer
+    parser_classes = [IIIFSearchParser]
+
+
+class IIIFSearch(SearchBaseClass):
+    """
+    Simple read only view for the IIIF data with methods for
+    adding hits and generating facets for return in the results
+
+    Uses a custom paginator to fit the Madoc model.
+    """
+
+    filter_backends = [IIIFSearchFilter]
+
+    def get_facets(self, request):
+        facet_summary = defaultdict(dict)
+        # If we haven't been provided a list of facet fields via a POST
+        # just generate the list by querying the unique list of metadata subtypes
+        # Make a copy of the query so we aren't running the get_queryset logic every time
+        facetable_queryset = self.filter_queryset(queryset=self.get_queryset())
+        if request.data.get("facet_on_manifests", None):
+            """
+            Facet on IIIF objects where:
+
+             1. They are associated (via the reverse relationship on `contexts`) with the queryset,
+                and where the associated context is a manifest
+             2. The object type is manifest
+
+             In other words, give me all the manifests where they are associated with a manifest context
+              that is related to the objects in the queryset. This manifest context should/will be
+              themselves as manifests are associated with themselves as context.
+            """
+            facetable_q = self.queryset.filter(
+                contexts__associated_iiif__madoc_id__in=facetable_queryset,
+                contexts__type__iexact="manifest",
+                type__iexact="manifest",
+            ).distinct()
+        else:
+            """
+            Otherwise, just create the facets on the objects that are in the queryset, rather than their
+            containing manifest contexts.
+            """
+            facetable_q = facetable_queryset
+        if not request.data.get("facet_types", None):
+            request.data["facet_types"] = ["metadata"]
+        if request.data.get("facet_fields"):
+            facet_summary = (
+                facetable_q.filter(
+                    indexables__type__in=request.data["facet_types"],
+                    indexables__subtype__in=request.data["facet_fields"],
+                )
+                .values("indexables__type", "indexables__subtype", "indexables__indexable")
+                .annotate(n=models.Count("pk", distinct=True))
+                .order_by("indexables__type", "indexables__subtype", "-n", "indexables__indexable")
+            )
+        else:
+            facet_summary = (
+                facetable_q.filter(indexables__type__in=request.data["facet_types"])
+                .values("indexables__type", "indexables__subtype", "indexables__indexable")
+                .annotate(n=models.Count("pk", distinct=True))
+                .order_by("indexables__type", "indexables__subtype", "-n", "indexables__indexable")
+            )
+        grouped_facets = defaultdict(lambda: defaultdict(lambda: defaultdict(dict)))
+        truncate_to = request.data.get("num_facets", 10)
+        truncated_facets = defaultdict(lambda: defaultdict(dict))
+        # Turn annotated list of results into a deeply nested dict
+        for facet in facet_summary:
+            grouped_facets[facet["indexables__type"]][facet["indexables__subtype"]][
+                facet["indexables__indexable"]
+            ] = facet["n"]
+        # Take the deeply nested dict and truncate the leaves of the tree to just N keys.
+        for facet_type, facet_subtypes in grouped_facets.items():
+            for k, v in facet_subtypes.items():
+                truncated_facets[facet_type][k] = dict(itertools.islice(v.items(), truncate_to))
+        return truncated_facets
+
+    def list(self, request, *args, **kwargs):
+        resp = super().list(request, *args, **kwargs)
+        resp.data.update({"facets": self.get_facets(request=request)})
+        reverse_sort = False
+        if request.data.get("sort_order", None):
+            if (direction := request.data["sort_order"].get("direction")) is not None:
+                if direction == "descending":
+                    logger.debug("Descending")
+                    reverse_sort = True
+        resp.data["results"] = sorted(
+            resp.data["results"],
+            key=lambda k: (k.get("sortk"),),
+            reverse=reverse_sort,
+        )
+        return resp
+
+    # def finalize_response(self, request, response, *args, **kwargs):
+    #     rep = super().finalize_response(request, response, *args, **kwargs)
+    #     # Still doing this here as I really can't see where also to insert it
+    #     # rep.data.update({"facets": self.get_facets(request=request)})
+    #     # Sort is happening here rather than at the queryset level because we
+    #     # are sorting on a key that's only added during serialization
+    #     reverse_sort = False
+    #     if request.data.get("sort_order", None):
+    #         if (direction := request.data["sort_order"].get("direction")) is not None:
+    #             if direction == "descending":
+    #                 logger.debug("Descending")
+    #                 reverse_sort = True
+    #     rep.data["results"] = sorted(
+    #         response.data["results"],
+    #         key=lambda k: (k.get("sortk"),),
+    #         reverse=reverse_sort,
+    #     )
+    #     return rep
+
+
+class Facets(SearchBaseClass):
+    """
+    Simple read only view to return a list of facet fields
+    """
+
+    filter_backends = [FacetListFilter]
+
+    def get_facet_list(self, request):
+        facet_dict = defaultdict(list)
+        # If we haven't been provided a list of facet fields via a POST
+        # just generate the list by querying the unique list of metadata subtypes
+        # Make a copy of the query so we aren't running the get_queryset logic every time
+        facetable_queryset = self.filter_queryset(queryset=self.get_queryset())
+        if request.data.get("facet_on_manifests", None):
+            """
+            Facet on IIIF objects where:
+
+             1. They are associated (via the reverse relationship on `contexts`) with the queryset,
+                and where the associated context is a manifest
+             2. The object type is manifest
+
+             In other words, give me all the manifests where they are associated with a manifest
+             context that is related to the objects in the queryset. This manifest context
+             should/will be themselves as manifests are associated with themselves as context.
+            """
+            facetable_q = IIIFResource.objects.filter(
+                contexts__associated_iiif__madoc_id__in=facetable_queryset,
+                contexts__type__iexact="manifest",
+                type__iexact="manifest",
+            ).distinct()
+        else:
+            """
+            Otherwise, just create the facets on the objects that are in the queryset,
+            rather than their containing manifest contexts.
+            """
+            facetable_q = facetable_queryset
+        facet_fields = []
+        if not request.data.get("facet_types", None):
+            request.data["facet_types"] = ["metadata"]
+        for facet_type in request.data["facet_types"]:
+            for t in (
+                facetable_q.filter(indexables__type__iexact=facet_type)
+                .values("indexables__subtype")
+                .distinct()
+            ):
+                for _, v in t.items():
+                    if v and v != "":
+                        facet_fields.append((facet_type, v))
+        facet_l = sorted(list(set(facet_fields)))
+        for i in facet_l:
+            facet_dict[i[0]].append(i[1])
+        return facet_dict
+
+    def list(self, request, *args, **kwargs):
+        response = super(Facets, self).list(request, args, kwargs)
+        response.data = self.get_facet_list(request=request)
+        return response
+
+
+class Autocomplete(SearchBaseClass):
+    queryset = Indexables.objects.all()
+    serializer_class = AutocompleteSerializer
+    filter_backends = [AutoCompleteFilter]
+
+    def list(self, request, *args, **kwargs):
+        facetable_queryset = self.filter_queryset(self.get_queryset().all())
+        raw_data = (
+            facetable_queryset.values("indexable")
+            .distinct()
+            .annotate(n=models.Count("pk", distinct=True))
+            .order_by("-n")[:10]
+        )
+        return_data = {
+            "results": [{"id": x.get("indexable"), "text": x.get("indexable")} for x in raw_data]
+        }
+        return Response(data=return_data)
