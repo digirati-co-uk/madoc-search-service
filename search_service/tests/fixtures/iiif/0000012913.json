@@ -1,0 +1,2152 @@
+{
+  "@context": "http://iiif.io/api/presentation/2/context.json",
+  "@id": "https://iiif.ub.uni-leipzig.de/0000012913/manifest.json",
+  "@type": "sc:Manifest",
+  "label": "Christliche Predigt Von der ReCoelesti, Das ist: Dem Himlischen Wesentlichen St\u00fcck des H. Abendmahls/ aus den Worten der stifftung desselben",
+  "license": "https://creativecommons.org/publicdomain/mark/1.0/",
+  "attribution": "Provided by Leipzig University Library<br/>No Copyright - Public Domain Marked",
+  "logo": "https://iiif.ub.uni-leipzig.de/ubl-logo.png",
+  "related": [
+    "https://katalog.ub.uni-leipzig.de/urn/urn:nbn:de:bsz:15-0008-232338",
+    "https://digital.ub.uni-leipzig.de/object/viewid/0000012913",
+    "https://iiif.ub.uni-leipzig.de/0000012913/manifest.json"
+  ],
+  "metadata": [
+    {
+      "label": "Kitodo",
+      "value": "13644"
+    },
+    {
+      "label": "URN",
+      "value": "urn:nbn:de:bsz:15-0008-232338"
+    },
+    {
+      "label": "VD17",
+      "value": "VD17 15:744106D"
+    },
+    {
+      "label": "Collection",
+      "value": "VD17"
+    },
+    {
+      "label": "Source PPN (SWB)",
+      "value": "510642772"
+    },
+    {
+      "label": "Collection",
+      "value": "Drucke des 17. Jahrhunderts"
+    },
+    {
+      "label": "Call number",
+      "value": "Syst.Theol.841/4"
+    },
+    {
+      "label": "Owner",
+      "value": "Leipzig University Library"
+    },
+    {
+      "label": "Author",
+      "value": "Dilger, Nathanael"
+    },
+    {
+      "label": "Place of publication",
+      "value": "Dantzig"
+    },
+    {
+      "label": "Date of publication",
+      "value": "1646"
+    },
+    {
+      "label": "Publisher",
+      "value": "Gedruckt zu Dantzig bey Andrea H\u00fcnefelden/ Anno M DC XL VI"
+    },
+    {
+      "label": "Physical description",
+      "value": "2 ungez\u00e4hlte Seiten, 72, das hei\u00dft 70 Seiten"
+    },
+    {
+      "label": "Manifest Type",
+      "value": "monograph"
+    }
+  ],
+  "sequences": [
+    {
+      "@id": "https://iiif.ub.uni-leipzig.de/0000012913/sequence/1",
+      "@type": "sc:Sequence",
+      "canvases": [
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000001",
+          "@type": "sc:Canvas",
+          "label": "-",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/1ded11f1-2e58-483a-a936-71279fd3a8b5",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000001.jpg",
+                "@type": "dctypes:Image",
+                "label": "-",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000001.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000001"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000002",
+          "@type": "sc:Canvas",
+          "label": "-",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/e5bb76bc-ed5e-49ef-bc33-3bdc8eaf3662",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000002.jpg",
+                "@type": "dctypes:Image",
+                "label": "-",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000002.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000002"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000003",
+          "@type": "sc:Canvas",
+          "label": "1",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/741ff082-b6b1-45ca-b93a-658db2c715d4",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000003.jpg",
+                "@type": "dctypes:Image",
+                "label": "1",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000003.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000003"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000004",
+          "@type": "sc:Canvas",
+          "label": "2",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/3f3d1690-a034-4d9e-835c-16393cebbed6",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000004.jpg",
+                "@type": "dctypes:Image",
+                "label": "2",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000004.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000004"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000005",
+          "@type": "sc:Canvas",
+          "label": "3",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/d3c33afb-fd7b-424a-b069-4a373b7f6982",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000005.jpg",
+                "@type": "dctypes:Image",
+                "label": "3",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000005.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000005"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000006",
+          "@type": "sc:Canvas",
+          "label": "4",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/88f8db81-01fc-4ba1-86b9-ce1f4500d33f",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000006.jpg",
+                "@type": "dctypes:Image",
+                "label": "4",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000006.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000006"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000007",
+          "@type": "sc:Canvas",
+          "label": "5",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/f29cb0b2-e166-4953-aa03-fa6353831839",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000007.jpg",
+                "@type": "dctypes:Image",
+                "label": "5",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000007.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000007"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000008",
+          "@type": "sc:Canvas",
+          "label": "6",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/f3a2163b-5dce-4850-9a8f-12ab611702c5",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000008.jpg",
+                "@type": "dctypes:Image",
+                "label": "6",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000008.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000008"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000009",
+          "@type": "sc:Canvas",
+          "label": "7",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/944beaa1-1268-458e-8f67-8c4c5ca63dba",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000009.jpg",
+                "@type": "dctypes:Image",
+                "label": "7",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000009.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000009"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000010",
+          "@type": "sc:Canvas",
+          "label": "8",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/030614c0-0d63-4c80-a5dc-7b6ad4171395",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000010.jpg",
+                "@type": "dctypes:Image",
+                "label": "8",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000010.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000010"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000011",
+          "@type": "sc:Canvas",
+          "label": "9",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/d81fbccb-64ce-44d6-9192-425847730688",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000011.jpg",
+                "@type": "dctypes:Image",
+                "label": "9",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000011.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000011"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000012",
+          "@type": "sc:Canvas",
+          "label": "10",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/f0a3f15b-747b-4aad-8762-1f7c2507936f",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000012.jpg",
+                "@type": "dctypes:Image",
+                "label": "10",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000012.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000012"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000013",
+          "@type": "sc:Canvas",
+          "label": "11",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/5aaaf1c6-e04d-45a5-aefb-d684b9728582",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000013.jpg",
+                "@type": "dctypes:Image",
+                "label": "11",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000013.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000013"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000014",
+          "@type": "sc:Canvas",
+          "label": "12",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/3165279b-74b3-492d-ba10-07ef5826eb9f",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000014.jpg",
+                "@type": "dctypes:Image",
+                "label": "12",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000014.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000014"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000015",
+          "@type": "sc:Canvas",
+          "label": "13",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/d2eb1cb0-cf0a-4f21-97dd-e643c373e40c",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000015.jpg",
+                "@type": "dctypes:Image",
+                "label": "13",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000015.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000015"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000016",
+          "@type": "sc:Canvas",
+          "label": "14",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/1005a8c1-55eb-48c0-adef-4d3806ebf48b",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000016.jpg",
+                "@type": "dctypes:Image",
+                "label": "14",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000016.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000016"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000017",
+          "@type": "sc:Canvas",
+          "label": "15",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/2edd6afb-a804-462b-bb15-007f093d7c84",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000017.jpg",
+                "@type": "dctypes:Image",
+                "label": "15",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000017.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000017"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000018",
+          "@type": "sc:Canvas",
+          "label": "16",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/83eb8815-e994-46b7-be06-432e621e152c",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000018.jpg",
+                "@type": "dctypes:Image",
+                "label": "16",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000018.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000018"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000019",
+          "@type": "sc:Canvas",
+          "label": "17",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/14785a1e-5403-42e7-bde9-7850f515e988",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000019.jpg",
+                "@type": "dctypes:Image",
+                "label": "17",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000019.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000019"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000020",
+          "@type": "sc:Canvas",
+          "label": "18",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/ccdfee3a-082d-4216-b79a-63a7091a4c47",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000020.jpg",
+                "@type": "dctypes:Image",
+                "label": "18",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000020.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000020"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000021",
+          "@type": "sc:Canvas",
+          "label": "19",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/873e91c5-c7be-4d30-b663-5c022c5332c6",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000021.jpg",
+                "@type": "dctypes:Image",
+                "label": "19",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000021.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000021"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000022",
+          "@type": "sc:Canvas",
+          "label": "20",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/9c4e0739-5ced-4f6f-b124-1e80ac2302dd",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000022.jpg",
+                "@type": "dctypes:Image",
+                "label": "20",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000022.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000022"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000023",
+          "@type": "sc:Canvas",
+          "label": "21",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/7f94f8f1-2d6b-4ea8-ae6f-9246eb3f90c8",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000023.jpg",
+                "@type": "dctypes:Image",
+                "label": "21",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000023.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000023"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000024",
+          "@type": "sc:Canvas",
+          "label": "22",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/662e95f6-5d77-4c10-946b-251308e8b29a",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000024.jpg",
+                "@type": "dctypes:Image",
+                "label": "22",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000024.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000024"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000025",
+          "@type": "sc:Canvas",
+          "label": "23",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/72698817-4f10-40a2-8b3d-482a67d47e9a",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000025.jpg",
+                "@type": "dctypes:Image",
+                "label": "23",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000025.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000025"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000026",
+          "@type": "sc:Canvas",
+          "label": "24",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/7e30ebf8-7a61-4c44-812d-172e59946e33",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000026.jpg",
+                "@type": "dctypes:Image",
+                "label": "24",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000026.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000026"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000027",
+          "@type": "sc:Canvas",
+          "label": "25",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/0df5db61-50fe-4ba3-a33b-0e2aace4ba44",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000027.jpg",
+                "@type": "dctypes:Image",
+                "label": "25",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000027.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000027"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000028",
+          "@type": "sc:Canvas",
+          "label": "26",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/58358cbb-8972-4ee8-8fcb-596302df333f",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000028.jpg",
+                "@type": "dctypes:Image",
+                "label": "26",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000028.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000028"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000029",
+          "@type": "sc:Canvas",
+          "label": "27",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/26eb1dff-7f3b-468c-9bb4-27c2c3539a28",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000029.jpg",
+                "@type": "dctypes:Image",
+                "label": "27",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000029.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000029"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000030",
+          "@type": "sc:Canvas",
+          "label": "28",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/05e40ad7-fd71-412f-bd9c-c4077220a406",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000030.jpg",
+                "@type": "dctypes:Image",
+                "label": "28",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000030.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000030"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000031",
+          "@type": "sc:Canvas",
+          "label": "29",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/7db808d2-1746-4169-a8e9-5ae2dfd83f15",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000031.jpg",
+                "@type": "dctypes:Image",
+                "label": "29",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000031.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000031"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000032",
+          "@type": "sc:Canvas",
+          "label": "30",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/46de5de3-36a7-4bbe-9bcc-bc8824e67cb5",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000032.jpg",
+                "@type": "dctypes:Image",
+                "label": "30",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000032.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000032"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000033",
+          "@type": "sc:Canvas",
+          "label": "31",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/90da6edb-9423-45e6-911c-b5aeb6eabccb",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000033.jpg",
+                "@type": "dctypes:Image",
+                "label": "31",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000033.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000033"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000034",
+          "@type": "sc:Canvas",
+          "label": "32",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/1658e9af-9169-4d35-ae0a-165ca883da57",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000034.jpg",
+                "@type": "dctypes:Image",
+                "label": "32",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000034.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000034"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000035",
+          "@type": "sc:Canvas",
+          "label": "33",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/84163592-38f0-4130-bd25-de1438d76103",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000035.jpg",
+                "@type": "dctypes:Image",
+                "label": "33",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000035.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000035"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000036",
+          "@type": "sc:Canvas",
+          "label": "34",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/084708a5-0f2e-4845-a922-5797cad7b308",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000036.jpg",
+                "@type": "dctypes:Image",
+                "label": "34",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000036.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000036"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000037",
+          "@type": "sc:Canvas",
+          "label": "35",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/2df76c93-afde-4529-ba73-722f40aa3079",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000037.jpg",
+                "@type": "dctypes:Image",
+                "label": "35",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000037.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000037"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000038",
+          "@type": "sc:Canvas",
+          "label": "36",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/002a324d-ffb1-4f3c-bf2e-4c4448d07c40",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000038.jpg",
+                "@type": "dctypes:Image",
+                "label": "36",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000038.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000038"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000039",
+          "@type": "sc:Canvas",
+          "label": "37",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/b0e760fb-13c5-4e03-af82-19f6dd221846",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000039.jpg",
+                "@type": "dctypes:Image",
+                "label": "37",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000039.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000039"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000040",
+          "@type": "sc:Canvas",
+          "label": "38",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/158aed6d-67b4-412d-aa22-3e69d1d65029",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000040.jpg",
+                "@type": "dctypes:Image",
+                "label": "38",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000040.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000040"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000041",
+          "@type": "sc:Canvas",
+          "label": "39",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/221a6f8a-79fc-4e63-8a0f-0ac41099f3e9",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000041.jpg",
+                "@type": "dctypes:Image",
+                "label": "39",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000041.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000041"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000042",
+          "@type": "sc:Canvas",
+          "label": "40",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/91648de0-9c14-4d75-acc1-35174a6f3b57",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000042.jpg",
+                "@type": "dctypes:Image",
+                "label": "40",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000042.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000042"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000043",
+          "@type": "sc:Canvas",
+          "label": "41",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/76a02aec-59f7-4e8f-a513-3edf645e86ee",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000043.jpg",
+                "@type": "dctypes:Image",
+                "label": "41",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000043.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000043"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000044",
+          "@type": "sc:Canvas",
+          "label": "42",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/5ea42a98-3c58-4b7e-86ba-c6f16f6613d4",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000044.jpg",
+                "@type": "dctypes:Image",
+                "label": "42",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000044.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000044"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000045",
+          "@type": "sc:Canvas",
+          "label": "43",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/39c8462e-8ff0-4980-89b3-1a4632ec4325",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000045.jpg",
+                "@type": "dctypes:Image",
+                "label": "43",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000045.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000045"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000046",
+          "@type": "sc:Canvas",
+          "label": "44",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/df287f46-13c3-4fe3-b743-aea3ee4a3f0e",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000046.jpg",
+                "@type": "dctypes:Image",
+                "label": "44",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000046.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000046"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000047",
+          "@type": "sc:Canvas",
+          "label": "45",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/3fcbd3cb-c0c9-4046-b214-63b4110d8676",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000047.jpg",
+                "@type": "dctypes:Image",
+                "label": "45",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000047.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000047"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000048",
+          "@type": "sc:Canvas",
+          "label": "46",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/289d9fae-311d-4fa9-afee-64a80564d4d7",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000048.jpg",
+                "@type": "dctypes:Image",
+                "label": "46",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000048.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000048"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000049",
+          "@type": "sc:Canvas",
+          "label": "47",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/f0d2eac0-57cd-4db4-9ced-c94e8f25294f",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000049.jpg",
+                "@type": "dctypes:Image",
+                "label": "47",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000049.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000049"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000050",
+          "@type": "sc:Canvas",
+          "label": "48",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/2fa0b0b7-b35b-4b96-a506-dfbf19e327de",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000050.jpg",
+                "@type": "dctypes:Image",
+                "label": "48",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000050.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000050"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000051",
+          "@type": "sc:Canvas",
+          "label": "49",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/8dbf2f8a-36b0-40eb-b6bd-2574881b0c24",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000051.jpg",
+                "@type": "dctypes:Image",
+                "label": "49",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000051.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000051"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000052",
+          "@type": "sc:Canvas",
+          "label": "50",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/48150c46-3168-4712-a542-7553b4662487",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000052.jpg",
+                "@type": "dctypes:Image",
+                "label": "50",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000052.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000052"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000053",
+          "@type": "sc:Canvas",
+          "label": "51",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/c3634fed-3971-42a6-b4d2-4e4ae72b1117",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000053.jpg",
+                "@type": "dctypes:Image",
+                "label": "51",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000053.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000053"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000054",
+          "@type": "sc:Canvas",
+          "label": "52",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/e4684309-b184-43df-9a0d-6d129740ba09",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000054.jpg",
+                "@type": "dctypes:Image",
+                "label": "52",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000054.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000054"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000055",
+          "@type": "sc:Canvas",
+          "label": "53",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/4b86e2ea-40a8-49a6-b2eb-a357a4d64d2b",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000055.jpg",
+                "@type": "dctypes:Image",
+                "label": "53",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000055.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000055"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000056",
+          "@type": "sc:Canvas",
+          "label": "54",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/0b1e6ece-a748-45d1-9e91-9722ec704a50",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000056.jpg",
+                "@type": "dctypes:Image",
+                "label": "54",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000056.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000056"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000057",
+          "@type": "sc:Canvas",
+          "label": "55",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/79a94db1-7475-4cd5-b6c8-a66ff4a42344",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000057.jpg",
+                "@type": "dctypes:Image",
+                "label": "55",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000057.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000057"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000058",
+          "@type": "sc:Canvas",
+          "label": "56",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/ee6d6847-1598-4aa2-b910-f4b12ab52182",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000058.jpg",
+                "@type": "dctypes:Image",
+                "label": "56",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000058.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000058"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000059",
+          "@type": "sc:Canvas",
+          "label": "57",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/a58d1054-0a7f-4771-8917-893521a9864c",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000059.jpg",
+                "@type": "dctypes:Image",
+                "label": "57",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000059.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000059"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000060",
+          "@type": "sc:Canvas",
+          "label": "58",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/d6870511-7af2-4f36-b6fa-d2fafa42d637",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000060.jpg",
+                "@type": "dctypes:Image",
+                "label": "58",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000060.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000060"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000061",
+          "@type": "sc:Canvas",
+          "label": "59",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/c3564969-5ff1-4ed1-888d-a16a5703ed3f",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000061.jpg",
+                "@type": "dctypes:Image",
+                "label": "59",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000061.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000061"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000062",
+          "@type": "sc:Canvas",
+          "label": "60",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/96e3736d-33d8-4781-a016-67842fc39e08",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000062.jpg",
+                "@type": "dctypes:Image",
+                "label": "60",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000062.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000062"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000063",
+          "@type": "sc:Canvas",
+          "label": "61",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/24f32010-3f6e-4424-877b-2de4f5901e29",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000063.jpg",
+                "@type": "dctypes:Image",
+                "label": "61",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000063.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000063"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000064",
+          "@type": "sc:Canvas",
+          "label": "62",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/5c306fd7-c2eb-40f2-a162-42f138c1d821",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000064.jpg",
+                "@type": "dctypes:Image",
+                "label": "62",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000064.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000064"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000065",
+          "@type": "sc:Canvas",
+          "label": "65",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/5f9afd8b-05a6-467e-beb5-56793d56dfe7",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000065.jpg",
+                "@type": "dctypes:Image",
+                "label": "65",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000065.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000065"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000066",
+          "@type": "sc:Canvas",
+          "label": "66",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/e7b7801a-4f6e-47ed-8c20-edb4534f019d",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000066.jpg",
+                "@type": "dctypes:Image",
+                "label": "66",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000066.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000066"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000067",
+          "@type": "sc:Canvas",
+          "label": "67",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/384017c1-28de-46d7-b682-346ce5f583c3",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000067.jpg",
+                "@type": "dctypes:Image",
+                "label": "67",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000067.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000067"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000068",
+          "@type": "sc:Canvas",
+          "label": "68",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/b1faec01-688a-4720-881a-47f1c2eca4cf",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000068.jpg",
+                "@type": "dctypes:Image",
+                "label": "68",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000068.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000068"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000069",
+          "@type": "sc:Canvas",
+          "label": "69",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/9181b278-ae62-407c-9b88-65f5732d867e",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000069.jpg",
+                "@type": "dctypes:Image",
+                "label": "69",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000069.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000069"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000070",
+          "@type": "sc:Canvas",
+          "label": "70",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/e0b30ab2-8677-4b97-8cb6-988305cc38cf",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000070.jpg",
+                "@type": "dctypes:Image",
+                "label": "70",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000070.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000070"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000071",
+          "@type": "sc:Canvas",
+          "label": "71",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/dd6701a5-e82b-4d7e-8f10-cb42b0b02f26",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000071.jpg",
+                "@type": "dctypes:Image",
+                "label": "71",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000071.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000071"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000072",
+          "@type": "sc:Canvas",
+          "label": "72",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/4147ab3e-2b45-4d1c-b2f9-62b3db7e4112",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000072.jpg",
+                "@type": "dctypes:Image",
+                "label": "72",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000072.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000072"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000073",
+          "@type": "sc:Canvas",
+          "label": "-",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/7877e3b9-5520-40ec-8bc6-0c2013ca5e9f",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000073.jpg",
+                "@type": "dctypes:Image",
+                "label": "-",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000073.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000073"
+            }
+          ]
+        },
+        {
+          "@id": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000074",
+          "@type": "sc:Canvas",
+          "label": "-",
+          "height": 4372,
+          "width": 3302,
+          "images": [
+            {
+              "@id": "https://iiif.ub.uni-leipzig.de/0000012913/anno/5b4a3325-643e-4d67-95ba-4696f05509b2",
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://iiif.ub.uni-leipzig.de/0000012913/00000074.jpg",
+                "@type": "dctypes:Image",
+                "label": "-",
+                "format": "image/jpeg",
+                "height": 4372,
+                "width": 3302,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012913/00000074.jpx",
+                  "profile": "http://iiif.io/api/image/2/level1.json"
+                }
+              },
+              "on": "https://iiif.ub.uni-leipzig.de/0000012913/canvas/00000074"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

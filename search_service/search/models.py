@@ -1,6 +1,6 @@
 
 from django.contrib.postgres.search import SearchVectorField, SearchVector
-from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.indexes import GinIndex, HashIndex
 from django.db import models
 from model_utils.models import TimeStampedModel
 from django_extensions.db.fields import AutoSlugField
@@ -27,7 +27,7 @@ class Context(TimeStampedModel):
         max_length=512, primary_key=True, editable=True, verbose_name=_("Identifier (Context)")
     )
     type = models.CharField(max_length=30)
-    slug = AutoSlugField(populate_from="id")
+    slug = AutoSlugField(populate_from="id", max_length=512)
 
 
 class IIIFResource(TimeStampedModel):
@@ -41,7 +41,7 @@ class IIIFResource(TimeStampedModel):
     )
     madoc_thumbnail = models.URLField(blank=True, null=True)
     id = models.URLField(verbose_name=_("IIIF id"))
-    slug = AutoSlugField(populate_from="madoc_id")
+    slug = AutoSlugField(populate_from="madoc_id", max_length=512)
     type = models.CharField(max_length=30)
     label = models.JSONField(blank=True, null=True)
     thumbnail = models.JSONField(blank=True, null=True)
@@ -53,6 +53,8 @@ class IIIFResource(TimeStampedModel):
     provider = models.JSONField(blank=True, null=True)
     items = models.ManyToManyField("self", blank=True, related_name="ispartof")
     contexts = models.ManyToManyField(Context, blank=True, related_name="associated_iiif")
+    first_canvas_id = models.URLField(verbose_name=_("First canvas IIIF id"), blank=True, null=True)
+    first_canvas_json = models.JSONField(blank=True, null=True)
 
 
 class Indexables(TimeStampedModel):
@@ -128,4 +130,6 @@ class Indexables(TimeStampedModel):
             models.Index(fields=["language_iso639_2", "language_iso639_1", "language_display"]),
             models.Index(fields=["type"]),
             models.Index(fields=["subtype"]),
+            models.Index(fields=["type", "subtype"]),
+            HashIndex(fields=["indexable"]),
         ]

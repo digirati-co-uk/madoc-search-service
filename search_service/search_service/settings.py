@@ -92,7 +92,7 @@ WSGI_APPLICATION = "search_service.wsgi.application"
 # REST Framework
 
 REST_FRAMEWORK = {
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": "search.pagination.MadocPagination",
     "PAGE_SIZE": 25,
 }
 

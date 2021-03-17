@@ -356,6 +356,35 @@ def test_facet_count_query():
         print(json.dumps(j, indent=2, ensure_ascii=False))
 
 
+def test_leipzig_query():
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+    query = {
+        "fulltext": "leipzig",
+    }
+    r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
+    if r.status_code == requests.codes.ok:
+        j = r.json()
+        print(json.dumps(j, indent=2, ensure_ascii=False))
+
+
+def test_leipzig_faceted_query():
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+    query = {
+        "fulltext": "leipzig",
+        "contexts": ["urn:muya:site:1"],
+        "facets": [
+            {"type": "metadata", "subtype": "place of publication", "value": "Altenburg"},
+        ],
+        "facet_on_manifests": True
+    }
+    r = requests.post("http://localhost:8000/api/search/search", json=query, headers=headers)
+    if r.status_code == requests.codes.ok:
+        j = r.json()
+        print(json.dumps(j, indent=2, ensure_ascii=False))
+
+
 if __name__ == "__main__":
     # test_ingest()
     # test_individual_manifests(manifest_uri="https://iiif.bodleian.ox.ac.uk/iiif/manifest/383be809-5c27-4e3a-a26b-a0137c49d02b.json")
@@ -367,7 +396,8 @@ if __name__ == "__main__":
     # test_nested_faceted_query()
     # test_date_query()
     # test_raw_query()
-    test_facet_count_query()
+    # test_facet_count_query()
+    test_leipzig_faceted_query()
 
 
 

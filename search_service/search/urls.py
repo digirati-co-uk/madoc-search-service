@@ -6,7 +6,7 @@ from . import views
 
 
 urlpatterns = [
-    path("", views.api_root),
+    path("api/search/", views.api_root),
     path("api/search/indexables", views.IndexablesList.as_view(), name="indexables-list"),
     path(
         "api/search/indexables/<int:pk>",

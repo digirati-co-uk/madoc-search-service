@@ -1,0 +1,42 @@
+version: '3'
+
+volumes:
+  local_postgres_data: {}
+  local_postgres_data_backups: {}
+
+services:
+  django:
+    build:
+      context: ../../
+      dockerfile: ./Dockerfile
+    image: search-django
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    environment:
+      - USE_DOCKER=yes
+      - IPYTHONDIR=/app/.ipython
+      - MIGRATE=True
+      - LOAD=False
+      - DJANGO_DEBUG=True
+      - WAITRESS=False
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=moctezuma
+      - DATABASE_URL=postgres://postgres:moctezuma@postgres:5432/postgres
+    ports:
+      - "8000:8000"
+      - "5000:5000"
+
+  postgres:
+    hostname: postgres
+    image: postgis/postgis
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=moctezuma
