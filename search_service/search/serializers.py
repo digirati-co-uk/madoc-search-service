@@ -153,7 +153,7 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
         """
         try:
             return max([h["rank"] for h in self.get_hits(iiif=iiif)])
-        except TypeError or ValueError:
+        except (TypeError, ValueError):
             return 1.0
 
     def get_hits(self, iiif):
