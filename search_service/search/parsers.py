@@ -236,16 +236,11 @@ class IIIFSearchParser(JSONParser):
                             search_string, search_type=search_type
                         )
                 else:
-                    postfilter_q.append(reduce(
-                        # AND together all of the individual space delimited words/characters
-                        and_,
-                        (
-                            Q(  # Iterate the split words/chars to make the Q objects
+                    [postfilter_q.append(Q(  # Iterate the split words/chars to make the Q objects
                                 **{
                                     f"indexables__indexable__icontains": split_search
                                 }
-                            )
-                            for split_search in search_string.split())))
+                            )) for split_search in search_string.split()]
             for p in [
                 "type",
                 "subtype",
