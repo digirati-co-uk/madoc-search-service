@@ -5,6 +5,7 @@ from operator import or_, and_
 import pytz
 from dateutil import parser
 import logging
+import unicodedata
 
 # Django imports
 from django.conf import settings
@@ -21,6 +22,7 @@ logger = logging.getLogger(__name__)
 # Globals
 global_facet_on_manifests = settings.FACET_ON_MANIFESTS_ONLY
 global_facet_types = ["metadata"]
+global_non_latin_fulltext = settings.NONLATIN_FULLTEXT
 
 
 def date_query_value(q_key, value):
@@ -168,6 +170,18 @@ def parse_facets(facet_queries):
     return
 
 
+def is_latin(text):
+    """
+    Function to evaluate whether a piece of text is all Latin characters, numbers or punctuation.
+
+    Can be used to test whether a search phrase is suitable for parsing as a fulltext query, or whether it
+    should be treated as an "icontains" or similarly language independent query filter.
+    """
+    return all([('LATIN' in unicodedata.name(x) or unicodedata.category(x).startswith('P')
+                 or unicodedata.category(x).startswith('N') or
+                 unicodedata.category(x).startswith('Z')) for x in text])
+
+
 class IIIFSearchParser(JSONParser):
     def parse(self, stream, media_type=None, parser_context=None):
         logger.info("IIIF Search Parser being invoked")
@@ -195,6 +209,7 @@ class IIIFSearchParser(JSONParser):
             facet_queries = request_data.get("facets", None)
             facet_on_manifests = request_data.get("facet_on_manifests", global_facet_on_manifests)
             facet_types = request_data.get("facet_types", global_facet_types)
+            non_latin_fulltext = request_data.get("non_latin_fulltext", global_non_latin_fulltext)
             num_facets = request_data.get("number_of_facets", 10)
             metadata_fields = request_data.get("metadata_fields", None)
             autocomplete_type = request_data.get("autocomplete_type", None)
@@ -210,14 +225,17 @@ class IIIFSearchParser(JSONParser):
             if iiif_identifiers:
                 prefilter_kwargs.append(Q(**{f"id__in": iiif_identifiers}))
             if search_string:
-                if language:
-                    filter_kwargs["indexables__search_vector"] = SearchQuery(
-                        search_string, config=language, search_type=search_type
-                    )
+                if non_latin_fulltext or is_latin(search_string):  # Search string is good candidate for fulltext query
+                    if language:
+                        filter_kwargs["indexables__search_vector"] = SearchQuery(
+                            search_string, config=language, search_type=search_type
+                        )
+                    else:
+                        filter_kwargs["indexables__search_vector"] = SearchQuery(
+                            search_string, search_type=search_type
+                        )
                 else:
-                    filter_kwargs["indexables__search_vector"] = SearchQuery(
-                        search_string, search_type=search_type
-                    )
+                    filter_kwargs["indexables__indexable__icontains"] = search_string
             for p in [
                 "type",
                 "subtype",

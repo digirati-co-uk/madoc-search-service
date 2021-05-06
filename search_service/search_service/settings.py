@@ -35,6 +35,10 @@ DEBUG = env.bool("DJANGO_DEBUG", False)
 # Facet on Manifets
 FACET_ON_MANIFESTS_ONLY = env.bool("FACET_ON_MANIFESTS", False)
 
+# Use fulltext querying for non-latin scripts
+NONLATIN_FULLTEXT = env.bool("NONLATIN_FULLTEXT", False)
+
+
 ALLOWED_HOSTS = ["*"]
 
 # Application definition

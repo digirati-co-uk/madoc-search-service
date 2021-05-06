@@ -115,7 +115,7 @@ if __name__ == "__main__":
             if result.get("pagination"):
                 summary = {"totalResults": result["pagination"].get("totalResults")}
         results[q["label"]] = {"status_code": status, "result": summary, "query": q["query"]}
-    # print(json.dumps(results, indent=2, ensure_ascii=False))
-    f = fixed_queries()
-    print(json.dumps(f, indent=2, ensure_ascii=False))
+    print(json.dumps(results, indent=2, ensure_ascii=False))
+    # f = fixed_queries()
+    # print(json.dumps(f, indent=2, ensure_ascii=False))
 
