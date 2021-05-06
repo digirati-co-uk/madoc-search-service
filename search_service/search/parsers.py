@@ -191,6 +191,7 @@ class IIIFSearchParser(JSONParser):
             decoded_stream = codecs.getreader(encoding)(stream)
             request_data = json.loads(decoded_stream.read())
             prefilter_kwargs = []
+            postfilter_q = []
             filter_kwargs = {}
             search_string = request_data.get("fulltext", None)
             date_start = request_data.get("date_start", None)
@@ -235,7 +236,16 @@ class IIIFSearchParser(JSONParser):
                             search_string, search_type=search_type
                         )
                 else:
-                    filter_kwargs["indexables__indexable__icontains"] = search_string
+                    postfilter_q.append(reduce(
+                        # AND together all of the individual space delimited words/characters
+                        and_,
+                        (
+                            Q(  # Iterate the split words/chars to make the Q objects
+                                **{
+                                    f"indexables__indexable__icontains": split_search
+                                }
+                            )
+                            for split_search in search_string.split())))
             for p in [
                 "type",
                 "subtype",
@@ -280,9 +290,8 @@ class IIIFSearchParser(JSONParser):
                 date_kwargs = date_q(value=date_exact, date_query_type="exact")
                 if date_kwargs:
                     filter_kwargs.update(date_kwargs)
-            postfilter_q = []
             if facet_queries:
-                postfilter_q = parse_facets(facet_queries=facet_queries)
+                postfilter_q += parse_facets(facet_queries=facet_queries)
             hits_filter_kwargs = {
                 k.replace("indexables__", ""): v
                 for k, v in filter_kwargs.items()
