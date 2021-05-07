@@ -36,6 +36,10 @@ test_queries = [
         "query": {"fulltext": "Ostasiatica Berlin", "search_type": "websearch"},
         "label": "Fulltext: Space separated terms from two different fields (Roman)",
     },
+    {
+        "query": {"fulltext": "Ostasiatica Berlin", "search_multiple_fields": True},
+        "label": "Fulltext: Space separated terms from two different fields with parameter set (Roman)",
+    },
     {"query": {"fulltext": "[서울]"}, "label": "Fulltext: space-delimited part of field (Korean)"},
     {"query": {"fulltext": "울"}, "label": "Fulltext: non-space-delimited part of field (Korean)"},
     {
