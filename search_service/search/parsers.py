@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 global_facet_on_manifests = settings.FACET_ON_MANIFESTS_ONLY
 global_facet_types = ["metadata"]
 global_non_latin_fulltext = settings.NONLATIN_FULLTEXT
+global_search_multiple_fields = settings.SEARCH_MULTIPLE_FIELDS
 
 
 def date_query_value(q_key, value):
@@ -211,6 +212,7 @@ class IIIFSearchParser(JSONParser):
             facet_on_manifests = request_data.get("facet_on_manifests", global_facet_on_manifests)
             facet_types = request_data.get("facet_types", global_facet_types)
             non_latin_fulltext = request_data.get("non_latin_fulltext", global_non_latin_fulltext)
+            search_multiple_fields = request_data.get("search_multiple_fields", global_search_multiple_fields)
             num_facets = request_data.get("number_of_facets", 10)
             metadata_fields = request_data.get("metadata_fields", None)
             autocomplete_type = request_data.get("autocomplete_type", None)
@@ -226,7 +228,8 @@ class IIIFSearchParser(JSONParser):
             if iiif_identifiers:
                 prefilter_kwargs.append(Q(**{f"id__in": iiif_identifiers}))
             if search_string:
-                if non_latin_fulltext or is_latin(search_string):  # Search string is good candidate for fulltext query
+                if (non_latin_fulltext or is_latin(search_string)) and not search_multiple_fields:
+                    # Search string is good candidate for fulltext query and we are not searching across multiple fields
                     if language:
                         filter_kwargs["indexables__search_vector"] = SearchQuery(
                             search_string, config=language, search_type=search_type
