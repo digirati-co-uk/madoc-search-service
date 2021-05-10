@@ -130,69 +130,15 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
     hits = serializers.SerializerMethodField("get_hits")
     resource_id = serializers.CharField(source="madoc_id")
     resource_type = serializers.CharField(source="type")
-    rank = serializers.SerializerMethodField("get_rank")
-    sortk = serializers.SerializerMethodField("get_sortk")
     metadata = serializers.SerializerMethodField("get_metadata")
-
-    def get_sortk(self, iiif):
-        """
-        Generate a sort key to associate with the object.
-        """
-        order_key = None
-        if self.context.get("request"):
-            order_key = self.context["request"].data.get("sort_order", None)
-        if not order_key:
-            return self.get_rank(iiif=iiif)
-        logger.debug(f"Order key {order_key}")
-        if isinstance(order_key, dict) and order_key.get("type") and order_key.get("subtype"):
-            val = order_key.get("value_for_sort", "indexable")
-            sort_qs = (
-                Indexables.objects.filter(
-                    iiif=iiif,
-                    type__iexact=order_key.get("type"),
-                    subtype__iexact=order_key.get("subtype"),
-                )
-                .values(val)
-                .first()
-            )
-            if sort_qs:
-                sort_keys = list(sort_qs.values())[0]
-                return sort_keys
-        else:
-            logger.debug("We have no type or subtype on order key")
-        return self.get_sort_default(order_key=order_key)
-
-    @staticmethod
-    def get_sort_default(order_key):
-        if value_for_sort := order_key.get("value_for_sort"):
-            if value_for_sort.startswith("indexable_int"):
-                return 0
-            elif value_for_sort.startswith("indexable_float"):
-                return 0.0
-            elif value_for_sort.startswith("indexable_date"):
-                return datetime.min.replace(tzinfo=utc)
-            else:
-                return ""
-
-        if order_key.get("type") and order_key.get("subtype"):
-            return ""
-
-        return 0.0
-
-    def get_rank(self, iiif):
-        """
-        Serializer method that calculates the average rank from the hits associated
-        with this search result
-        """
-        try:
-            return max([h["rank"] for h in self.get_hits(iiif=iiif)])
-        except TypeError or ValueError:
-            return 1.0
+    rank = serializers.FloatField(read_only=True)
 
     def get_hits(self, iiif):
         """
         Serializer method that calculates the hits to return along with this search
-        result
+        result.
+
+        N.B. this is no longer used to calcualte the rank.
         """
         # Rank must be greater than 0 (i.e. this is some kind of hit)
         filter_kwargs = {"rank__gt": 0.0}
@@ -290,7 +236,6 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
             "label",
             "contexts",
             "hits",
-            "sortk",
             "metadata",
             "first_canvas_id",
         ]

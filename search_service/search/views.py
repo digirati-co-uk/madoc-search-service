@@ -485,37 +485,7 @@ class IIIFSearch(SearchBaseClass):
     def list(self, request, *args, **kwargs):
         resp = super().list(request, *args, **kwargs)
         resp.data.update({"facets": self.get_facets(request=request)})
-        reverse_sort = False
-        if request.data.get("sort_order", None):
-            if (direction := request.data["sort_order"].get("direction")) is not None:
-                if direction == "descending":
-                    logger.debug("Descending")
-                    reverse_sort = True
-        resp.data["results"] = sorted(
-            resp.data["results"],
-            key=lambda k: (k.get("sortk"),),
-            reverse=reverse_sort,
-        )
         return resp
-
-    # def finalize_response(self, request, response, *args, **kwargs):
-    #     rep = super().finalize_response(request, response, *args, **kwargs)
-    #     # Still doing this here as I really can't see where also to insert it
-    #     # rep.data.update({"facets": self.get_facets(request=request)})
-    #     # Sort is happening here rather than at the queryset level because we
-    #     # are sorting on a key that's only added during serialization
-    #     reverse_sort = False
-    #     if request.data.get("sort_order", None):
-    #         if (direction := request.data["sort_order"].get("direction")) is not None:
-    #             if direction == "descending":
-    #                 logger.debug("Descending")
-    #                 reverse_sort = True
-    #     rep.data["results"] = sorted(
-    #         response.data["results"],
-    #         key=lambda k: (k.get("sortk"),),
-    #         reverse=reverse_sort,
-    #     )
-    #     return rep
 
 
 class Facets(SearchBaseClass):

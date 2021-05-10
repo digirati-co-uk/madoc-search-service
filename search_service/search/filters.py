@@ -1,7 +1,17 @@
-from rest_framework.filters import BaseFilterBackend
-from .models import IIIFResource
-from django.db.models import Q
 import logging
+from datetime import datetime
+
+import pytz
+from django.contrib.postgres.search import SearchRank
+from django.db.models import F
+from django.db.models import Max
+from django.db.models import OuterRef, Subquery
+from django.db.models import Q, Value, FloatField
+from rest_framework.filters import BaseFilterBackend
+
+from .models import IIIFResource, Indexables
+
+utc = pytz.UTC
 
 logger = logging.getLogger(__name__)
 
@@ -78,11 +88,29 @@ class AutoCompleteFilter(BaseFilterBackend):
         return queryset.distinct()
 
 
+def get_sort_default(order_key):
+    if value_for_sort := order_key.get("value_for_sort"):
+        if value_for_sort.startswith("indexable_int"):
+            return 0
+        elif value_for_sort.startswith("indexable_float"):
+            return 0.0
+        elif value_for_sort.startswith("indexable_date"):
+            return datetime.min.replace(tzinfo=utc)
+        else:
+            return ""
+
+    if order_key.get("type") and order_key.get("subtype"):
+        return ""
+
+    return 0.0
+
+
 class IIIFSearchFilter(BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         """
         Return a filtered queryset.
         """
+        order_key = request.data.get("sort_order", None)
         if request.data.get("prefilter_kwargs", None):
             # Just check if this thing is all nested Q() objects
             if all([type(k) == Q for k in request.data.get("prefilter_kwargs")]):
@@ -125,4 +153,44 @@ class IIIFSearchFilter(BaseFilterBackend):
                     # This is a chaining operation
                     # Appending each filter one at a time
                     queryset = queryset.filter(**filter_dict)
-        return queryset.distinct()
+        search_query = None
+        if request.data.get("hits_filter_kwargs"):
+            # We have a dictionary of queries to use, so we use that
+            search_query = request.data["hits_filter_kwargs"].get("search_vector", None)
+        logger.warning(f"Search query {search_query}")
+        if search_query:
+            logger.debug(f"Search query for the ranking {search_query}")
+            queryset = queryset.distinct().annotate(
+                rank=Max(
+                    SearchRank(F("indexables__search_vector"), search_query, cover_density=True),
+                    output_field=FloatField(),
+                ),
+            )
+        else:
+            queryset = queryset.distinct().annotate(
+                rank=Value(0.0, FloatField()),
+            )
+        if isinstance(order_key, dict) and order_key.get("type") and order_key.get("subtype"):
+            val = order_key.get("value_for_sort", "indexable")
+            if order_key.get("direction") == "descending":
+                queryset = queryset.annotate(
+                    sortk=Subquery(
+                        Indexables.objects.filter(
+                            iiif=OuterRef("pk"),
+                            type__iexact=order_key.get("type"),
+                            subtype__iexact=order_key.get("subtype"),
+                        ).values(val)[:1]
+                    )
+                ).order_by("-sortk")
+            else:
+                queryset = queryset.annotate(
+                    sortk=Subquery(
+                        Indexables.objects.filter(
+                            iiif=OuterRef("pk"),
+                            type__iexact=order_key.get("type"),
+                            subtype__iexact=order_key.get("subtype"),
+                        ).values(val)[:1]
+                    )
+                ).order_by("sortk")
+            return queryset
+        return queryset.order_by("-rank")
