@@ -5,6 +5,7 @@ from operator import or_, and_
 import pytz
 from dateutil import parser
 import logging
+import unicodedata
 
 # Django imports
 from django.conf import settings
@@ -21,6 +22,8 @@ logger = logging.getLogger(__name__)
 # Globals
 global_facet_on_manifests = settings.FACET_ON_MANIFESTS_ONLY
 global_facet_types = ["metadata"]
+global_non_latin_fulltext = settings.NONLATIN_FULLTEXT
+global_search_multiple_fields = settings.SEARCH_MULTIPLE_FIELDS
 
 
 def date_query_value(q_key, value):
@@ -168,6 +171,18 @@ def parse_facets(facet_queries):
     return
 
 
+def is_latin(text):
+    """
+    Function to evaluate whether a piece of text is all Latin characters, numbers or punctuation.
+
+    Can be used to test whether a search phrase is suitable for parsing as a fulltext query, or whether it
+    should be treated as an "icontains" or similarly language independent query filter.
+    """
+    return all([('LATIN' in unicodedata.name(x) or unicodedata.category(x).startswith('P')
+                 or unicodedata.category(x).startswith('N') or
+                 unicodedata.category(x).startswith('Z')) for x in text])
+
+
 class IIIFSearchParser(JSONParser):
     def parse(self, stream, media_type=None, parser_context=None):
         logger.info("IIIF Search Parser being invoked")
@@ -177,6 +192,7 @@ class IIIFSearchParser(JSONParser):
             decoded_stream = codecs.getreader(encoding)(stream)
             request_data = json.loads(decoded_stream.read())
             prefilter_kwargs = []
+            postfilter_q = []
             filter_kwargs = {}
             search_string = request_data.get("fulltext", None)
             date_start = request_data.get("date_start", None)
@@ -195,6 +211,8 @@ class IIIFSearchParser(JSONParser):
             facet_queries = request_data.get("facets", None)
             facet_on_manifests = request_data.get("facet_on_manifests", global_facet_on_manifests)
             facet_types = request_data.get("facet_types", global_facet_types)
+            non_latin_fulltext = request_data.get("non_latin_fulltext", global_non_latin_fulltext)
+            search_multiple_fields = request_data.get("search_multiple_fields", global_search_multiple_fields)
             num_facets = request_data.get("number_of_facets", 10)
             metadata_fields = request_data.get("metadata_fields", None)
             autocomplete_type = request_data.get("autocomplete_type", None)
@@ -210,14 +228,22 @@ class IIIFSearchParser(JSONParser):
             if iiif_identifiers:
                 prefilter_kwargs.append(Q(**{f"id__in": iiif_identifiers}))
             if search_string:
-                if language:
-                    filter_kwargs["indexables__search_vector"] = SearchQuery(
-                        search_string, config=language, search_type=search_type
-                    )
+                if (non_latin_fulltext or is_latin(search_string)) and not search_multiple_fields:
+                    # Search string is good candidate for fulltext query and we are not searching across multiple fields
+                    if language:
+                        filter_kwargs["indexables__search_vector"] = SearchQuery(
+                            search_string, config=language, search_type=search_type
+                        )
+                    else:
+                        filter_kwargs["indexables__search_vector"] = SearchQuery(
+                            search_string, search_type=search_type
+                        )
                 else:
-                    filter_kwargs["indexables__search_vector"] = SearchQuery(
-                        search_string, search_type=search_type
-                    )
+                    [postfilter_q.append(Q(  # Iterate the split words/chars to make the Q objects
+                                **{
+                                    f"indexables__indexable__icontains": split_search
+                                }
+                            )) for split_search in search_string.split()]
             for p in [
                 "type",
                 "subtype",
@@ -262,9 +288,8 @@ class IIIFSearchParser(JSONParser):
                 date_kwargs = date_q(value=date_exact, date_query_type="exact")
                 if date_kwargs:
                     filter_kwargs.update(date_kwargs)
-            postfilter_q = []
             if facet_queries:
-                postfilter_q = parse_facets(facet_queries=facet_queries)
+                postfilter_q += parse_facets(facet_queries=facet_queries)
             hits_filter_kwargs = {
                 k.replace("indexables__", ""): v
                 for k, v in filter_kwargs.items()

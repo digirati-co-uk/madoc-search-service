@@ -121,6 +121,8 @@ The accepted fields are as follows:
 * __fulltext__: _Optional_ This is the text you want to search for in the indexed fulltext.
 * __search_language__: _Optional_ This is the language you want to use in constructing the query, this determines how the query parser will stem/parse the text that you provide in the 'fulltext' parameter.
 * __search_type__: _Optional_ This is the type of search to use in constructing the query, e.g. 'websearch', 'plaintext', 'raw' - see https://docs.djangoproject.com/en/3.1/ref/contrib/postgres/search/#searchquery
+* __non_latin_fulltext__: _Optional_ If True, this signals to the API that non-Latin text (such as Chinese, Korean, Thai, etc) can be queried using fulltext (for example when the Postgres instance has support for zhparser or similar). This should largely be left un-set, as typically, this support will NOT be present.
+* __search_multiple_fields__: _Optional_ If True, this signals to the API that rather than parsing fulltext queries (using PostgreSQL `ts_query`) and matching against individual metadata fields, we should search across multiple fields for partial matches. Some support for stemming is lost, but more flexibility in matching is gained.  
 * __type__: _Optional_ Search againsts just textual data with this type, e.g. metadata (to only search metadata)
 * __subtype__: _Optional_ Search against just textual data with this subtype, e.g. a specific metadata field.
 * __date_exact__: _Optional_ Search for just objects with a start and end date that exactly matches this
