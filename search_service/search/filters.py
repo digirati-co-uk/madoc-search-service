@@ -6,7 +6,7 @@ from django.contrib.postgres.search import SearchRank
 from django.db.models import F
 from django.db.models import Max
 from django.db.models import OuterRef, Subquery
-from django.db.models import Q, Value, FloatField
+from django.db.models import Q, Value, FloatField, IntegerField, CharField, DateTimeField
 from rest_framework.filters import BaseFilterBackend
 
 from .models import IIIFResource, Indexables
@@ -89,20 +89,24 @@ class AutoCompleteFilter(BaseFilterBackend):
 
 
 def get_sort_default(order_key):
+    """
+    Unused function (for now), as the sorting is based on rank, if no
+    order_key is provided.
+    """
     if value_for_sort := order_key.get("value_for_sort"):
         if value_for_sort.startswith("indexable_int"):
-            return 0
+            return 0, IntegerField()
         elif value_for_sort.startswith("indexable_float"):
-            return 0.0
+            return 0.0, FloatField()
         elif value_for_sort.startswith("indexable_date"):
-            return datetime.min.replace(tzinfo=utc)
+            return datetime.min.replace(tzinfo=utc), DateTimeField()
         else:
-            return ""
+            return "", CharField()
 
     if order_key.get("type") and order_key.get("subtype"):
-        return ""
+        return "", CharField()
 
-    return 0.0
+    return 0.0, FloatField()
 
 
 class IIIFSearchFilter(BaseFilterBackend):
