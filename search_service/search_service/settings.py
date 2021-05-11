@@ -96,6 +96,8 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 25,
 }
 
+MAX_PAGE_SIZE = env.int("MAX_PAGE_SIZE", None)
+
 BROWSABLE = strtobool(env("BROWSABLE", default="False"))
 
 
