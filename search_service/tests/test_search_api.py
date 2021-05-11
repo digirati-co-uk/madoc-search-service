@@ -161,6 +161,26 @@ def test_simple_metadata_query_pagination(http_service):
     assert j["pagination"] == {
         "next": None,
         "page": 1,
+        "pageSize": 25,
+        "previous": None,
+        "totalPages": 1,
+        "totalResults": 1,
+    }
+
+
+def test_simple_metadata_query_page_size(http_service):
+    query = {
+        "fulltext": "Mietzsching",
+        "contexts": ["urn:muya:site:1"],
+    }
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    result = requests.post(url=http_service + "/api/search/search", json=query, headers=headers,
+                           params={"page_size": 10})
+    j = result.json()
+    assert j["pagination"] == {
+        "next": None,
+        "page": 1,
+        "pageSize": 10,
         "previous": None,
         "totalPages": 1,
         "totalResults": 1,
@@ -237,11 +257,63 @@ def test_simple_facet_query_pagination(http_service):
     assert j["pagination"] == {
         "next": "http://127.0.0.1:8000/api/search/search?page=2",
         "page": 1,
+        "pageSize": 25,
         "previous": None,
         "totalPages": 3,
         "totalResults": 73,
     }
     assert len(j["results"]) == 25
+
+
+def test_simple_facet_query_no_sort(http_service):
+    query = {
+        "contexts": ["urn:muya:site:1"],
+        "facets": [
+            {"type": "metadata", "subtype": "manifest type", "value": "monograph"},
+        ],
+    }
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    result = requests.post(url=http_service + "/api/search/search", json=query, headers=headers)
+    j = result.json()
+    assert result.status_code == requests.codes.ok
+    assert j["pagination"] == {
+        "next": "http://127.0.0.1:8000/api/search/search?page=2",
+        "page": 1,
+        "pageSize": 25,
+        "previous": None,
+        "totalPages": 3,
+        "totalResults": 73,
+    }
+    assert len(j["results"]) == 25
+    assert j["results"][0]["label"]["en"][0].startswith("Das Friede")
+
+
+def test_simple_facet_query_sort(http_service):
+    query = {
+        "contexts": ["urn:muya:site:1"],
+        "facets": [
+            {"type": "metadata", "subtype": "manifest type", "value": "monograph"},
+        ],
+        "ordering": {
+            "type": "descriptive",
+            "subtype": "label",
+            "direction": "descending"
+        }
+    }
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    result = requests.post(url=http_service + "/api/search/search", json=query, headers=headers)
+    j = result.json()
+    assert result.status_code == requests.codes.ok
+    assert j["pagination"] == {
+        "next": "http://127.0.0.1:8000/api/search/search?page=2",
+        "page": 1,
+        "pageSize": 25,
+        "previous": None,
+        "totalPages": 3,
+        "totalResults": 73,
+    }
+    assert len(j["results"]) == 25
+    assert j["results"][0]["label"]["en"][0].startswith("Zētēmata")
 
 
 def test_simple_facet_query_multiplefacets(http_service):
@@ -259,6 +331,7 @@ def test_simple_facet_query_multiplefacets(http_service):
     assert j["pagination"] == {
         "next": None,
         "page": 1,
+        "pageSize": 25,
         "previous": None,
         "totalPages": 1,
         "totalResults": 3,
@@ -277,6 +350,7 @@ def test_contexts_only_query(http_service):
     assert j["pagination"] == {
         "next": "http://127.0.0.1:8000/api/search/search?page=2",
         "page": 1,
+        "pageSize": 25,
         "previous": None,
         "totalPages": 4,
         "totalResults": 76,
