@@ -576,6 +576,19 @@ N.B. the _resource_id_ __must__ exist and must be already in the search service.
         if not content_id is passed in, the system will generate one based on the resource_id and the content_type.
 
 
+## Pagination
+
+API endpoints support pagination. This can be controlled at query time, using the following query parameters (supported in both GET and POST operations)
+
+* `?page=2`: return the second page of results.
+* `?page_size=10`: limit the number of results to `10` items.
+
+Default page_size is controlled by the `PAGE_SIZE` environment variable, defaulted to 25.
+
+The `MAX_PAGE_SIZE` environment variable can be used to set a limit on how many results to allow. 
+
+By default this is _not_ set, allowing any page_size to be set.
+
 # POSTing "raw" Indexable content
 
 POST to `/api/search/indexables`
