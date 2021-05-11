@@ -161,6 +161,7 @@ def test_simple_metadata_query_pagination(http_service):
     assert j["pagination"] == {
         "next": None,
         "page": 1,
+        "pageSize": 25,
         "previous": None,
         "totalPages": 1,
         "totalResults": 1,
@@ -237,6 +238,7 @@ def test_simple_facet_query_pagination(http_service):
     assert j["pagination"] == {
         "next": "http://127.0.0.1:8000/api/search/search?page=2",
         "page": 1,
+        "pageSize": 25,
         "previous": None,
         "totalPages": 3,
         "totalResults": 73,
@@ -259,6 +261,7 @@ def test_simple_facet_query_multiplefacets(http_service):
     assert j["pagination"] == {
         "next": None,
         "page": 1,
+        "pageSize": 25,
         "previous": None,
         "totalPages": 1,
         "totalResults": 3,
@@ -277,6 +280,7 @@ def test_contexts_only_query(http_service):
     assert j["pagination"] == {
         "next": "http://127.0.0.1:8000/api/search/search?page=2",
         "page": 1,
+        "pageSize": 25,
         "previous": None,
         "totalPages": 4,
         "totalResults": 76,
