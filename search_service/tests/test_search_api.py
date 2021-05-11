@@ -168,6 +168,25 @@ def test_simple_metadata_query_pagination(http_service):
     }
 
 
+def test_simple_metadata_query_page_size(http_service):
+    query = {
+        "fulltext": "Mietzsching",
+        "contexts": ["urn:muya:site:1"],
+    }
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    result = requests.post(url=http_service + "/api/search/search", json=query, headers=headers,
+                           params={"page_size": 10})
+    j = result.json()
+    assert j["pagination"] == {
+        "next": None,
+        "page": 1,
+        "pageSize": 10,
+        "previous": None,
+        "totalPages": 1,
+        "totalResults": 1,
+    }
+
+
 def test_simple_metadata_query_results(http_service):
     query = {
         "fulltext": "Mietzsching",
