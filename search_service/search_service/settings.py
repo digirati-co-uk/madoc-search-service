@@ -99,7 +99,7 @@ WSGI_APPLICATION = "search_service.wsgi.application"
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "search.pagination.MadocPagination",
-    "PAGE_SIZE": 25,
+    "PAGE_SIZE": env.int("PAGE_SIZE", 25),
 }
 
 MAX_PAGE_SIZE = env.int("MAX_PAGE_SIZE", None)
