@@ -211,6 +211,7 @@ class IIIFSearchParser(JSONParser):
             facet_queries = request_data.get("facets", None)
             facet_on_manifests = request_data.get("facet_on_manifests", global_facet_on_manifests)
             facet_types = request_data.get("facet_types", global_facet_types)
+            facet_languages = request_data.get("facet_languages")
             non_latin_fulltext = request_data.get("non_latin_fulltext", global_non_latin_fulltext)
             search_multiple_fields = request_data.get("search_multiple_fields", global_search_multiple_fields)
             num_facets = request_data.get("number_of_facets", 10)
@@ -311,6 +312,7 @@ class IIIFSearchParser(JSONParser):
                 "sort_order": sort_order,
                 "facet_on_manifest": facet_on_manifests,
                 "facet_types": facet_types,
+                "facet_languages": facet_languages,
                 "num_facets": num_facets,
                 "metadata_fields": metadata_fields,
                 "autocomplete_type": autocomplete_type,

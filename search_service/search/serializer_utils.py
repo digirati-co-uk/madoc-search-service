@@ -216,7 +216,6 @@ def process_field(
                             This assumes a single navDate, but we translate this into a datetime
                             range via adding two indexables.
                             """
-                            print("Got a date!!!!!")
                             try:
                                 parsed_date = parser.parse(v)
                             except ValueError:

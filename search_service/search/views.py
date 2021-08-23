@@ -449,25 +449,32 @@ class IIIFSearch(SearchBaseClass):
             containing manifest contexts.
             """
             facetable_q = facetable_queryset
-        if not request.data.get("facet_types", None):
-            request.data["facet_types"] = ["metadata"]
-        if request.data.get("facet_fields"):
-            facet_summary = (
-                facetable_q.filter(
-                    indexables__type__in=request.data["facet_types"],
-                    indexables__subtype__in=request.data["facet_fields"],
+
+        facet_filter_args = [
+                models.Q(indexables__type__in=request.data.get("facet_types", ["metadata"])), 
+                ]
+        if facet_fields:=request.data.get("facet_fields"):
+            facet_filter_args.append(
+                models.Q(indexables__subtype__in=facet_fields)
                 )
-                .values("indexables__type", "indexables__subtype", "indexables__indexable")
-                .annotate(n=models.Count("pk", distinct=True))
-                .order_by("indexables__type", "indexables__subtype", "-n", "indexables__indexable")
-            )
-        else:
-            facet_summary = (
-                facetable_q.filter(indexables__type__in=request.data["facet_types"])
-                .values("indexables__type", "indexables__subtype", "indexables__indexable")
-                .annotate(n=models.Count("pk", distinct=True))
-                .order_by("indexables__type", "indexables__subtype", "-n", "indexables__indexable")
-            )
+        if facet_languages:=request.data.get("facet_languages"):
+            facet_language_codes = set(map(lambda x: x.split('-')[0], facet_languages))
+            iso639_1_codes = list(filter(lambda x: len(x)==2, facet_language_codes))
+            iso639_2_codes = list(filter(lambda x: len(x)==3, facet_language_codes))
+            # Always include indexables where no language is specified. This will be cases where there it has neither iso639 field set. 
+            facet_language_filter = (models.Q(indexables__language_iso639_1__isnull=True) & models.Q(indexables__language_iso639_2__isnull=True)) 
+            if iso639_1_codes: 
+                facet_language_filter |= models.Q(indexables__language_iso639_1__in=iso639_1_codes) 
+            if iso639_2_codes: 
+                facet_language_filter |= models.Q(indexables__language_iso639_2__in=iso639_2_codes)
+            facet_filter_args.append(facet_language_filter)
+
+        facet_summary = (
+            facetable_q.filter(*facet_filter_args)
+            .values("indexables__type", "indexables__subtype", "indexables__indexable")
+            .annotate(n=models.Count("pk", distinct=True))
+            .order_by("indexables__type", "indexables__subtype", "-n", "indexables__indexable")
+        )
         grouped_facets = defaultdict(lambda: defaultdict(lambda: defaultdict(dict)))
         truncate_to = request.data.get("num_facets", 10)
         truncated_facets = defaultdict(lambda: defaultdict(dict))
