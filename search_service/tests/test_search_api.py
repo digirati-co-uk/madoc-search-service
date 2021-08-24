@@ -545,13 +545,50 @@ def test_simple_query_facet_language(http_service):
     result = requests.post(url=http_service + "/api/search/search", json=query, headers=headers)
     j = result.json()
     facets = j.get("facets")
-    print(facets)
     assert facets.get('metadata', {}).get('titel') == {"Testtitel": 1}
     assert facets.get('metadata', {}).get('title') == None
     assert facets.get('metadata', {}).get('sprache') == {"Hebräisch": 1}
     assert facets.get('metadata', {}).get('language') == None
 
+def test_simple_query_facet_no_language(http_service): 
+    """
+    Dependent on test_simple_query_thumbnail
+    """
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    query = {
+        "fulltext": "Testtitel",
+        "contexts": ["urn:muya:site:1"],
+        "facet_languages": [],
+    }
+    result = requests.post(url=http_service + "/api/search/search", json=query, headers=headers)
+    j = result.json()
+    facets = j.get("facets")
+    assert facets.get('metadata', {}).get('title') == {"Seder Seliḥot (Western Ashkenazi rite)": 1}
+    assert facets.get('metadata', {}).get('titel') == {"Testtitel": 1}
+    assert facets.get('metadata', {}).get('language') == {"Hebrew": 1}
+    assert facets.get('metadata', {}).get('sprache') == {"Hebräisch": 1}
+
+
 def test_simple_query_facet_multiple_language(http_service): 
+    """
+    Dependent on test_simple_query_thumbnail
+    """
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    query = {
+        "fulltext": "Testtitel",
+        "contexts": ["urn:muya:site:1"],
+        "facet_languages": ["en", "de"],
+    }
+    result = requests.post(url=http_service + "/api/search/search", json=query, headers=headers)
+    j = result.json()
+    facets = j.get("facets")
+    assert facets.get('metadata', {}).get('title') == {"Seder Seliḥot (Western Ashkenazi rite)": 1}
+    assert facets.get('metadata', {}).get('titel') == {"Testtitel": 1}
+    assert facets.get('metadata', {}).get('language') == {"Hebrew": 1}
+    assert facets.get('metadata', {}).get('sprache') == {"Hebräisch": 1}
+
+
+def test_simple_query_facet_multiple_same_language(http_service): 
     """
     Dependent on test_simple_query_thumbnail
     """
@@ -564,16 +601,11 @@ def test_simple_query_facet_multiple_language(http_service):
     result = requests.post(url=http_service + "/api/search/search", json=query, headers=headers)
     j = result.json()
     facets = j.get("facets")
-    print(facets)
     assert facets.get('metadata', {}).get('title') == {"Seder Seliḥot (Western Ashkenazi rite)": 1}
     assert facets.get('metadata', {}).get('titel') == None
     assert facets.get('metadata', {}).get('language') == {"Hebrew": 1}
     assert facets.get('metadata', {}).get('sprache') == None
 
-
-#[{'label': {'de': ['Titel'], 'en': ['Title']}, 'value': {'de': ['Testtitel'], 'en': ['Seder Seliḥot (Western Ashkenazi rite)']}}, {'label': {'en': ['Shelfmark']}, 'value': {'en': ['Bodleian Library MS. Arch. Selden A. 3']}}, {'label': {'de': ['Sprache'], 'en': ['Language']}, 'value': {'de': ['Hebräisch'], 'en': ['Hebrew']}}, {'label': {'en': ['Date Statement']}, 'value': {'en': ['1225–1275']}}, {'label': {'en': ['Place of Origin']}, 'value': {'en': ['[France?]']}}, {'label': {'en': ['Collection']}, 'value': {'en': ['Hebrew Manuscripts and Printed Books']}}, {'label': {'en': ['Catalogue Identifier']}, 'value': {'en': ['Neubauer 1159']}}, {'label': {'en': ['Digitization Project']}, 'value': {'en': ['The Polonsky Foundation Digitization Project (2012-2017)']}}, {'label': {'en': ['Record Created']}, 'value': {'en': ['2016-12-06T15:52:17Z']}}, {'label': {'en': ['Holding Institution']}, 'value': {'en': ['Bodleian Libraries, University of Oxford']}}, {'label': {'en': ['Access Rights']}, 'value': {'en': ['Photo: © Bodleian Libraries, University of Oxford']}}], 'first_canvas_id': 'https://iiif.bodleian.ox.ac.uk/iiif/canvas/f4c4d772-d19b-42d6-b817-805e405c7714.json'}], i
-
-#'facets': {'metadata': {'access rights': {'Photo: © Bodleian Libraries, University of Oxford': 1}, 'catalogue identifier': {'Neubauer 1159': 1}, 'collection': {'Hebrew Manuscripts and Printed Books': 1}, 'date statement': {'1225–1275': 1}, 'digitization project': {'The Polonsky Foundation Digitization Project (2012-2017)': 1}, 'holding institution': {'Bodleian Libraries, University of Oxford': 1}, 'place of origin': {'[France?]': 1}, 'record created': {'2016-12-06T15:52:17Z': 1}, 'shelfmark': {'Bodleian Library MS. Arch. Selden A. 3': 1}, 'sprache': {'Hebräisch': 1}, 'titel': {'Testtitel': 1}}}
 
 def test_manifest_update_nochange(http_service, iiif_collection):
     foo = iiif_collection
