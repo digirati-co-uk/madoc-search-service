@@ -242,11 +242,6 @@ def process_field(
                     language_data = get_language_data(lang_code=lang, langbase=lang_base)
                     for v in vals: 
                         if field_indexable_type == "text":
-                            print('-----------')
-                            print(field_type)
-                            print(subtype)
-                            print(v)
-                            print(language_data)
                             field_data.append(
                                 {
                                     "type": field_type,
@@ -301,7 +296,6 @@ def flatten_iiif_descriptive(iiif, default_language=None, lang_base=None):
     ]
     for d in dict_fields:
         if iiif.get(d[0]):
-            print(f"Got {d[0]}")
             if isinstance(iiif[d[0]], dict):
                 field_instances = [iiif[d[0]]]
             elif isinstance(iiif[d[0]], list):
@@ -312,8 +306,6 @@ def flatten_iiif_descriptive(iiif, default_language=None, lang_base=None):
                 field_instances = [{"none": [iiif[d[0]]]}]
             if field_instances:
                 for field_instance in field_instances:
-                    #print("Field instance")
-                    #print(field_instance)
                     returned_data = process_field(
                         field_instance=field_instance,
                         lang_base=lang_base,

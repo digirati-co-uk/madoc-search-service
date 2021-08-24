@@ -625,7 +625,6 @@ def test_manifest_update_nochange(http_service, iiif_collection):
     )
     j = r.json()
     assert r.status_code == 200
-    print(j.get("label"))
 
 
 def test_manifest_update_labelchange(http_service, iiif_collection):
