@@ -216,7 +216,6 @@ def process_field(
                             This assumes a single navDate, but we translate this into a datetime
                             range via adding two indexables.
                             """
-                            print("Got a date!!!!!")
                             try:
                                 parsed_date = parser.parse(v)
                             except ValueError:
@@ -232,52 +231,52 @@ def process_field(
                                     }
                                 )
         else:
-            for label_lang, label_val in field_instance.get("label").items():
-                if label_val:
-                    subtype = label_val[0]
-            if field_instance.get("value"):
-                for lang, val in field_instance["value"].items():
+            indexable_values = []
+            label_values = field_instance.get("label", {})
+            if field_values:=field_instance.get("value"):
+                for lang, vals in field_values.items(): 
+                    if labels:= label_values.get(lang): 
+                        subtype = labels[0]
                     if lang in ["@none", "none"]:
                         lang = default_language
-            language_data = get_language_data(lang_code=lang, langbase=lang_base)
-            if val:
-                for v in val:
-                    if field_indexable_type == "text":
-                        field_data.append(
-                            {
-                                "type": field_type,
-                                "subtype": subtype.lower(),
-                                "indexable": BeautifulSoup(v, "html.parser").text,
-                                "original_content": {subtype: v},
-                                **language_data,
-                            }
-                        )
-                    elif field_indexable_type == "date":
-                        """
-                        This assumes a single navDate, but we translate this into a datetime
-                        range via adding two indexables.
-                        """
-                        try:
-                            parsed_date = parser.parse(v)
-                        except ValueError:
-                            parsed_date = None
-                        if parsed_date:
+                    language_data = get_language_data(lang_code=lang, langbase=lang_base)
+                    for v in vals: 
+                        if field_indexable_type == "text":
                             field_data.append(
                                 {
                                     "type": field_type,
                                     "subtype": subtype.lower(),
-                                    "indexable_date_range_start": parsed_date,
+                                    "indexable": BeautifulSoup(v, "html.parser").text,
                                     "original_content": {subtype: v},
+                                    **language_data,
                                 }
                             )
-                            field_data.append(
-                                {
-                                    "type": field_type,
-                                    "subtype": subtype.lower(),
-                                    "indexable_date_range_end": parsed_date,
-                                    "original_content": {subtype: v},
-                                }
-                            )
+                        elif field_indexable_type == "date":
+                            """
+                            This assumes a single navDate, but we translate this into a datetime
+                            range via adding two indexables.
+                            """
+                            try:
+                                parsed_date = parser.parse(v)
+                            except ValueError:
+                                parsed_date = None
+                            if parsed_date:
+                                field_data.append(
+                                    {
+                                        "type": field_type,
+                                        "subtype": subtype.lower(),
+                                        "indexable_date_range_start": parsed_date,
+                                        "original_content": {subtype: v},
+                                    }
+                                )
+                                field_data.append(
+                                    {
+                                        "type": field_type,
+                                        "subtype": subtype.lower(),
+                                        "indexable_date_range_end": parsed_date,
+                                        "original_content": {subtype: v},
+                                    }
+                                )
         return field_data
     return
 
@@ -297,7 +296,6 @@ def flatten_iiif_descriptive(iiif, default_language=None, lang_base=None):
     ]
     for d in dict_fields:
         if iiif.get(d[0]):
-            print(f"Got {d[0]}")
             if isinstance(iiif[d[0]], dict):
                 field_instances = [iiif[d[0]]]
             elif isinstance(iiif[d[0]], list):
@@ -308,8 +306,6 @@ def flatten_iiif_descriptive(iiif, default_language=None, lang_base=None):
                 field_instances = [{"none": [iiif[d[0]]]}]
             if field_instances:
                 for field_instance in field_instances:
-                    print("Field instance")
-                    print(field_instance)
                     returned_data = process_field(
                         field_instance=field_instance,
                         lang_base=lang_base,

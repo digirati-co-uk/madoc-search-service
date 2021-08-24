@@ -532,6 +532,80 @@ def test_simple_query_thumbnail(http_service):
         }
     ]
 
+def test_simple_query_facet_language(http_service): 
+    """
+    Dependent on test_simple_query_thumbnail
+    """
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    query = {
+        "fulltext": "Testtitel",
+        "contexts": ["urn:muya:site:1"],
+        "facet_languages": ["de"],
+    }
+    result = requests.post(url=http_service + "/api/search/search", json=query, headers=headers)
+    j = result.json()
+    facets = j.get("facets")
+    assert facets.get('metadata', {}).get('titel') == {"Testtitel": 1}
+    assert facets.get('metadata', {}).get('title') == None
+    assert facets.get('metadata', {}).get('sprache') == {"Hebräisch": 1}
+    assert facets.get('metadata', {}).get('language') == None
+
+def test_simple_query_facet_no_language(http_service): 
+    """
+    Dependent on test_simple_query_thumbnail
+    """
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    query = {
+        "fulltext": "Testtitel",
+        "contexts": ["urn:muya:site:1"],
+        "facet_languages": [],
+    }
+    result = requests.post(url=http_service + "/api/search/search", json=query, headers=headers)
+    j = result.json()
+    facets = j.get("facets")
+    assert facets.get('metadata', {}).get('title') == {"Seder Seliḥot (Western Ashkenazi rite)": 1}
+    assert facets.get('metadata', {}).get('titel') == {"Testtitel": 1}
+    assert facets.get('metadata', {}).get('language') == {"Hebrew": 1}
+    assert facets.get('metadata', {}).get('sprache') == {"Hebräisch": 1}
+
+
+def test_simple_query_facet_multiple_language(http_service): 
+    """
+    Dependent on test_simple_query_thumbnail
+    """
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    query = {
+        "fulltext": "Testtitel",
+        "contexts": ["urn:muya:site:1"],
+        "facet_languages": ["en", "de"],
+    }
+    result = requests.post(url=http_service + "/api/search/search", json=query, headers=headers)
+    j = result.json()
+    facets = j.get("facets")
+    assert facets.get('metadata', {}).get('title') == {"Seder Seliḥot (Western Ashkenazi rite)": 1}
+    assert facets.get('metadata', {}).get('titel') == {"Testtitel": 1}
+    assert facets.get('metadata', {}).get('language') == {"Hebrew": 1}
+    assert facets.get('metadata', {}).get('sprache') == {"Hebräisch": 1}
+
+
+def test_simple_query_facet_multiple_same_language(http_service): 
+    """
+    Dependent on test_simple_query_thumbnail
+    """
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    query = {
+        "fulltext": "Testtitel",
+        "contexts": ["urn:muya:site:1"],
+        "facet_languages": ["en", "en-GB"],
+    }
+    result = requests.post(url=http_service + "/api/search/search", json=query, headers=headers)
+    j = result.json()
+    facets = j.get("facets")
+    assert facets.get('metadata', {}).get('title') == {"Seder Seliḥot (Western Ashkenazi rite)": 1}
+    assert facets.get('metadata', {}).get('titel') == None
+    assert facets.get('metadata', {}).get('language') == {"Hebrew": 1}
+    assert facets.get('metadata', {}).get('sprache') == None
+
 
 def test_manifest_update_nochange(http_service, iiif_collection):
     foo = iiif_collection
@@ -551,7 +625,6 @@ def test_manifest_update_nochange(http_service, iiif_collection):
     )
     j = r.json()
     assert r.status_code == 200
-    print(j.get("label"))
 
 
 def test_manifest_update_labelchange(http_service, iiif_collection):

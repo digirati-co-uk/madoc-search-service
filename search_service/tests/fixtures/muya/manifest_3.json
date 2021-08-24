@@ -10,10 +10,12 @@
 	},
 	"metadata": [{
 		"label": {
-			"en": ["Title"]
+			"en": ["Title"], 
+			"de": ["Titel"]
 		},
 		"value": {
-			"en": ["Seder Seli\u1e25ot (Western Ashkenazi rite)"]
+			"en": ["Seder Seli\u1e25ot (Western Ashkenazi rite)"], 
+			"de": ["Testtitel"]
 		}
 	}, {
 		"label": {
@@ -24,10 +26,12 @@
 		}
 	}, {
 		"label": {
-			"en": ["Language"]
+			"en": ["Language"],
+			"de": ["Sprache"]
 		},
 		"value": {
-			"en": ["Hebrew"]
+			"en": ["Hebrew"],
+			"de": ["Hebräisch"]
 		}
 	}, {
 		"label": {
