@@ -3,7 +3,7 @@
 When enabled this will add a "madoc" dictionary to each request object. If a JWT is present it will be parsed (NOT validated) 
 and the data extracted.
 
-The resulting dictionary will be something like this:
+The resulting object will be something like this:
 ```python
 request.madoc = {
   'token': '...', 
@@ -24,8 +24,10 @@ request.madoc = {
 }
 ```
 
-You can use either `request.madoc['site']['urn']` or `request.madoc['site']['id']` if you want to apply a 
-pre-applied filter on a site. Note, this will not be usable if `request.madoc['gateway']` is `True`.
+There are a few classes that wrap the above structure.
+
+You can use either `request.madoc.site.urn` or `request.madoc.site.id` if you want to apply a 
+pre-applied filter on a site. Note, this will not be usable if `request.madoc.gateway` is `True`.
 
 
 Additionally a recreation of a Madoc internal function that is used for requiring a JWT + scope has been added.
@@ -47,7 +49,7 @@ class SomeClass:
     madoc = user_with_scope(request, ["site.admin"])
 
     # Which can be used for sandboxing.
-    site_urn = madoc['site']['urn']
+    site_urn = madoc.site.urn
 
     self.some_admin_action()
 ```
