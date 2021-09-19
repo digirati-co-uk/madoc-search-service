@@ -5,7 +5,7 @@ and the data extracted.
 
 The resulting dictionary will be something like this:
 ```python
-response.madoc = {
+request.madoc = {
   'token': '...', 
   'user': {
     'id': 1, 
