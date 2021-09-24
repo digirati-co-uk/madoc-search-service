@@ -56,6 +56,15 @@ class IIIFResource(TimeStampedModel):
     first_canvas_id = models.URLField(verbose_name=_("First canvas IIIF id"), blank=True, null=True)
     first_canvas_json = models.JSONField(blank=True, null=True)
 
+    class Meta:
+        # Add a postgres index for the search_vector
+        indexes = [
+            models.Index(fields=["type"]),
+            models.Index(fields=["madoc_id"]),
+            models.Index(fields=["id"]),
+            models.Index(fields=["label"])
+        ]
+
 
 class Indexables(TimeStampedModel):
     """
