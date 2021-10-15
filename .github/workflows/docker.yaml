@@ -46,7 +46,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/digirati-co-uk/search-api:${{ github.sha }}
-            ghcr.io/digirati-co-uk/search-api:latest
+            ghcr.io/digirati-co-uk/madoc-search-service:${{ github.sha }}
+            ghcr.io/digirati-co-uk/madoc-search-service:latest
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
