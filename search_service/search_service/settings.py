@@ -43,6 +43,28 @@ SEARCH_MULTIPLE_FIELDS = env.bool("SEARCH_MULTIPLE_FIELDS", False)
 
 ALLOWED_HOSTS = ["*"]
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "console": {
+            # format does not provide timestamp as in prod this will be provided by greylog
+            "format": "[%(levelname)s] %(name)s.%(funcName)s:%(lineno)s - %(message)s"
+        }
+    },
+    "handlers": {
+        "console": {"class": "logging.StreamHandler", "formatter": "console"},
+    },
+    "loggers": {
+        #        '': {
+        #            'level': 'INFO',
+        #            'propagate': True,
+        #            'handlers': ['console']
+        #        },
+        "search": {"level": "DEBUG", "propagate": True, "handlers": ["console"]},
+    },
+}
+
 # Application definition
 
 INSTALLED_APPS = [

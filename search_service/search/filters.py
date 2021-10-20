@@ -158,9 +158,9 @@ class IIIFSearchFilter(BaseFilterBackend):
                     # Appending each filter one at a time
                     queryset = queryset.filter(**filter_dict)
         search_query = None
-        if request.data.get("hits_filter_kwargs"):
+        if hits_filter_kwargs:= request.data.get("hits_filter_kwargs"):
             # We have a dictionary of queries to use, so we use that
-            search_query = request.data["hits_filter_kwargs"].get("search_vector", None)
+            search_query = hits_filter_kwargs.get("search_vector", None)
         logger.warning(f"Search query {search_query}")
         if search_query:
             logger.debug(f"Search query for the ranking {search_query}")

@@ -38,6 +38,9 @@ from .serializers import (
     CaptureModelSerializer,
     AutocompleteSerializer,
 )
+from .madoc_jwt import (
+        request_madoc_site_urn, 
+        )
 
 # Globals
 default_lang = get_language()
@@ -80,12 +83,18 @@ class IIIFDetail(generics.RetrieveUpdateDestroyAPIView):
         Override the update so that we can rewrite the format coming from Madoc in the event of
         an Update operation.
         """
+
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
         d = request.data
         # Try to populate from the request data, but if it's not there, just use existing
+        madoc_id =  request.data.get("madoc_id", instance.madoc_id)
+        if madoc_site_urn:= request_madoc_site_urn(request): 
+            logger.debug(f"Got madoc site urn: {madoc_site_urn}")
+            if not madoc_id.startswith(madoc_site_urn): 
+                return Response(f'Cannot modify resources without prefix {madoc_site_urn}', status.HTTP_400_BAD_REQUEST)
         data_dict = {
-            "madoc_id": d.get("madoc_id", instance.madoc_id),
+            "madoc_id": madoc_id,
             "madoc_thumbnail": d.get("madoc_thumbnail", instance.madoc_thumbnail),
         }
         contexts = d.get("contexts")
@@ -166,7 +175,6 @@ class IIIFList(generics.ListCreateAPIView):
         ):
             """ "
             Nested function that ingests the IIIF object into PostgreSQL via the Django ORM.
-
             :param iiif3_resource: IIIF object (this could be anything in the API spec)
             :param resource_contexts: contexts, e.g. collections, sites, manifests, etc.
             :param madoc_id: the identifier for this thing
@@ -174,6 +182,7 @@ class IIIFList(generics.ListCreateAPIView):
             :param child: is this a child object, or the object that has been POSTed
             :param parent: the madoc_id for the parent object that this is being derived from (if any)
             """
+
             local_dict = {"madoc_id": madoc_id, "madoc_thumbnail": madoc_thumbnail}
             # Add the relevant keys from the IIIF resource into the data dictionary
             # To Do: This should probanly be working with a set of keys passed in rather than the
@@ -273,11 +282,19 @@ class IIIFList(generics.ListCreateAPIView):
                 # it finds content _on_ that object, and not just on objects _within_ that object.
                 if iiif3.get("type"):
                     contexts += [{"id": d["id"], "type": iiif3["type"]}]
+
+        if madoc_site_urn:= request_madoc_site_urn(request): 
+            logger.debug(f"Got madoc site urn: {madoc_site_urn}")
+            madoc_id = f"{madoc_site_urn}|{d['id']}"
+        else: 
+            madoc_id = d["id"]
+
+        logger.debug(f"Creating with madoc_id: {madoc_id}")
         # Create the manifest and return the data and header information
         manifest_data, manifest_headers = ingest_iiif(
             iiif3_resource=iiif3,
             resource_contexts=contexts,
-            madoc_id=d["id"],
+            madoc_id=madoc_id,
             madoc_thumbnail=d["thumbnail"],
             child=False,
             parent=None,
@@ -290,7 +307,7 @@ class IIIFList(generics.ListCreateAPIView):
                     item_data, item_headers = ingest_iiif(
                         iiif3_resource=item,
                         resource_contexts=contexts,
-                        madoc_id=":".join([d["id"], item["type"].lower(), str(num)]),
+                        madoc_id=":".join([madoc_id, item["type"].lower(), str(num)]),
                         madoc_thumbnail=d["thumbnail"],
                         child=True,
                         parent=d["id"],
@@ -490,6 +507,7 @@ class IIIFSearch(SearchBaseClass):
         return truncated_facets
 
     def list(self, request, *args, **kwargs):
+        logger.info('Search list being called')
         resp = super().list(request, *args, **kwargs)
         resp.data.update({"facets": self.get_facets(request=request)})
         return resp

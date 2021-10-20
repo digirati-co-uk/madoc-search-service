@@ -16,6 +16,12 @@ from django.db.models import Q
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import JSONParser
 
+#Local Imports
+
+from .madoc_jwt import (
+        request_madoc_site_urn, 
+        )
+
 
 logger = logging.getLogger(__name__)
 
@@ -185,7 +191,7 @@ def is_latin(text):
 
 class IIIFSearchParser(JSONParser):
     def parse(self, stream, media_type=None, parser_context=None):
-        logger.info("IIIF Search Parser being invoked")
+        logger.debug("IIIF Search Parser being invoked")
         parser_context = parser_context or {}
         encoding = parser_context.get("encoding", settings.DEFAULT_CHARSET)
         try:
@@ -219,6 +225,9 @@ class IIIFSearchParser(JSONParser):
             autocomplete_type = request_data.get("autocomplete_type", None)
             autocomplete_subtype = request_data.get("autocomplete_subtype", None)
             autocomplete_query = request_data.get("autocomplete_query", None)
+            if madoc_site_urn:= request_madoc_site_urn(parser_context.get('request')): 
+                logger.debug(f'Got madoc site urn: {madoc_site_urn}')
+                prefilter_kwargs.append(Q(**{f"madoc_id__startswith": madoc_site_urn}))
             if contexts:
                 prefilter_kwargs.append(Q(**{f"contexts__id__in": contexts}))
             if contexts_all:
