@@ -657,24 +657,6 @@ def test_simple_query_facet_multiple_same_language(http_service, madoc_access_jw
     assert facets.get('metadata', {}).get('language') == {"Hebrew": 1}
     assert facets.get('metadata', {}).get('sprache') == None
 
-def test_manifest_update_no_id_prefix(http_service, iiif_collection, madoc_access_jwt_headers):
-    foo = iiif_collection
-    with open(f"./fixtures/iiif/{foo[0]}", "r") as manifest_f:
-        manifest_json = json.load(manifest_f)
-    id = foo[0].replace(".json", "")
-    headers = {"Content-Type": "application/json", "Accept": "application/json", **madoc_access_jwt_headers}
-    identifier = f"urn:muya:manifest:{id}"
-    payload = {
-        "madoc_id": identifier,
-        "resource": manifest_json,
-        "type": "Manifest",
-        "id": manifest_json["@id"],
-    }
-    r = requests.put(
-        url=http_service + f"/api/search/iiif/{identifier}", json=payload, headers=headers
-    )
-    j = r.json()
-    assert r.status_code == 400
 
 def test_manifest_update_nochange(http_service, iiif_collection, madoc_access_jwt_headers):
     foo = iiif_collection
@@ -682,7 +664,7 @@ def test_manifest_update_nochange(http_service, iiif_collection, madoc_access_jw
         manifest_json = json.load(manifest_f)
     id = foo[0].replace(".json", "")
     headers = {"Content-Type": "application/json", "Accept": "application/json", **madoc_access_jwt_headers}
-    identifier = f"urn:madoc:site:1|urn:muya:manifest:{id}"
+    identifier = f"urn:muya:manifest:{id}"
     payload = {
         "madoc_id": identifier,
         "resource": manifest_json,
@@ -703,7 +685,7 @@ def test_manifest_update_labelchange(http_service, iiif_collection, madoc_access
     id = foo[0].replace(".json", "")
     manifest_json["label"] = "QuickBrownFoxLazyDog"
     headers = {"Content-Type": "application/json", "Accept": "application/json", **madoc_access_jwt_headers}
-    identifier = f"urn:madoc:site:1|urn:muya:manifest:{id}"
+    identifier = f"urn:muya:manifest:{id}"
     payload = {
         "madoc_id": identifier,
         "resource": manifest_json,

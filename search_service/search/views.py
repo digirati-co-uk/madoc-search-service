@@ -78,23 +78,25 @@ class IIIFDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = IIIFResource.objects.all()
     serializer_class = IIIFSerializer
 
+    def get_object(self):
+        if madoc_site_urn:= request_madoc_site_urn(self.request): 
+            logger.debug(f"Got madoc site urn: {madoc_site_urn}")
+            lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+            url_id = self.kwargs.get(lookup_url_kwarg)
+            self.kwargs[lookup_url_kwarg] = f'{madoc_site_urn}|{url_id}'
+        return super().get_object()
+
     def update(self, request, *args, **kwargs):
         """
         Override the update so that we can rewrite the format coming from Madoc in the event of
         an Update operation.
         """
-
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
         d = request.data
         # Try to populate from the request data, but if it's not there, just use existing
-        madoc_id =  request.data.get("madoc_id", instance.madoc_id)
-        if madoc_site_urn:= request_madoc_site_urn(request): 
-            logger.debug(f"Got madoc site urn: {madoc_site_urn}")
-            if not madoc_id.startswith(madoc_site_urn): 
-                return Response(f'Cannot modify resources without prefix {madoc_site_urn}', status.HTTP_400_BAD_REQUEST)
         data_dict = {
-            "madoc_id": madoc_id,
+            "madoc_id": instance.madoc_id, 
             "madoc_thumbnail": d.get("madoc_thumbnail", instance.madoc_thumbnail),
         }
         contexts = d.get("contexts")
