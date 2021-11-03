@@ -31,6 +31,12 @@ class ContextSerializer(serializers.HyperlinkedModelSerializer):
         fields = ["url", "id", "type", "slug"]
         extra_kwargs = {"url": {"lookup_field": "slug"}}
 
+class MadocIDSiteURNField(serializers.Serializer): 
+    """ 
+        """
+    
+    def to_representation(self, value): 
+        return value.split('|')[-1]
 
 class IIIFSerializer(serializers.HyperlinkedModelSerializer):
     """
@@ -38,6 +44,7 @@ class IIIFSerializer(serializers.HyperlinkedModelSerializer):
     """
 
     contexts = ContextSerializer(read_only=True, many=True)
+    madoc_id = MadocIDSiteURNField(read_only=True)
 
     class Meta:
         model = IIIFResource
@@ -60,6 +67,31 @@ class IIIFSerializer(serializers.HyperlinkedModelSerializer):
             "contexts",
         ]
 
+class IIIFCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for IIIF Prezi 3 resources.
+    """
+    class Meta:
+        model = IIIFResource
+        fields = [
+            "madoc_id",
+            "madoc_thumbnail",
+            "id",
+            "type",
+            "label",
+            "thumbnail",
+            "summary",
+            "metadata",
+            "rights",
+            "provider",
+            "requiredStatement",
+            "navDate",
+            "first_canvas_id",
+            "first_canvas_json",
+            "contexts",
+        ]
+
+
 
 class IIIFSummary(serializers.HyperlinkedModelSerializer):
     """
@@ -68,6 +100,7 @@ class IIIFSummary(serializers.HyperlinkedModelSerializer):
     """
 
     contexts = ContextSerializer(read_only=True, many=True)
+    madoc_id = MadocIDSiteURNField(read_only=True)
 
     class Meta:
         model = IIIFResource
@@ -88,6 +121,13 @@ class ContextSummarySerializer(serializers.HyperlinkedModelSerializer):
     Serializer that produces a summary of a Context object for return in lists of
     search results or other similar nested views
     """
+    id = serializers.SerializerMethodField(source='*')
+
+    def get_id(self, obj):
+        if obj.type == 'Manifest' and '|' in obj.id: 
+            return obj.id.split('|')[-1]
+        else: 
+            return obj.id
 
     class Meta:
         model = Context
@@ -128,7 +168,7 @@ class IIIFSearchSummarySerializer(serializers.HyperlinkedModelSerializer):
 
     contexts = ContextSummarySerializer(read_only=True, many=True)
     hits = serializers.SerializerMethodField("get_hits")
-    resource_id = serializers.CharField(source="madoc_id")
+    resource_id = MadocIDSiteURNField(source="madoc_id", read_only=True)
     resource_type = serializers.CharField(source="type")
     metadata = serializers.SerializerMethodField("get_metadata")
     rank = serializers.FloatField(read_only=True)

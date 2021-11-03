@@ -33,6 +33,7 @@ from .serializers import (
     UserSerializer,
     IndexablesSerializer,
     IIIFSerializer,
+    IIIFCreateSerializer,
     ContextSerializer,
     IIIFSearchSummarySerializer,
     CaptureModelSerializer,
@@ -162,6 +163,20 @@ class IIIFList(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ["madoc_id"]
 
+    serializer_mapping = {
+            'POST': IIIFCreateSerializer, 
+            }
+
+    def get_serializer_class(self):
+        method = self.request.method
+        logger.info(method)
+        if serializer_class:=self.serializer_mapping.get(method):
+            return serializer_class
+        elif serializer_class:=self.serializer_mapping.get("default"):
+            return serializer_class
+        else: 
+            return self.serializer_class
+
     def create(self, request, *args, **kwargs):
         """
         Override the .create() method on the rest-framework generic ListCreateAPIViewset
@@ -261,9 +276,16 @@ class IIIFList(generics.ListCreateAPIView):
             d = overridden
         else:
             d = request.data
+
+        if madoc_site_urn:= request_madoc_site_urn(request): 
+            logger.debug(f"Got madoc site urn: {madoc_site_urn}")
+            madoc_id = f"{madoc_site_urn}|{d['id']}"
+        else: 
+            madoc_id = d["id"]
+
         # Cascade
         cascade = d.get("cascade")
-        logger.debug("Truth(y) value of cascade", bool(cascade))
+        logger.debug(f"Truth(y) value of cascade: {bool(cascade)}")
         # Get the contexts from the "context" key in the outer context of the request payload
         contexts = d.get("contexts")
         # We have a IIIF resource to index
@@ -283,13 +305,8 @@ class IIIFList(generics.ListCreateAPIView):
                 # Add self to context, this is so that for example, if constrain context to a specific object
                 # it finds content _on_ that object, and not just on objects _within_ that object.
                 if iiif3.get("type"):
-                    contexts += [{"id": d["id"], "type": iiif3["type"]}]
+                    contexts += [{"id": madoc_id, "type": iiif3["type"]}]
 
-        if madoc_site_urn:= request_madoc_site_urn(request): 
-            logger.debug(f"Got madoc site urn: {madoc_site_urn}")
-            madoc_id = f"{madoc_site_urn}|{d['id']}"
-        else: 
-            madoc_id = d["id"]
 
         logger.debug(f"Creating with madoc_id: {madoc_id}")
         # Create the manifest and return the data and header information
@@ -315,6 +332,9 @@ class IIIFList(generics.ListCreateAPIView):
                         parent=d["id"],
                     )
                     logger.debug(f"Cascaded: {item_headers}")
+
+        if madoc_site_urn: 
+            manifest_data['madoc_id'] = d["id"]
         return Response(manifest_data, status=status.HTTP_201_CREATED, headers=manifest_headers)
 
 

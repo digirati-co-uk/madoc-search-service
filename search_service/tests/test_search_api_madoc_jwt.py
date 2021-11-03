@@ -67,7 +67,7 @@ def test_iiif_instance(http_service, iiif_collection, madoc_access_jwt_headers):
     result = requests.post(url=http_service + "/api/search/iiif", json=post_json, headers=headers)
     j = result.json()
     assert result.status_code == 201
-    assert j.get("madoc_id") == f"urn:madoc:site:1|urn:muya:manifest:{id}"
+    assert j.get("madoc_id") == f"urn:muya:manifest:{id}"
     assert j.get("madoc_thumbnail") == f"{image_service}/full/400,/0/default.jpg"
     assert j.get("first_canvas_id") is not None
     assert j.get("first_canvas_json") is not None
@@ -551,7 +551,7 @@ def test_simple_query_thumbnail(http_service, madoc_access_jwt_headers):
     result = requests.post(url=http_service + "/api/search/iiif", json=post_json, headers=headers)
     j = result.json()
     assert result.status_code == 201
-    assert j.get("madoc_id") == f"urn:madoc:site:1|{manifest_id}"
+    assert j.get("madoc_id") == manifest_id
     assert j.get("madoc_thumbnail") == thumbnail_url
 
     query = {
@@ -676,6 +676,7 @@ def test_manifest_update_nochange(http_service, iiif_collection, madoc_access_jw
     )
     j = r.json()
     assert r.status_code == 200
+    assert r.json().get('madoc_id') == identifier
 
 
 def test_manifest_update_labelchange(http_service, iiif_collection, madoc_access_jwt_headers):
@@ -696,6 +697,7 @@ def test_manifest_update_labelchange(http_service, iiif_collection, madoc_access
         url=http_service + f"/api/search/iiif/{identifier}", json=payload, headers=headers
     )
     assert r.status_code == 200
+    assert r.json().get('madoc_id') == identifier
 
 
 def test_updated_label(http_service, madoc_access_jwt_headers):
@@ -708,4 +710,4 @@ def test_updated_label(http_service, madoc_access_jwt_headers):
     assert result.status_code == requests.codes.ok
     j = result.json()
     assert len(j["results"]) == 1
-    assert j["results"][0]["resource_id"] == "urn:madoc:site:1|urn:muya:manifest:0000000140"
+    assert j["results"][0]["resource_id"] == "urn:muya:manifest:0000000140"
