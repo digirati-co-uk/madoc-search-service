@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('iiif_search', '0003_auto_20201120_1253'),
+        ('search', '0003_auto_20201120_1253'),
     ]
 
     operations = [
         migrations.RemoveIndex(
             model_name='indexables',
-            name='iiif_search_inde_origina_7999e9_idx',
+            name='search_inde_origina_7999e9_idx',
         ),
     ]

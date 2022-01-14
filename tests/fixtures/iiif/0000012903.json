@@ -94,7 +94,7 @@
                 "width": 3840,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0129/0000012903/00000001.jpx",
+                  "@id": "http://mock-remote-http.org/iiif/j2k/0000/0129/0000012903/00000001.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },

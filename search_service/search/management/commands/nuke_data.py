@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from iiif_search.models import IIIFResource, Indexables
+from search.models import IIIFResource, Indexables
 import logging
 
 

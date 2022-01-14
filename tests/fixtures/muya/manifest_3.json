@@ -10,11 +10,11 @@
 	},
 	"metadata": [{
 		"label": {
-			"en": ["Title"], 
+			"en": ["Title"],
 			"de": ["Titel"]
 		},
 		"value": {
-			"en": ["Seder Seli\u1e25ot (Western Ashkenazi rite)"], 
+			"en": ["Seder Seli\u1e25ot (Western Ashkenazi rite)"],
 			"de": ["Testtitel"]
 		}
 	}, {
@@ -90,6 +90,7 @@
 			"en": ["Photo: \u00a9 Bodleian Libraries, University of Oxford"]
 		}
 	}],
+
 	"homepage": [{
 		"id": "https://digital.bodleian.ox.ac.uk/objects/029e4c7d-3955-4f22-ab67-781e434c8b50",
 		"type": "Text",
@@ -132,11 +133,11 @@
 		"id": "https://iiif.bodleian.ox.ac.uk/iiif/image/f4c4d772-d19b-42d6-b817-805e405c7714/full/256,/0/default.jpg",
 		"type": "Image",
 		"service": [{
-			"@id": "https://iiif.bodleian.ox.ac.uk/iiif/image/f4c4d772-d19b-42d6-b817-805e405c7714",
+			"@id": "http://mock-remote-http.org/iiif/image/f4c4d772-d19b-42d6-b817-805e405c7714",
 			"@type": "ImageService2",
 			"profile": "http://iiif.io/api/image/2/level1.json"
 		}, {
-			"id": "https://iiif.bodleian.ox.ac.uk/iiif/image/f4c4d772-d19b-42d6-b817-805e405c7714",
+			"id": "http://mock-remote-http.org/iiif/image/f4c4d772-d19b-42d6-b817-805e405c7714",
 			"type": "ImageService3",
 			"profile": "level1"
 		}]

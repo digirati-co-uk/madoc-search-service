@@ -94,7 +94,7 @@
                 "width": 980,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000001.jpx",
+                  "@id": "http://mock-remote-http.org/iiif/j2k/0000/0001/0000000140/00000001.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -122,7 +122,7 @@
                 "width": 956,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000002.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000002.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -150,7 +150,7 @@
                 "width": 902,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000003.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000003.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -178,7 +178,7 @@
                 "width": 896,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000004.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000004.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -206,7 +206,7 @@
                 "width": 902,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000005.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000005.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -234,7 +234,7 @@
                 "width": 870,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000006.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000006.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -262,7 +262,7 @@
                 "width": 899,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000007.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000007.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -290,7 +290,7 @@
                 "width": 870,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000008.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000008.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -318,7 +318,7 @@
                 "width": 899,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000009.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000009.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -346,7 +346,7 @@
                 "width": 870,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000010.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000010.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -374,7 +374,7 @@
                 "width": 892,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000011.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000011.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -402,7 +402,7 @@
                 "width": 870,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000012.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000012.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -430,7 +430,7 @@
                 "width": 892,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000013.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000013.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -458,7 +458,7 @@
                 "width": 870,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000014.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000014.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -486,7 +486,7 @@
                 "width": 892,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000015.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000015.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -514,7 +514,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000016.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000016.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -542,7 +542,7 @@
                 "width": 892,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000017.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000017.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -570,7 +570,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000018.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000018.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -598,7 +598,7 @@
                 "width": 855,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000019.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000019.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -626,7 +626,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000020.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000020.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -654,7 +654,7 @@
                 "width": 855,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000021.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000021.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -682,7 +682,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000022.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000022.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -710,7 +710,7 @@
                 "width": 855,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000023.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000023.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -738,7 +738,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000024.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000024.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -766,7 +766,7 @@
                 "width": 855,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000025.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000025.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -794,7 +794,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000026.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000026.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -822,7 +822,7 @@
                 "width": 855,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000027.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000027.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -850,7 +850,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000028.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000028.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -878,7 +878,7 @@
                 "width": 855,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000029.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000029.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -906,7 +906,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000030.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000030.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -934,7 +934,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000031.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000031.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -962,7 +962,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000032.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000032.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -990,7 +990,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000033.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000033.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1018,7 +1018,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000034.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000034.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1046,7 +1046,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000035.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000035.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1074,7 +1074,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000036.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000036.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1102,7 +1102,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000037.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000037.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1130,7 +1130,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000038.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000038.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1158,7 +1158,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000039.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000039.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1186,7 +1186,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000040.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000040.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1214,7 +1214,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000041.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000041.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1242,7 +1242,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000042.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000042.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1270,7 +1270,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000043.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000043.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1298,7 +1298,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000044.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000044.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1326,7 +1326,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000045.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000045.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1354,7 +1354,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000046.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000046.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1382,7 +1382,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000047.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000047.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1410,7 +1410,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000048.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000048.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1438,7 +1438,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000049.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000049.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1466,7 +1466,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000050.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000050.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1494,7 +1494,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000051.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000051.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1522,7 +1522,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000052.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000052.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1550,7 +1550,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000053.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000053.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1578,7 +1578,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000054.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000054.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1606,7 +1606,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000055.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000055.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1634,7 +1634,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000056.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000056.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1662,7 +1662,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000057.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000057.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1690,7 +1690,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000058.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000058.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1718,7 +1718,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000059.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000059.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1746,7 +1746,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000060.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000060.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1774,7 +1774,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000061.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000061.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1802,7 +1802,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000062.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000062.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1830,7 +1830,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000063.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000063.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1858,7 +1858,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000064.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000064.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1886,7 +1886,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000065.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000065.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1914,7 +1914,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000066.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000066.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1942,7 +1942,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000067.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000067.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1970,7 +1970,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000068.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000068.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -1998,7 +1998,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000069.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000069.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2026,7 +2026,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000070.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000070.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2054,7 +2054,7 @@
                 "width": 852,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000071.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000071.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2082,7 +2082,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000072.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000072.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2110,7 +2110,7 @@
                 "width": 817,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000073.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000073.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2138,7 +2138,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000074.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000074.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2166,7 +2166,7 @@
                 "width": 817,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000075.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000075.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2194,7 +2194,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000076.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000076.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2222,7 +2222,7 @@
                 "width": 817,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000077.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000077.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2250,7 +2250,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000078.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000078.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2278,7 +2278,7 @@
                 "width": 814,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000079.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000079.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2306,7 +2306,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000080.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000080.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2334,7 +2334,7 @@
                 "width": 814,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000081.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000081.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2362,7 +2362,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000082.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000082.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2390,7 +2390,7 @@
                 "width": 866,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000083.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000083.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2418,7 +2418,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000084.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000084.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2446,7 +2446,7 @@
                 "width": 866,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000085.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000085.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2474,7 +2474,7 @@
                 "width": 844,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000086.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000086.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2502,7 +2502,7 @@
                 "width": 866,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000087.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000087.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2530,7 +2530,7 @@
                 "width": 844,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000088.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000088.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2558,7 +2558,7 @@
                 "width": 866,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000089.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000089.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2586,7 +2586,7 @@
                 "width": 844,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000090.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000090.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2614,7 +2614,7 @@
                 "width": 866,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000091.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000091.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2642,7 +2642,7 @@
                 "width": 844,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000092.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000092.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2670,7 +2670,7 @@
                 "width": 866,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000093.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000093.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2698,7 +2698,7 @@
                 "width": 844,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000094.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000094.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2726,7 +2726,7 @@
                 "width": 866,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000095.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000095.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2754,7 +2754,7 @@
                 "width": 844,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000096.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000096.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2782,7 +2782,7 @@
                 "width": 866,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000097.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000097.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2810,7 +2810,7 @@
                 "width": 844,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000098.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000098.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2838,7 +2838,7 @@
                 "width": 866,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000099.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000099.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2866,7 +2866,7 @@
                 "width": 844,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000100.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000100.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2894,7 +2894,7 @@
                 "width": 866,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000101.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000101.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2922,7 +2922,7 @@
                 "width": 844,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000102.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000102.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2950,7 +2950,7 @@
                 "width": 866,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000103.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000103.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -2978,7 +2978,7 @@
                 "width": 844,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000104.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000104.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3006,7 +3006,7 @@
                 "width": 866,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000105.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000105.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3034,7 +3034,7 @@
                 "width": 844,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000106.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000106.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3062,7 +3062,7 @@
                 "width": 866,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000107.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000107.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3090,7 +3090,7 @@
                 "width": 841,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000108.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000108.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3118,7 +3118,7 @@
                 "width": 862,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000109.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000109.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3146,7 +3146,7 @@
                 "width": 841,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000110.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000110.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3174,7 +3174,7 @@
                 "width": 862,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000111.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000111.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3202,7 +3202,7 @@
                 "width": 839,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000112.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000112.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3230,7 +3230,7 @@
                 "width": 853,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000113.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000113.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3258,7 +3258,7 @@
                 "width": 839,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000114.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000114.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3286,7 +3286,7 @@
                 "width": 853,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000115.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000115.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3314,7 +3314,7 @@
                 "width": 839,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000116.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000116.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3342,7 +3342,7 @@
                 "width": 853,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000117.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000117.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3370,7 +3370,7 @@
                 "width": 839,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000118.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000118.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3398,7 +3398,7 @@
                 "width": 853,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000119.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000119.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3426,7 +3426,7 @@
                 "width": 839,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000120.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000120.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3454,7 +3454,7 @@
                 "width": 853,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000121.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000121.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3482,7 +3482,7 @@
                 "width": 839,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000122.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000122.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3510,7 +3510,7 @@
                 "width": 853,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000123.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000123.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3538,7 +3538,7 @@
                 "width": 839,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000124.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000124.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3566,7 +3566,7 @@
                 "width": 853,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000125.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000125.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3594,7 +3594,7 @@
                 "width": 839,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000126.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000126.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3622,7 +3622,7 @@
                 "width": 853,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000127.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000127.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3650,7 +3650,7 @@
                 "width": 839,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000128.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000128.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3678,7 +3678,7 @@
                 "width": 853,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000129.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000129.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3706,7 +3706,7 @@
                 "width": 839,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000130.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000130.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3734,7 +3734,7 @@
                 "width": 853,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000131.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000131.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3762,7 +3762,7 @@
                 "width": 839,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000132.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000132.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3790,7 +3790,7 @@
                 "width": 853,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000133.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000133.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3818,7 +3818,7 @@
                 "width": 814,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000134.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000134.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3846,7 +3846,7 @@
                 "width": 853,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000135.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000135.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3874,7 +3874,7 @@
                 "width": 814,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000136.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000136.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3902,7 +3902,7 @@
                 "width": 853,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000137.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000137.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3930,7 +3930,7 @@
                 "width": 814,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000138.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000138.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3958,7 +3958,7 @@
                 "width": 849,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000139.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000139.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -3986,7 +3986,7 @@
                 "width": 786,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000140.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000140.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4014,7 +4014,7 @@
                 "width": 819,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000141.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000141.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4042,7 +4042,7 @@
                 "width": 786,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000142.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000142.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4070,7 +4070,7 @@
                 "width": 815,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000143.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000143.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4098,7 +4098,7 @@
                 "width": 795,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000144.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000144.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4126,7 +4126,7 @@
                 "width": 815,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000145.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000145.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4154,7 +4154,7 @@
                 "width": 795,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000146.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000146.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4182,7 +4182,7 @@
                 "width": 815,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000147.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000147.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4210,7 +4210,7 @@
                 "width": 795,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000148.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000148.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4238,7 +4238,7 @@
                 "width": 815,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000149.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000149.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4266,7 +4266,7 @@
                 "width": 795,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000150.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000150.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4294,7 +4294,7 @@
                 "width": 815,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000151.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000151.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4322,7 +4322,7 @@
                 "width": 795,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000152.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000152.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4350,7 +4350,7 @@
                 "width": 815,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000153.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000153.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4378,7 +4378,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000154.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000154.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4406,7 +4406,7 @@
                 "width": 815,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000155.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000155.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4434,7 +4434,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000156.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000156.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4462,7 +4462,7 @@
                 "width": 815,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000157.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000157.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4490,7 +4490,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000158.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000158.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4518,7 +4518,7 @@
                 "width": 815,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000159.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000159.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4546,7 +4546,7 @@
                 "width": 816,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000160.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000160.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4574,7 +4574,7 @@
                 "width": 815,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000161.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000161.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4602,7 +4602,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000162.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000162.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4630,7 +4630,7 @@
                 "width": 849,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000163.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000163.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4658,7 +4658,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000164.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000164.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4686,7 +4686,7 @@
                 "width": 849,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000165.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000165.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4714,7 +4714,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000166.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000166.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4742,7 +4742,7 @@
                 "width": 809,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000167.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000167.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4770,7 +4770,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000168.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000168.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4798,7 +4798,7 @@
                 "width": 809,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000169.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000169.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4826,7 +4826,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000170.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000170.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4854,7 +4854,7 @@
                 "width": 809,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000171.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000171.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4882,7 +4882,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000172.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000172.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4910,7 +4910,7 @@
                 "width": 835,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000173.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000173.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4938,7 +4938,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000174.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000174.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4966,7 +4966,7 @@
                 "width": 835,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000175.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000175.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -4994,7 +4994,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000176.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000176.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5022,7 +5022,7 @@
                 "width": 835,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000177.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000177.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5050,7 +5050,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000178.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000178.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5078,7 +5078,7 @@
                 "width": 819,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000179.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000179.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5106,7 +5106,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000180.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000180.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5134,7 +5134,7 @@
                 "width": 824,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000181.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000181.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5162,7 +5162,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000182.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000182.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5190,7 +5190,7 @@
                 "width": 824,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000183.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000183.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5218,7 +5218,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000184.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000184.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5246,7 +5246,7 @@
                 "width": 824,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000185.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000185.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5274,7 +5274,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000186.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000186.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5302,7 +5302,7 @@
                 "width": 824,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000187.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000187.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5330,7 +5330,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000188.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000188.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5358,7 +5358,7 @@
                 "width": 824,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000189.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000189.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5386,7 +5386,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000190.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000190.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5414,7 +5414,7 @@
                 "width": 845,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000191.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000191.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5442,7 +5442,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000192.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000192.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5470,7 +5470,7 @@
                 "width": 845,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000193.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000193.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5498,7 +5498,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000194.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000194.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5526,7 +5526,7 @@
                 "width": 845,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000195.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000195.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5554,7 +5554,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000196.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000196.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5582,7 +5582,7 @@
                 "width": 845,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000197.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000197.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5610,7 +5610,7 @@
                 "width": 831,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000198.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000198.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5638,7 +5638,7 @@
                 "width": 845,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000199.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000199.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },
@@ -5666,7 +5666,7 @@
                 "width": 928,
                 "service": {
                   "@context": "http://iiif.io/api/image/2/context.json",
-                  "@id": "https://iiif.ub.uni-leipzig.de/iiif/j2k/0000/0001/0000000140/00000200.jpx",
+                  "@id": "http://mock-remote-http/iiif/j2k/0000/0001/0000000140/00000200.jpx",
                   "profile": "http://iiif.io/api/image/2/level1.json"
                 }
               },

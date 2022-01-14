@@ -5,10 +5,10 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [("iiif_search", "0001_initial")]
+    dependencies = [("search", "0001_initial")]
 
     operations = [
-        migrations.RemoveIndex(model_name="indexables", name="iiif_search_inde_languag_8d9a47_idx"),
+        migrations.RemoveIndex(model_name="indexables", name="search_inde_languag_8d9a47_idx"),
         migrations.RenameField(
             model_name="indexables", old_name="language_iso629_1", new_name="language_iso639_1"
         ),
@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
             model_name="indexables",
             index=models.Index(
                 fields=["language_iso639_2", "language_iso639_1", "language_display"],
-                name="iiif_search_inde_languag_e4a69b_idx",
+                name="search_inde_languag_e4a69b_idx",
             ),
         ),
     ]

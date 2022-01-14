@@ -7,7 +7,7 @@ import django_extensions.db.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('iiif_search', '0005_auto_20210216_1706'),
+        ('search', '0005_auto_20210216_1706'),
     ]
 
     operations = [

@@ -94,13 +94,13 @@ class Migration(migrations.Migration):
                 (
                     "contexts",
                     models.ManyToManyField(
-                        blank=True, related_name="associated_iiif", to="iiif_search.Context"
+                        blank=True, related_name="associated_iiif", to="search.Context"
                     ),
                 ),
                 (
                     "items",
                     models.ManyToManyField(
-                        blank=True, related_name="_iiifresource_items_+", to="iiif_search.IIIFResource"
+                        blank=True, related_name="_iiifresource_items_+", to="search.IIIFResource"
                     ),
                 ),
             ],
@@ -162,7 +162,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="indexables",
-                        to="iiif_search.iiifresource",
+                        to="search.iiifresource",
                     ),
                 ),
             ],
@@ -170,30 +170,30 @@ class Migration(migrations.Migration):
         migrations.AddIndex(
             model_name="indexables",
             index=django.contrib.postgres.indexes.GinIndex(
-                fields=["search_vector"], name="iiif_search_inde_search__09e477_gin"
+                fields=["search_vector"], name="search_inde_search__09e477_gin"
             ),
         ),
         migrations.AddIndex(
             model_name="indexables",
-            index=models.Index(fields=["original_content"], name="iiif_search_inde_origina_7999e9_idx"),
+            index=models.Index(fields=["original_content"], name="search_inde_origina_7999e9_idx"),
         ),
         migrations.AddIndex(
             model_name="indexables",
-            index=models.Index(fields=["content_id"], name="iiif_search_inde_content_2b8043_idx"),
+            index=models.Index(fields=["content_id"], name="search_inde_content_2b8043_idx"),
         ),
         migrations.AddIndex(
             model_name="indexables",
             index=models.Index(
                 fields=["language_iso629_2", "language_iso629_1", "language_display"],
-                name="iiif_search_inde_languag_8d9a47_idx",
+                name="search_inde_languag_8d9a47_idx",
             ),
         ),
         migrations.AddIndex(
             model_name="indexables",
-            index=models.Index(fields=["type"], name="iiif_search_inde_type_8a963a_idx"),
+            index=models.Index(fields=["type"], name="search_inde_type_8a963a_idx"),
         ),
         migrations.AddIndex(
             model_name="indexables",
-            index=models.Index(fields=["subtype"], name="iiif_search_inde_subtype_c91e89_idx"),
+            index=models.Index(fields=["subtype"], name="search_inde_subtype_c91e89_idx"),
         ),
     ]
