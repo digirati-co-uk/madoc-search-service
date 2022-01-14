@@ -483,7 +483,7 @@ def test_simple_query_thumbnail(http_service):
     Adds an additional manifest from /fixtures/muya/ where the iiif
     has a thumbnail block to allow testing for its presence after ingest and querying.
     """
-    with open(f"./fixtures/muya/manifest_3.json", "r") as manifest_f:
+    with open(f"fixtures/muya/manifest_3.json", "r") as manifest_f:
         manifest_json = json.load(manifest_f)
     manifest_id = "iiif3_thumbnail_test"
     thumbnail_url = manifest_json.get("thumbnail")[0].get("id")

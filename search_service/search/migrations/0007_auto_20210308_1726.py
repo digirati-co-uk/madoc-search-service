@@ -7,12 +7,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('search', '0006_auto_20210308_1146'),
+        ('iiif_search', '0006_auto_20210308_1146'),
     ]
 
     operations = [
         migrations.AddIndex(
             model_name='indexables',
-            index=django.contrib.postgres.indexes.HashIndex(fields=['indexable'], name='search_inde_indexab_3d4d48_hash'),
+            index=django.contrib.postgres.indexes.HashIndex(fields=['indexable'], name='iiif_search_inde_indexab_3d4d48_hash'),
         ),
     ]

@@ -1,12 +1,12 @@
-
-from django.contrib.postgres.search import SearchVectorField, SearchVector
 from django.contrib.postgres.indexes import GinIndex, HashIndex
+from django.contrib.postgres.search import SearchVectorField, SearchVector
 from django.db import models
-from model_utils.models import TimeStampedModel
-from django_extensions.db.fields import AutoSlugField
+from django.db.models.functions import Upper
 
 # from .langbase import INTERNET_LANGUAGES
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
+from django_extensions.db.fields import AutoSlugField
+from model_utils.models import TimeStampedModel
 
 
 # Add Models
@@ -136,9 +136,16 @@ class Indexables(TimeStampedModel):
         indexes = [
             GinIndex(fields=["search_vector"]),
             models.Index(fields=["content_id"]),
+            models.Index(fields=["resource_id"]),
             models.Index(fields=["language_iso639_2", "language_iso639_1", "language_display"]),
             models.Index(fields=["type"]),
             models.Index(fields=["subtype"]),
             models.Index(fields=["type", "subtype"]),
+            models.Index(Upper("type"), name="uppercase_type"),
+            models.Index(Upper("subtype"), name="uppercase_subtype"),
+            models.Index(Upper("type"), Upper("subtype"), name="uppercase_type_subtype"),
+            models.Index(
+                Upper("type"), Upper("subtype"), Upper("indexable"), name="uppercase_indexables"
+            ),
             HashIndex(fields=["indexable"]),
         ]

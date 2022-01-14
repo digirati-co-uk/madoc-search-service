@@ -1,17 +1,13 @@
 import logging
-from datetime import datetime
 
-import pytz
 from django.contrib.postgres.search import SearchRank
 from django.db.models import F
 from django.db.models import Max
 from django.db.models import OuterRef, Subquery
-from django.db.models import Q, Value, FloatField, IntegerField, CharField, DateTimeField
+from django.db.models import Q, Value, FloatField
 from rest_framework.filters import BaseFilterBackend
 
-from .models import IIIFResource, Indexables
-
-utc = pytz.UTC
+from .models import IIIFResource, Context, Indexables
 
 logger = logging.getLogger(__name__)
 
@@ -88,27 +84,6 @@ class AutoCompleteFilter(BaseFilterBackend):
         return queryset.distinct()
 
 
-def get_sort_default(order_key):
-    """
-    Unused function (for now), as the sorting is based on rank, if no
-    order_key is provided.
-    """
-    if value_for_sort := order_key.get("value_for_sort"):
-        if value_for_sort.startswith("indexable_int"):
-            return 0, IntegerField()
-        elif value_for_sort.startswith("indexable_float"):
-            return 0.0, FloatField()
-        elif value_for_sort.startswith("indexable_date"):
-            return datetime.min.replace(tzinfo=utc), DateTimeField()
-        else:
-            return "", CharField()
-
-    if order_key.get("type") and order_key.get("subtype"):
-        return "", CharField()
-
-    return 0.0, FloatField()
-
-
 class IIIFSearchFilter(BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         """
@@ -122,8 +97,20 @@ class IIIFSearchFilter(BaseFilterBackend):
                 for f in request.data.get("prefilter_kwargs"):
                     queryset = queryset.filter(*(f,))
         if request.data.get("filter_kwargs", None):
-            logger.info("Got filter kwargs")
             queryset = queryset.filter(**request.data.get("filter_kwargs"))
+        # Step up to a different level and filter to those things which are part of the context
+        # of an object that meets the contains_kwargs filters.
+        if request.data.get("contains_kwargs", None):
+            # These are filters that are keyed off the context, not the iiif resource
+            # filter to contexts that match this set of filters.
+            contains_queryset = (
+                Context.objects.filter(**request.data.get("contains_kwargs"))
+                .distinct().values("id")
+            )
+            # Filter the list of IIIF objects to those objects whose identifier is in the
+            # list of contexts that match the query above.
+
+            queryset = queryset.filter(madoc_id__in=[x["id"] for x in contains_queryset])
         if request.data.get("postfilter_kwargs", None):
             # Just check if this thing is nested Q() objects, rather than dicts
             if type(request.data.get("postfilter_kwargs")[0]) == Q:
@@ -158,9 +145,9 @@ class IIIFSearchFilter(BaseFilterBackend):
                     # Appending each filter one at a time
                     queryset = queryset.filter(**filter_dict)
         search_query = None
-        if request.data.get("hits_filter_kwargs"):
+        if hits_filter_kwargs := request.data.get("hits_filter_kwargs"):
             # We have a dictionary of queries to use, so we use that
-            search_query = request.data["hits_filter_kwargs"].get("search_vector", None)
+            search_query = hits_filter_kwargs.get("search_vector", None)
         logger.warning(f"Search query {search_query}")
         if search_query:
             logger.debug(f"Search query for the ranking {search_query}")
@@ -174,6 +161,7 @@ class IIIFSearchFilter(BaseFilterBackend):
             queryset = queryset.distinct().annotate(
                 rank=Value(0.0, FloatField()),
             )
+        # Some ordering has been passed in from the request parser
         if isinstance(order_key, dict) and order_key.get("type") and order_key.get("subtype"):
             val = order_key.get("value_for_sort", "indexable")
             if order_key.get("direction") == "descending":
@@ -197,4 +185,5 @@ class IIIFSearchFilter(BaseFilterBackend):
                     )
                 ).order_by("sortk")
             return queryset
-        return queryset.order_by("-rank")
+        # Otherwise, default to sorting by rank.
+        return queryset.distinct().order_by("-rank")

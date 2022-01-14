@@ -7,8 +7,8 @@ volumes:
 services:
   django:
     build:
-      context: ../../
-      dockerfile: ./Dockerfile
+      context: ..
+      dockerfile: ../Dockerfile
     image: search-django
     depends_on:
       - postgres
