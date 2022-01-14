@@ -36,6 +36,7 @@ services:
       - MADOC_CLIENT_SECRET=madoc_client_secret
       - REQUIRE_AUTH=True
       - THUMBNAIL_FALLBACK=True
+      - WAITRESS=True
     ports:
       - "8000:8000"
       - "5000:5000"
