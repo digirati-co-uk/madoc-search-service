@@ -45,7 +45,7 @@ def get_first_canvas(iiif_resource, manifest=None):
 
 def get_info_json_data(image_service_id):
     info_url = f"{image_service_id}/info.json"
-    logger.info(f"Fetching info.json: ({info_url})")
+    logger.debug(f"Fetching info.json: ({info_url})")
     try:
         info = requests.get(info_url)
         return info.json()
@@ -105,9 +105,9 @@ def get_iiif_resource_thumbnail_json(iiif_resource, first_canvas_json={},
         https://github.com/atlas-viewer/iiif-image-api/blob/master/src/README.md
     """
     thumbnail_json = iiif_resource.get("thumbnail", [])
-    logger.info(f"IIIF id passed to thumbnail code: {iiif_resource.get('id', iiif_resource.get('@id', None))}")
+    logger.debug(f"IIIF id passed to thumbnail code: {iiif_resource.get('id', iiif_resource.get('@id', None))}")
     if not thumbnail_json and first_canvas_json:
-        logger.info("No thumbnail block on the resource")
+        logger.debug("No thumbnail block on the resource")
         if annotations := resources_by_type(iiif=first_canvas_json, iiif_type="Annotation"):
             image_annotation_bodies = [
                 a.get("body")
@@ -117,7 +117,7 @@ def get_iiif_resource_thumbnail_json(iiif_resource, first_canvas_json={},
             if image_annotation_bodies:
                 thumbnail_json = image_annotation_bodies[:1]
     if fallback:
-        logger.info("Dereferencing the info.json for the thumbnail")
+        logger.debug("Dereferencing the info.json for the thumbnail")
         try:
             thumbnail_json = [normalise_thumbnail_services(thumbnail) for thumbnail in thumbnail_json]
         except requests.exceptions.ConnectionError:
@@ -137,7 +137,7 @@ def format_thumbnail_url(thumbnail_json):
         if info := services[0].get("info"):
             thumbnail_id = info.get("@id")
         else:
-            thumbnail_id = services[0].get("@id")
+            thumbnail_id = services[0].get("@id", services[0].get("id"))
     else:
         thumbnail_id = thumbnail_json[0].get("id")
     return f"{thumbnail_id}/full/400,/0/default.jpg"
