@@ -651,8 +651,10 @@ def build_iiif_resource_data(validated_data, contexts=None):
         iiif3_resource, first_canvas_json=first_canvas_json, fallback=settings.THUMBNAIL_FALLBACK
     )
     if thumbnail_json:
+        if isinstance(thumbnail_json, list):
+            local_dict["madoc_thumbnail"] = format_thumbnail_url(thumbnail_json)
+            logger.info(local_dict["madoc_thumbnail"])
         local_dict["thumbnail"] = thumbnail_json
-        local_dict["madoc_thumbnail"] = format_thumbnail_url(thumbnail_json)
     if contexts is not None:
         local_contexts = deepcopy(contexts)
     else:
