@@ -144,8 +144,5 @@ class Indexables(TimeStampedModel):
             models.Index(Upper("type"), name="uppercase_type"),
             models.Index(Upper("subtype"), name="uppercase_subtype"),
             models.Index(Upper("type"), Upper("subtype"), name="uppercase_type_subtype"),
-            models.Index(
-                Upper("type"), Upper("subtype"), Upper("indexable"), name="uppercase_indexables"
-            ),
             HashIndex(fields=["indexable"]),
         ]

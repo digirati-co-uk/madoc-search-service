@@ -1,10 +1,3 @@
-FROM node:14 as frontend
-
-WORKDIR /app/yasna
-COPY ./yasna /app/yasna
-RUN yarn install --frozen-lockfile --non-interactive
-RUN yarn build
-
 FROM python:3.8-slim-bullseye
 
 RUN apt-get update
