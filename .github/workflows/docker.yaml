@@ -16,7 +16,7 @@ on:
 
 jobs:
 
-  madoc-ts-docker:
+  madoc-search-docker:
     runs-on: ubuntu-latest
 
     steps:
