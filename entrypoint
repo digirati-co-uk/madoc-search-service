@@ -34,44 +34,38 @@ sys.exit(0)
 END
 }
 until postgres_ready; do
-  >&2 echo 'Waiting for PostgreSQL to become available...'
+  >&2 echo 'entrypoint: Waiting for PostgreSQL to become available...'
   sleep 1
 done
->&2 echo 'PostgreSQL is available'
+>&2 echo 'entrypoint: PostgreSQL is available'
 
 echo "$MIGRATE"
 
-if [[ $MIGRATE ]]
-then
-  if [ "$MIGRATE" = "True" ]; then
-    python3 manage.py makemigrations --no-input
-    python3 manage.py migrate --no-input
-    python3 manage.py collectstatic --noinput
-  fi
+if [[ ($MIGRATE) && ("$MIGRATE" = "True") ]]; then
+  python3 manage.py makemigrations --no-input
+  python3 manage.py migrate --no-input --fake-initial
+  echo "entrypoint: Migrations finished"
+  python3 manage.py collectstatic --noinput
+  echo "entrypoint: Static files collected"
 fi
 
-if [[ $INIT_SUPERUSER ]]
-then
-  if [ "$INIT_SUPERUSER" = "True" ]; then
-    python3 manage.py initialise_superuser --user "$DJANGO_ADMIN" --email "$DJANGO_ADMIN_EMAIL" --password "$DJANGO_ADMIN_PASSWORD"
-  fi
+if [[ ($INIT_SUPERUSER) && ("$INIT_SUPERUSER" = "True") ]]; then
+  echo "entrypoint: Creating superuser"
+  python3 manage.py initialise_superuser --user "$DJANGO_ADMIN" --email "$DJANGO_ADMIN_EMAIL" --password "$DJANGO_ADMIN_PASSWORD"
 fi
 
 nginx
 
+
 # Switching the WSGI host to Waitress, which seems faster, and more robust than Gunicorn for long running jobs when
 # sitting behind Nginx.
-if [[ $WAITRESS ]]
-then  # WAITRESS is more robust than standard runserver, but won't autoreload during development
-  if [ "$WAITRESS" = "True" ]; then
-    python3 /app/manage.py waitress --port=5000 --threads=16
+# Switching the WSGI host to Waitress, which seems faster, and more robust than Gunicorn for long running jobs when
+# sitting behind Nginx.
+if [[ (-z "$LOADER") || ("$LOADER" = "False")]]; then
+  if [[ ($WAITRESS) && ("$WAITRESS" = "True") ]]; then
+    echo "Bringing up waitress on port 5000 as wsgi host"
+    waitress-serve --threads=16 --listen=127.0.0.1:5000 search_service.wsgi:application
   else
     python3 /app/manage.py runserver 5000
   fi
-else
-   python3 /app/manage.py runserver 5000
 fi
-
-
-
-

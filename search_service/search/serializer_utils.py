@@ -6,7 +6,11 @@ from bs4 import BeautifulSoup
 from collections import defaultdict
 from ordered_set import OrderedSet
 from dateutil import parser
+import bleach
+import logging
+import itertools
 
+logger = logging.getLogger(__name__)
 
 pg_languages = [
     "danish",
@@ -27,7 +31,7 @@ pg_languages = [
 ]
 
 
-def resources_by_type(iiif, iiif_type="Canvas", master_resources=None):
+def resources_by_type(iiif, iiif_type=("Canvas",), master_resources=None):
     """
     Iterate a Presentation API 3 manifest and produce a list of resources by type, e.g. Canvases
     or Annotations.
@@ -37,8 +41,11 @@ def resources_by_type(iiif, iiif_type="Canvas", master_resources=None):
     else:
         working_resources = master_resources
     if (items := iiif.get("items", None)) is not None:
-        resources = [c for c in items if c.get("type") is not None]
-        filtered_resources = [r for r in resources if r.get("type") == iiif_type]
+        if any([isinstance(item, list) for item in items]):
+            resources = [c for c in itertools.chain.from_iterable(items) if c.get("type") is not None]
+        else:
+            resources = [c for c in items if c.get("type") is not None]
+        filtered_resources = [r for r in resources if r.get("type") in iiif_type]
         if filtered_resources:
             working_resources += filtered_resources
         else:
@@ -201,13 +208,14 @@ def process_field(
                     lang = val_lang
                 if val:
                     for v in val:
+                        v = str(v)
                         if field_indexable_type == "text":
                             field_data.append(
                                 {
                                     "type": field_type,
                                     "subtype": subtype.lower(),
                                     "indexable": BeautifulSoup(v, "html.parser").text,
-                                    "original_content": {subtype: v},
+                                    "original_content": {subtype: bleach.clean(v)},
                                     **get_language_data(lang_code=lang, langbase=lang_base),
                                 }
                             )
@@ -227,20 +235,20 @@ def process_field(
                                         "subtype": subtype.lower(),
                                         "indexable_date_range_start": parsed_date,
                                         "indexable_date_range_end": parsed_date,
-                                        "original_content": {subtype: v},
+                                        "original_content": {subtype: bleach.clean(v)},
                                     }
                                 )
         else:
             indexable_values = []
             label_values = field_instance.get("label", {})
             if field_values:=field_instance.get("value"):
-                for lang, vals in field_values.items(): 
-                    if labels:= label_values.get(lang): 
+                for lang, vals in field_values.items():
+                    if labels:= label_values.get(lang):
                         subtype = labels[0]
                     if lang in ["@none", "none"]:
                         lang = default_language
                     language_data = get_language_data(lang_code=lang, langbase=lang_base)
-                    for v in vals: 
+                    for v in vals:
                         if field_indexable_type == "text":
                             field_data.append(
                                 {
@@ -536,6 +544,31 @@ def calc_offsets(obj):
     return
 
 
-if __name__ == "__main__":
-    pass
+class ActionBasedSerializerMixin(object):
+    serializer_mapping = {
+        "default": None,
+    }
 
+    def get_serializer_class(self):
+        logger.info(self.action)
+        if serializer_class := self.serializer_mapping.get(self.action):
+            return serializer_class
+        elif serializer_class := self.serializer_mapping.get("default"):
+            return serializer_class
+        else:
+            return self.serializer_class
+
+
+class MethodBasedSerializerMixin(object):
+    serializer_mapping = {
+        "default": None,
+    }
+
+    def get_serializer_class(self):
+        logger.info(self.request.method)
+        if serializer_class := self.serializer_mapping.get(self.request.method.lower()):
+            return serializer_class
+        elif serializer_class := self.serializer_mapping.get("default"):
+            return serializer_class
+        else:
+            return self.serializer_class

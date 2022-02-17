@@ -1,0 +1,26 @@
+{
+  "@context" : "http://iiif.io/api/image/2/context.json",
+  "protocol" : "http://iiif.io/api/image",
+  "width" : 6619,
+  "height" : 7830,
+  "sizes" : [
+     { "width" : 206, "height" : 244 },
+     { "width" : 413, "height" : 489 },
+     { "width" : 827, "height" : 978 },
+     { "width" : 1654, "height" : 1957 },
+     { "width" : 3309, "height" : 3915 }
+  ],
+  "tiles" : [
+     { "width" : 256, "height" : 256, "scaleFactors" : [ 1, 2, 4, 8, 16, 32 ] }
+  ],
+  "@id" : "https://iiif.bodleian.ox.ac.uk/iiif/image/f4c4d772-d19b-42d6-b817-805e405c7714",
+  "profile" : [
+     "http://iiif.io/api/image/2/level1",
+     { "formats" : [ "jpg" ],
+       "qualities" : ["native","color","gray","bitonal"],
+       "supports" : ["regionByPct","regionSquare","sizeByForcedWh","sizeByWh","sizeAboveFull","sizeUpscaling","rotationBy90s","mirroring"],
+       "maxWidth" : 4000,
+       "maxHeight" : 4000
+     }
+  ]
+}

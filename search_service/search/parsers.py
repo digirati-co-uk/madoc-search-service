@@ -7,15 +7,26 @@ from dateutil import parser
 import logging
 import unicodedata
 
+
 # Django imports
 from django.conf import settings
 from django.contrib.postgres.search import SearchQuery
 from django.db.models import Q
+from django.utils.translation import get_language
+
 
 # DRF Imports
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import JSONParser
 
+from .prezi_upgrader import Upgrader
+
+from .madoc_jwt import (
+    request_madoc_site_urn,
+)
+
+default_lang = get_language()
+upgrader = Upgrader(flags={"default_lang": default_lang})
 
 logger = logging.getLogger(__name__)
 
@@ -151,16 +162,16 @@ def parse_facets(facet_queries):
                                 )
                                 for k, v in sorted_facet_query.items()
                                 if k
-                                   in [
-                                       "type",
-                                       "subtype",
-                                       "indexable",
-                                       "value",
-                                       "indexable_int",
-                                       "ndexable_float",
-                                       "indexable_date_range_start",
-                                       "indexable_date_range_end",
-                                   ]  # These are the fields to query
+                                in [
+                                    "type",
+                                    "subtype",
+                                    "indexable",
+                                    "value",
+                                    "indexable_int",
+                                    "ndexable_float",
+                                    "indexable_date_range_start",
+                                    "indexable_date_range_end",
+                                ]  # These are the fields to query
                             ),
                         )
                         for sorted_facet_query in sorted_facet_queries
@@ -178,14 +189,22 @@ def is_latin(text):
     Can be used to test whether a search phrase is suitable for parsing as a fulltext query, or whether it
     should be treated as an "icontains" or similarly language independent query filter.
     """
-    return all([('LATIN' in unicodedata.name(x) or unicodedata.category(x).startswith('P')
-                 or unicodedata.category(x).startswith('N') or
-                 unicodedata.category(x).startswith('Z')) for x in text])
+    return all(
+        [
+            (
+                "LATIN" in unicodedata.name(x)
+                or unicodedata.category(x).startswith("P")
+                or unicodedata.category(x).startswith("N")
+                or unicodedata.category(x).startswith("Z")
+            )
+            for x in text
+        ]
+    )
 
 
 class IIIFSearchParser(JSONParser):
     def parse(self, stream, media_type=None, parser_context=None):
-        logger.info("IIIF Search Parser being invoked")
+        logger.debug("IIIF Search Parser being invoked")
         parser_context = parser_context or {}
         encoding = parser_context.get("encoding", settings.DEFAULT_CHARSET)
         try:
@@ -213,12 +232,17 @@ class IIIFSearchParser(JSONParser):
             facet_types = request_data.get("facet_types", global_facet_types)
             facet_languages = request_data.get("facet_languages")
             non_latin_fulltext = request_data.get("non_latin_fulltext", global_non_latin_fulltext)
-            search_multiple_fields = request_data.get("search_multiple_fields", global_search_multiple_fields)
+            search_multiple_fields = request_data.get(
+                "search_multiple_fields", global_search_multiple_fields
+            )
             num_facets = request_data.get("number_of_facets", 10)
             metadata_fields = request_data.get("metadata_fields", None)
             autocomplete_type = request_data.get("autocomplete_type", None)
             autocomplete_subtype = request_data.get("autocomplete_subtype", None)
             autocomplete_query = request_data.get("autocomplete_query", None)
+            if madoc_site_urn := request_madoc_site_urn(parser_context.get("request")):
+                logger.debug(f"Got madoc site urn: {madoc_site_urn}")
+                prefilter_kwargs.append(Q(**{f"madoc_id__startswith": madoc_site_urn}))
             if contexts:
                 prefilter_kwargs.append(Q(**{f"contexts__id__in": contexts}))
             if contexts_all:
@@ -240,11 +264,14 @@ class IIIFSearchParser(JSONParser):
                             search_string, search_type=search_type
                         )
                 else:
-                    [postfilter_q.append(Q(  # Iterate the split words/chars to make the Q objects
-                                **{
-                                    f"indexables__indexable__icontains": split_search
-                                }
-                            )) for split_search in search_string.split()]
+                    [
+                        postfilter_q.append(
+                            Q(  # Iterate the split words/chars to make the Q objects
+                                **{f"indexables__indexable__icontains": split_search}
+                            )
+                        )
+                        for split_search in search_string.split()
+                    ]
             for p in [
                 "type",
                 "subtype",
@@ -257,7 +284,7 @@ class IIIFSearchParser(JSONParser):
                     filter_kwargs[f"indexables__{p}__iexact"] = request_data[p]
             if query_raw and isinstance(query_raw, dict):
                 for raw_k, raw_v in query_raw.items():
-                    if raw_k.startswith("indexables__"):
+                    if raw_k.startswith(("indexables__", "type__", "madoc_id__", "id__")):
                         filter_kwargs[raw_k] = raw_v
             if query_float:
                 if query_float.get("value"):
@@ -303,6 +330,7 @@ class IIIFSearchParser(JSONParser):
             if search_type:
                 hits_filter_kwargs["search_type"] = search_type
             sort_order = request_data.get("ordering", {"ordering": "descending"})
+            logger.info(f"Filter kwargs: {filter_kwargs}")
             return {
                 "prefilter_kwargs": prefilter_kwargs,
                 "filter_kwargs": filter_kwargs,
@@ -319,5 +347,85 @@ class IIIFSearchParser(JSONParser):
                 "autocomplete_subtype": autocomplete_subtype,
                 "autocomplete_query": autocomplete_query,
             }
+        except ValueError as exc:
+            raise ParseError("JSON parse error - %s" % str(exc))
+
+
+def parse_and_configure_iiif_ingest(data, madoc_site_urn=None):
+    """
+    Will return an upgraded manifest and other properties needed by the ingest.
+
+    Expects as input a dict with:
+
+        {
+        "casacde": Boolean,
+        "cascade_canvases": Boolean,
+        "contexts": List,
+        "resource": IIIF Presentation API resource,
+        "id": Madoc ID (string),
+        "thumbnail": Thumbnail URI,
+        }
+
+    :param data:
+    :param madoc_site_urn:
+    :return:
+    """
+    _return = dict(
+        cascade=data.get("cascade", False),
+        cascade_canvases=data.get("cascade_canvases", False),
+        resource_contexts=data.get("contexts", []),
+        iiif3_resource=None,
+        manifest=None,
+        madoc_id=data.get("madoc_id", data.get("id")),
+        madoc_thumbnail=data.get("thumbnail"),
+        child=False,
+        parent=None,
+    )
+    if madoc_site_urn:
+        if not _return["madoc_id"].startswith(f"{madoc_site_urn}|"):
+            _return["madoc_id"] = f"{madoc_site_urn}|{_return['madoc_id']}"
+    if (iiif_resource := data.get("resource")) is not None:
+        if iiif_resource.get("@context") == "http://iiif.io/api/presentation/2/context.json":
+            iiif3 = upgrader.process_resource(iiif_resource, top=True)
+            iiif3["@context"] = "http://iiif.io/api/presentation/3/context.json"
+            _return["iiif3_resource"] = iiif3
+        else:
+            _return["iiif3_resource"] = iiif_resource
+    if (iiif := _return.get("iiif3_resource")) is not None:
+        _return["id"] = iiif.get("id")
+        # Add self to context, this is so that for example, if constrain context to a specific object
+        # it finds content _on_ that object, and not just on objects _within_ that object.
+        if (iiif_type := iiif.get("type")) is not None:
+            _return["resource_contexts"] += [{"id": _return["id"], "type": iiif_type}]
+            _return["type"] = iiif_type
+            if iiif_type == "Manifest":
+                _return["manifest"] = iiif
+    return _return
+
+
+class IIIFCreateUpdateParser(JSONParser):
+    def parse(self, stream, media_type=None, parser_context=None):
+        logger.debug("IIIF Ingest Parser being invoked")
+        parser_context = parser_context or {}
+        encoding = parser_context.get("encoding", settings.DEFAULT_CHARSET)
+        if madoc_site_urn := request_madoc_site_urn(parser_context["request"]._request):
+            logger.info(f"Got a Madoc Site URN {madoc_site_urn}")
+        else:
+            logger.info("No Madoc Site URN")
+        try:
+            decoded_stream = codecs.getreader(encoding)(stream)
+            request_data = json.loads(decoded_stream.read())
+            logger.debug("We have JSON")
+            if (overridden := parser_context.get("kwargs").get("data_override")) is not None:
+                logger.debug("Overridden")
+                return parse_and_configure_iiif_ingest(
+                    data=overridden, madoc_site_urn=madoc_site_urn
+                )
+            else:
+                logger.debug("Not overridden")
+                parsed = parse_and_configure_iiif_ingest(
+                    data=request_data, madoc_site_urn=madoc_site_urn
+                )
+                return parsed
         except ValueError as exc:
             raise ParseError("JSON parse error - %s" % str(exc))

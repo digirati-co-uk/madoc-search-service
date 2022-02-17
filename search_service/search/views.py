@@ -3,7 +3,6 @@
 import itertools
 import logging
 from collections import defaultdict
-from copy import deepcopy
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -17,6 +16,7 @@ from rest_framework import generics, filters, status
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import ValidationError, ParseError
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
@@ -24,11 +24,11 @@ from .filters import IIIFSearchFilter, FacetListFilter, AutoCompleteFilter
 from .indexable_utils import gen_indexables
 
 # Local imports
-from .langbase import LANGBASE
 from .models import Indexables, IIIFResource, Context
-from .parsers import IIIFSearchParser
+from .parsers import IIIFSearchParser, IIIFCreateUpdateParser
+from .pagination import MadocPagination
 from .prezi_upgrader import Upgrader
-from .serializer_utils import flatten_iiif_descriptive, resources_by_type
+from .serializer_utils import MethodBasedSerializerMixin
 from .serializers import (
     UserSerializer,
     IndexablesSerializer,
@@ -37,6 +37,10 @@ from .serializers import (
     IIIFSearchSummarySerializer,
     CaptureModelSerializer,
     AutocompleteSerializer,
+    IIIFCreateUpdateSerializer,
+)
+from .madoc_jwt import (
+    request_madoc_site_urn,
 )
 
 # Globals
@@ -53,10 +57,12 @@ logger = logging.getLogger(__name__)
 def api_root(request, format=None):
     return Response(
         {
-            "iiif": reverse("iiifresource-list", request=request, format=format),
-            "indexable": reverse("indexables-list", request=request, format=format),
-            "contexts": reverse("context-list", request=request, format=format),
-            "search": reverse("search", request=request, format=format),
+            "iiif": reverse("search.api.iiifresource_list", request=request, format=format),
+            "indexable": reverse(
+                "search.api.indexables_list", request=request, format=format
+            ),
+            "contexts": reverse("search.api.context_list", request=request, format=format),
+            "search": reverse("search.api.search", request=request, format=format),
         }
     )
 
@@ -71,232 +77,36 @@ class UserDetail(generics.RetrieveAPIView):
     serializer_class = UserSerializer
 
 
-class IIIFDetail(generics.RetrieveUpdateDestroyAPIView):
+class IIIFDetail(MethodBasedSerializerMixin, generics.RetrieveUpdateDestroyAPIView):
     queryset = IIIFResource.objects.all()
     serializer_class = IIIFSerializer
+    serializer_mapping = {
+        "get": IIIFSerializer,
+        "put": IIIFCreateUpdateSerializer,
+    }
+    # permission_classes = [AllowAny]
+    parser_classes = [IIIFCreateUpdateParser]
 
-    def update(self, request, *args, **kwargs):
-        """
-        Override the update so that we can rewrite the format coming from Madoc in the event of
-        an Update operation.
-        """
-        partial = kwargs.pop("partial", False)
-        instance = self.get_object()
-        d = request.data
-        # Try to populate from the request data, but if it's not there, just use existing
-        data_dict = {
-            "madoc_id": d.get("madoc_id", instance.madoc_id),
-            "madoc_thumbnail": d.get("madoc_thumbnail", instance.madoc_thumbnail),
-        }
-        contexts = d.get("contexts")
-        iiif3 = None
-        # If we have IIIF stuff as a "resource" in the request.data
-        if d.get("resource"):
-            if d["resource"].get("@context") == "http://iiif.io/api/presentation/2/context.json":
-                iiif3 = upgrader.process_resource(d["resource"], top=True)
-                iiif3["@context"] = "http://iiif.io/api/presentation/3/context.json"
-            else:
-                iiif3 = d["resource"]
-            for k in [
-                "id",
-                "type",
-                "label",
-                "thumbnail",
-                "summary",
-                "metadata",
-                "rights",
-                "provider",
-                "requiredStatement",
-                "navDate",
-            ]:
-                data_dict[k] = iiif3.get(k, getattr(instance, k, None))
-            first_canvas_json = next(iter(resources_by_type(iiif=iiif3)), None)
-            if first_canvas_json:
-                data_dict["first_canvas_json"] = first_canvas_json
-                data_dict["first_canvas_id"] = first_canvas_json.get("id")
-        if iiif3:
-            indexable_list = flatten_iiif_descriptive(
-                iiif=iiif3, default_language=default_lang, lang_base=LANGBASE
-            )
-            if indexable_list:
-                _ = (
-                    Indexables.objects.filter(iiif__pk=instance.madoc_id)
-                    .filter(type__in=["descriptive", "metadata"])
-                    .delete()
-                )
-                for _indexable in indexable_list:
-                    indexable_obj = Indexables(
-                        **_indexable, iiif=instance, resource_id=instance.madoc_id
-                    )
-                    indexable_obj.save()
-        serializer = self.get_serializer(instance, data=data_dict, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        if contexts:
-            c_objs = [Context.objects.get_or_create(**context) for context in contexts]
-            c_objs_set = [c_obj for c_obj, _ in c_objs]
-            instance.contexts.set(c_objs_set)
-            instance.save()
-        if getattr(instance, "_prefetched_objects_cache", None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
-
-        return Response(serializer.data)
+    def get_object(self):
+        if madoc_site_urn := request_madoc_site_urn(self.request):
+            logger.debug(f"Got madoc site urn: {madoc_site_urn}")
+            lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+            url_id = self.kwargs.get(lookup_url_kwarg)
+            self.kwargs[lookup_url_kwarg] = f"{madoc_site_urn}|{url_id}"
+        return super().get_object()
 
 
-class IIIFList(generics.ListCreateAPIView):
-    queryset = IIIFResource.objects.all()
+class IIIFList(MethodBasedSerializerMixin, generics.ListCreateAPIView):
+    queryset = IIIFResource.objects.all().prefetch_related("contexts")
     serializer_class = IIIFSerializer
+    serializer_mapping = {
+        "get": IIIFSerializer,
+        "post": IIIFCreateUpdateSerializer,
+    }
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ["madoc_id"]
-
-    def create(self, request, *args, **kwargs):
-        """
-        Override the .create() method on the rest-framework generic ListCreateAPIViewset
-        """
-
-        def ingest_iiif(
-            iiif3_resource=None,
-            resource_contexts=None,
-            madoc_id=None,
-            madoc_thumbnail=None,
-            child=False,
-            parent=None,
-        ):
-            """ "
-            Nested function that ingests the IIIF object into PostgreSQL via the Django ORM.
-
-            :param iiif3_resource: IIIF object (this could be anything in the API spec)
-            :param resource_contexts: contexts, e.g. collections, sites, manifests, etc.
-            :param madoc_id: the identifier for this thing
-            :param madoc_thumbnail: the thumbnail for this thing
-            :param child: is this a child object, or the object that has been POSTed
-            :param parent: the madoc_id for the parent object that this is being derived from (if any)
-            """
-            local_dict = {"madoc_id": madoc_id, "madoc_thumbnail": madoc_thumbnail}
-            # Add the relevant keys from the IIIF resource into the data dictionary
-            # To Do: This should probanly be working with a set of keys passed in rather than the
-            # data dict from the outer context
-            if iiif3_resource:
-                for k in [
-                    "id",
-                    "type",
-                    "label",
-                    "thumbnail",
-                    "summary",
-                    "metadata",
-                    "rights",
-                    "provider",
-                    "requiredStatement",
-                    "navDate",
-                ]:
-                    local_dict[k] = iiif3_resource.get(k)
-                first_canvas_json = next(iter(resources_by_type(iiif=iiif3_resource)), None)
-                if first_canvas_json:
-                    local_dict["first_canvas_json"] = first_canvas_json
-                    local_dict["first_canvas_id"] = first_canvas_json.get("id")
-            parent_object = None
-            if (child is True) and (parent is not None):
-                parent_object = IIIFResource.objects.get(madoc_id=parent)
-            """
-            To Do: We potentially need something here to replace the
-            perform_create with a perform_update in the event that the object exists, and then we can
-            have the operation be idempotent as a POST will update rather than error
-            """
-            serializer = self.get_serializer(data=local_dict)  # Serialize the data
-            serializer.is_valid(raise_exception=True)  # Check it's valid
-            self.perform_create(serializer)  # Create the object
-            instance = IIIFResource.objects.get(
-                madoc_id=local_dict["madoc_id"]
-            )  # Get the object created
-            if resource_contexts:
-                local_contexts = deepcopy(resource_contexts)
-            else:
-                local_contexts = []
-            if iiif3_resource:  # Add myself to the context(s)
-                if local_dict.get("type"):
-                    local_contexts += [{"id": madoc_id, "type": local_dict["type"]}]
-                    local_contexts += [{"id": local_dict["id"], "type": local_dict["type"]}]
-            if parent_object is not None:
-                # If I'm, e.g. a Canvas, add my parent manifest to the list of context(s)
-                local_contexts += [{"id": parent_object.id, "type": parent_object.type}]
-                local_contexts += [{"id": parent_object.madoc_id, "type": parent_object.type}]
-            if local_contexts:
-                # Get or create the context object in the ORM
-                c_objs = [Context.objects.get_or_create(**cont) for cont in local_contexts]
-                if instance:  # Set the contexts Many to Many relationsip for each context
-                    c_objs_set = [c_obj for c_obj, _ in c_objs]
-                    instance.contexts.set(c_objs_set)
-                    instance.save()
-            if iiif3_resource:
-                # Flatten the IIIF metadata and descriptive properties into a list of indexables
-                indexable_list = flatten_iiif_descriptive(
-                    iiif=iiif3_resource, default_language=default_lang, lang_base=LANGBASE
-                )
-                if indexable_list:
-                    # Create the indexables
-                    for _indexable in indexable_list:
-                        indexable_obj = Indexables(
-                            **_indexable, iiif=instance, resource_id=instance.madoc_id
-                        )
-                        indexable_obj.save()
-            return serializer.data, self.get_success_headers(serializer.data)
-
-        if (overridden := request.parser_context.get("kwargs").get("data_override")) is not None:
-            logger.debug(
-                "Using a data object passed in from an external view, rather than the request"
-            )
-            d = overridden
-        else:
-            d = request.data
-        # Cascade
-        cascade = d.get("cascade")
-        logger.debug("Truth(y) value of cascade", bool(cascade))
-        # Get the contexts from the "context" key in the outer context of the request payload
-        contexts = d.get("contexts")
-        # We have a IIIF resource to index
-        if d.get("resource"):
-            # IIIF 2.x so convert to Presentation API 3
-            if d["resource"].get("@context") == "http://iiif.io/api/presentation/2/context.json":
-                iiif3 = upgrader.process_resource(d["resource"], top=True)
-                iiif3["@context"] = "http://iiif.io/api/presentation/3/context.json"
-            else:
-                # Just use this as is
-                iiif3 = d["resource"]
-        else:
-            # Else we have nothing to index (although the ID and the contexts will still be created)
-            iiif3 = None
-        if contexts:
-            if iiif3:
-                # Add self to context, this is so that for example, if constrain context to a specific object
-                # it finds content _on_ that object, and not just on objects _within_ that object.
-                if iiif3.get("type"):
-                    contexts += [{"id": d["id"], "type": iiif3["type"]}]
-        # Create the manifest and return the data and header information
-        manifest_data, manifest_headers = ingest_iiif(
-            iiif3_resource=iiif3,
-            resource_contexts=contexts,
-            madoc_id=d["id"],
-            madoc_thumbnail=d["thumbnail"],
-            child=False,
-            parent=None,
-        )
-        if iiif3.get("items"):
-            logger.debug(f"Got items, this is where I would cascade: {len(iiif3['items'])} items.")
-            logger.debug(f"Cascade is {cascade}")
-            if cascade:
-                for num, item in enumerate(iiif3["items"]):
-                    item_data, item_headers = ingest_iiif(
-                        iiif3_resource=item,
-                        resource_contexts=contexts,
-                        madoc_id=":".join([d["id"], item["type"].lower(), str(num)]),
-                        madoc_thumbnail=d["thumbnail"],
-                        child=True,
-                        parent=d["id"],
-                    )
-                    logger.debug(f"Cascaded: {item_headers}")
-        return Response(manifest_data, status=status.HTTP_201_CREATED, headers=manifest_headers)
+    # permission_classes = [AllowAny]
+    parser_classes = [IIIFCreateUpdateParser]
 
 
 class ContextDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -405,9 +215,10 @@ class SearchBaseClass(viewsets.ReadOnlyModelViewSet):
     BaseClass for Search Service APIs.
     """
 
-    queryset = IIIFResource.objects.all().distinct()
+    queryset = IIIFResource.objects.all().distinct().prefetch_related("contexts")
     serializer_class = IIIFSearchSummarySerializer
     parser_classes = [IIIFSearchParser]
+    permission_classes = [AllowAny]
 
 
 class IIIFSearch(SearchBaseClass):
@@ -419,6 +230,7 @@ class IIIFSearch(SearchBaseClass):
     """
 
     filter_backends = [IIIFSearchFilter]
+    pagination_class = MadocPagination
 
     def get_facets(self, request):
         facet_summary = defaultdict(dict)
@@ -449,26 +261,44 @@ class IIIFSearch(SearchBaseClass):
             containing manifest contexts.
             """
             facetable_q = facetable_queryset
-
+        # if not request.data.get("facet_types", None):
+        #     request.data["facet_types"] = ["metadata"]
+        # if request.data.get("facet_fields"):
+        #     facet_summary = (
+        #         facetable_q.filter(
+        #             indexables__type__in=request.data["facet_types"],
+        #             indexables__subtype__in=request.data["facet_fields"],
+        #         )
+        #         .values("indexables__type", "indexables__subtype", "indexables__indexable")
+        #         .annotate(n=models.Count("pk", distinct=True))
+        #         .order_by("indexables__type", "indexables__subtype", "-n", "indexables__indexable")
+        #     )
+        # else:
+        #     facet_summary = (
+        #         facetable_q.filter(indexables__type__in=request.data["facet_types"])
+        #         .values("indexables__type", "indexables__subtype", "indexables__indexable")
+        #         .annotate(n=models.Count("pk", distinct=True))
+        #         .order_by("indexables__type", "indexables__subtype", "-n", "indexables__indexable")
+        #     )
         facet_filter_args = [
-                models.Q(indexables__type__in=request.data.get("facet_types", ["metadata"])), 
-                ]
-        if facet_fields:=request.data.get("facet_fields"):
-            facet_filter_args.append(
-                models.Q(indexables__subtype__in=facet_fields)
-                )
-        if facet_languages:=request.data.get("facet_languages"):
-            facet_language_codes = set(map(lambda x: x.split('-')[0], facet_languages))
-            iso639_1_codes = list(filter(lambda x: len(x)==2, facet_language_codes))
-            iso639_2_codes = list(filter(lambda x: len(x)==3, facet_language_codes))
-            # Always include indexables where no language is specified. This will be cases where there it has neither iso639 field set. 
-            facet_language_filter = (models.Q(indexables__language_iso639_1__isnull=True) & models.Q(indexables__language_iso639_2__isnull=True)) 
-            if iso639_1_codes: 
-                facet_language_filter |= models.Q(indexables__language_iso639_1__in=iso639_1_codes) 
-            if iso639_2_codes: 
+            models.Q(indexables__type__in=request.data.get("facet_types", ["metadata"])),
+        ]
+        if facet_fields := request.data.get("facet_fields"):
+            facet_filter_args.append(models.Q(indexables__subtype__in=facet_fields))
+        if facet_languages := request.data.get("facet_languages"):
+            facet_language_codes = set(map(lambda x: x.split("-")[0], facet_languages))
+            iso639_1_codes = list(filter(lambda x: len(x) == 2, facet_language_codes))
+            iso639_2_codes = list(filter(lambda x: len(x) == 3, facet_language_codes))
+            # Always include indexables where no language is specified.
+            # This will be cases where there it has neither iso639 field set.
+            facet_language_filter = models.Q(
+                indexables__language_iso639_1__isnull=True
+            ) & models.Q(indexables__language_iso639_2__isnull=True)
+            if iso639_1_codes:
+                facet_language_filter |= models.Q(indexables__language_iso639_1__in=iso639_1_codes)
+            if iso639_2_codes:
                 facet_language_filter |= models.Q(indexables__language_iso639_2__in=iso639_2_codes)
             facet_filter_args.append(facet_language_filter)
-
         facet_summary = (
             facetable_q.filter(*facet_filter_args)
             .values("indexables__type", "indexables__subtype", "indexables__indexable")
@@ -492,6 +322,17 @@ class IIIFSearch(SearchBaseClass):
     def list(self, request, *args, **kwargs):
         resp = super().list(request, *args, **kwargs)
         resp.data.update({"facets": self.get_facets(request=request)})
+        reverse_sort = False
+        if request.data.get("sort_order", None):
+            if (direction := request.data["sort_order"].get("direction")) is not None:
+                if direction == "descending":
+                    logger.debug("Descending")
+                    reverse_sort = True
+        resp.data["results"] = sorted(
+            resp.data["results"],
+            key=lambda k: (k.get("sortk"),),
+            reverse=reverse_sort,
+        )
         return resp
 
 

@@ -9,13 +9,9 @@ https://docs.djangoproject.com/en/3.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
-
 import os
 import environ
-from django.utils.translation import ugettext_lazy as _
-import os
-import environ
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from distutils.util import strtobool
 
 env = environ.Env()
@@ -40,6 +36,11 @@ NONLATIN_FULLTEXT = env.bool("NONLATIN_FULLTEXT", False)
 
 # Search across multiple fields on a "fulltext" query (if True), will disable fulltext features
 SEARCH_MULTIPLE_FIELDS = env.bool("SEARCH_MULTIPLE_FIELDS", False)
+
+# Thumbnail request: if set to True if no thumbnail service/block is present on a IIIF resource,
+# fallback to constructing a thumbnail from the image service on the first canvas in that resource on ingest
+# defaults to True, but typically set to False during test coverage, so that we can mock services locally
+THUMBNAIL_FALLBACK = env.bool("THUMBNAIL_FALLBACK", False)
 
 ALLOWED_HOSTS = ["*"]
 

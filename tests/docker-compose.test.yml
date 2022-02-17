@@ -1,0 +1,59 @@
+version: "3"
+
+volumes:
+  local_postgres_data: {}
+  local_postgres_data_backups: {}
+
+services:
+  django:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile
+    image: search
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    environment:
+      - USE_DOCKER=yes
+      - MIGRATE=True
+      - LOAD=True
+      - DJANGO_DEBUG=True
+      - WAITRESS=False
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=moctezuma
+      - DJANGO_ADMIN=admin
+      - DJANGO_ADMIN_PASSWORD=password
+      - INIT_SUPERUSER=True
+      - DJANGO_ADMIN_EMAIL=admin@iiif-discovery-test.org
+      - DATABASE_URL=postgres://postgres:moctezuma@postgres:5432/postgres
+      - CANONICAL_HOSTNAME=http://iiif-discovery-test.org
+      - MADOC_URL=madoc_url
+      - MADOC_CLIENT_ID=madoc_client_id
+      - MADOC_CLIENT_SECRET=madoc_client_secret
+      - REQUIRE_AUTH=True
+      - THUMBNAIL_FALLBACK=True
+      - WAITRESS=True
+    ports:
+      - "8000:8000"
+      - "5000:5000"
+
+  postgres:
+    hostname: postgres
+    image: postgis/postgis
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=moctezuma
+
+  mock-remote-http.org: 
+    image: nginx
+    volumes:
+      - ./fixtures:/usr/share/nginx/html
+    ports: 
+      - "8080:80"
