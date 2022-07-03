@@ -133,6 +133,7 @@ def test_fuzzy_matching(
     # query using search term 
     query = {
         "fulltext": search_term,
+        "search_type": "trigram",
         "contexts": ["urn:ual:site:1"],
     }
     result = requests.post(
