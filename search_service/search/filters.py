@@ -165,11 +165,19 @@ class IIIFSearchFilter(BaseFilterBackend):
             search_query = hits_filter_kwargs.get("search_vector", None)
             search_string = hits_filter_kwargs.get("search_string", None)
             search_type = hits_filter_kwargs.get("search_type")
+        else: 
+            search_type = None
+
         logger.warning(f"Search query {search_query}")
         if search_type == "trigram":
-            logger.warning(f"TrigramWordSimilarity for the ranking {search_string}")
+            logger.warning(f"TrigramSimilarity for the ranking {search_string}")
             queryset = queryset.distinct().annotate(
                 rank=TrigramSimilarity("indexables__indexable", search_string),
+            )
+        elif search_type == "trigram_word":
+            logger.warning(f"TrigramWordSimilarity for the ranking {search_string}")
+            queryset = queryset.distinct().annotate(
+                rank=TrigramWordSimilarity(search_string, "indexables__indexable"),
             )
 
         elif search_query:
@@ -186,7 +194,6 @@ class IIIFSearchFilter(BaseFilterBackend):
             queryset = queryset.distinct().annotate(
                 rank=Value(0.0, FloatField()),
             )
-
         # Some ordering has been passed in from the request parser
         if (
             isinstance(order_key, dict)
