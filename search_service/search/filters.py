@@ -172,12 +172,12 @@ class IIIFSearchFilter(BaseFilterBackend):
         if search_type == "trigram":
             logger.warning(f"TrigramSimilarity for the ranking {search_string}")
             queryset = queryset.distinct().annotate(
-                rank=TrigramSimilarity("indexables__indexable", search_string),
+                rank=Max(TrigramSimilarity("indexables__indexable", search_string)),
             )
         elif search_type == "trigram_word":
             logger.warning(f"TrigramWordSimilarity for the ranking {search_string}")
             queryset = queryset.distinct().annotate(
-                rank=TrigramWordSimilarity(search_string, "indexables__indexable"),
+                rank=Max(TrigramWordSimilarity(search_string, "indexables__indexable")),
             )
 
         elif search_query:
