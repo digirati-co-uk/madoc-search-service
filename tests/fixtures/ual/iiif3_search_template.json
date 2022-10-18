@@ -1,0 +1,123 @@
+{
+    "@context": "http://iiif.io/api/presentation/3/context.json",
+    "id": "https://demo-forager.ch.digtest.co.uk/preservica/manifest/{{ manifest_uuid }}",
+    "type": "Manifest",
+    "items": [
+        {
+            "id": "https://demo-forager.ch.digtest.co.uk/preservica/canvas/{{ canvas_uuid }}",
+            "type": "Canvas",
+            "items": [
+                {
+                    "id": "https://demo-forager.ch.digtest.co.uk/preservica/page/{{ page_uuid }}",
+                    "type": "AnnotationPage",
+                    "items": [
+                        {
+                            "id": "https://demo-forager.ch.digtest.co.uk/preservica/annotation/{{ annotation_uuid }}",
+                            "body": {
+                                "id": "http://mock-remote-http.org/mock_dlcs/iiif-img/13/1/mock_image/full/!1024,1024/0/default.jpg",
+                                "type": "Image",
+                                "format": "image/jpeg",
+                                "service": [
+                                    {
+                                        "@id": "http://mock-remote-http.org/mock_dlcs/iiif-img/13/1/mock_image",
+                                        "@type": "ImageService2",
+                                        "profile": "http://iiif.io/api/image/2/level2.json"
+                                    }
+                                ],
+                                "height": 6188,
+                                "width": 5004
+                            },
+                            "type": "Annotation",
+                            "target": "https://demo-forager.ch.digtest.co.uk/preservica/canvas/{{ canvas_uuid }}",
+                            "motivation": "painting"
+                        }
+                    ]
+                }
+            ],
+            "label": {
+                "en": [
+                    "18647779303_d4b942eff2_o.jpg"
+                ]
+            },
+            "width": 5004,
+            "height": 6188,
+            "metadata": [], 
+            "thumbnail": [
+                {
+                    "id": "http://mock-remote-http.org/mock_dlcs/thumbs/13/1/mock_image/full/!828,1024/0/default.jpg",
+                    "type": "Image",
+                    "format": "image/jpeg",
+                    "width": 828,
+                    "height": 1024,
+                    "service": [
+                        {
+                            "id": "http://mock-remote-http.org/mock_dlcs/thumbs/13/1/mock_image",
+                            "@type": "ImageService2",
+                            "profile": "http://iiif.io/api/image/2/level2.json",
+                            "sizes": [
+                                {
+                                    "width": 828,
+                                    "height": 1024
+                                },
+                                {
+                                    "width": 323,
+                                    "height": 400
+                                },
+                                {
+                                    "width": 162,
+                                    "height": 200
+                                },
+                                {
+                                    "width": 81,
+                                    "height": 100
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+
+        }
+    ],
+    "label": {
+        "en": [
+            "Mars"
+        ]
+    },
+    "metadata": {{ metadata }}, 
+    "thumbnail": [
+        {
+            "id": "http://mock-remote-http.org/mock_dlcs/thumbs/13/1/mock_image/full/!828,1024/0/default.jpg",
+            "type": "Image",
+            "format": "image/jpeg",
+            "width": 828,
+            "height": 1024,
+            "service": [
+                {
+                    "id": "http://mock-remote-http.org/mock_dlcs/thumbs/13/1/mock_image",
+                    "@type": "ImageService2",
+                    "profile": "http://iiif.io/api/image/2/level2.json",
+                    "sizes": [
+                        {
+                            "width": 828,
+                            "height": 1024
+                        },
+                        {
+                            "width": 323,
+                            "height": 400
+                        },
+                        {
+                            "width": 162,
+                            "height": 200
+                        },
+                        {
+                            "width": 81,
+                            "height": 100
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+
+}
