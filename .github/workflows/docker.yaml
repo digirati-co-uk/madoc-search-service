@@ -2,10 +2,10 @@ name: Docker image
 
 on:
   push:
-    branches: ['main']
+    branches: ['main', 'ual_main']
     tags: ['v*']
   pull_request:
-    branches: ['main']
+    branches: ['main', 'ual_main']
     paths:
       - ".github/workflows/docker.yaml"
       - "search_service/**"
