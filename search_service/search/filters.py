@@ -1,10 +1,6 @@
 import logging
 
-from django.contrib.postgres.search import (
-    SearchRank,
-    TrigramSimilarity,
-    TrigramWordSimilarity,
-)
+from django.contrib.postgres.search import SearchRank
 from django.db.models import F
 from django.db.models import Max
 from django.db.models import OuterRef, Subquery
@@ -41,9 +37,7 @@ class AutoCompleteFilter(BaseFilterBackend):
                 for f in request.data.get("prefilter_kwargs"):
                     contexts_queryset = contexts_queryset.filter(*(f,))
         if request.data.get("filter_kwargs", None):
-            contexts_queryset = contexts_queryset.filter(
-                **request.data["filter_kwargs"]
-            )
+            contexts_queryset = contexts_queryset.filter(**request.data["filter_kwargs"])
         if request.data.get("postfilter_kwargs", None):
             # Just check if this thing is nested Q() objects, rather than dicts
             if type(request.data["postfilter_kwargs"][0]) == Q:
@@ -78,21 +72,15 @@ class AutoCompleteFilter(BaseFilterBackend):
                 for filter_dict in request.data["postfilter_kwargs"]:
                     # This is a chaining operation
                     # Appending each filter one at a time
-                    contexts_queryset = contexts_queryset.filter(**filter_dict).values(
-                        "id"
-                    )
+                    contexts_queryset = contexts_queryset.filter(**filter_dict).values("id")
         logger.debug(contexts_queryset)
         queryset = queryset.filter(iiif__contexts__id__in=contexts_queryset)
         if request.data.get("autocomplete_type", None):
             queryset = queryset.filter(type__iexact=request.data["autocomplete_type"])
         if request.data.get("autocomplete_subtype", None):
-            queryset = queryset.filter(
-                subtype__iexact=request.data["autocomplete_subtype"]
-            )
+            queryset = queryset.filter(subtype__iexact=request.data["autocomplete_subtype"])
         if request.data.get("autocomplete_query", None):
-            queryset = queryset.filter(
-                indexable__istartswith=request.data["autocomplete_subtype"]
-            )
+            queryset = queryset.filter(indexable__istartswith=request.data["autocomplete_subtype"])
         return queryset.distinct()
 
 
@@ -117,15 +105,12 @@ class IIIFSearchFilter(BaseFilterBackend):
             # filter to contexts that match this set of filters.
             contains_queryset = (
                 Context.objects.filter(**request.data.get("contains_kwargs"))
-                .distinct()
-                .values("id")
+                .distinct().values("id")
             )
             # Filter the list of IIIF objects to those objects whose identifier is in the
             # list of contexts that match the query above.
 
-            queryset = queryset.filter(
-                madoc_id__in=[x["id"] for x in contains_queryset]
-            )
+            queryset = queryset.filter(madoc_id__in=[x["id"] for x in contains_queryset])
         if request.data.get("postfilter_kwargs", None):
             # Just check if this thing is nested Q() objects, rather than dicts
             if type(request.data.get("postfilter_kwargs")[0]) == Q:
@@ -163,30 +148,12 @@ class IIIFSearchFilter(BaseFilterBackend):
         if hits_filter_kwargs := request.data.get("hits_filter_kwargs"):
             # We have a dictionary of queries to use, so we use that
             search_query = hits_filter_kwargs.get("search_vector", None)
-            search_string = hits_filter_kwargs.get("search_string", None)
-            search_type = hits_filter_kwargs.get("search_type")
-        else:
-            search_type = None
-
         logger.warning(f"Search query {search_query}")
-        if search_type == "trigram":
-            logger.warning(f"TrigramSimilarity for the ranking {search_string}")
-            queryset = queryset.distinct().annotate(
-                rank=Max(TrigramSimilarity("indexables__indexable", search_string)),
-            )
-        elif search_type == "trigram_word":
-            logger.warning(f"TrigramWordSimilarity for the ranking {search_string}")
-            queryset = queryset.distinct().annotate(
-                rank=Max(TrigramWordSimilarity(search_string, "indexables__indexable")),
-            )
-
-        elif search_query:
-            logger.warning(f"Search query for the ranking {search_query}")
+        if search_query:
+            logger.debug(f"Search query for the ranking {search_query}")
             queryset = queryset.distinct().annotate(
                 rank=Max(
-                    SearchRank(
-                        F("indexables__search_vector"), search_query, cover_density=True
-                    ),
+                    SearchRank(F("indexables__search_vector"), search_query, cover_density=True),
                     output_field=FloatField(),
                 ),
             )
@@ -195,11 +162,7 @@ class IIIFSearchFilter(BaseFilterBackend):
                 rank=Value(0.0, FloatField()),
             )
         # Some ordering has been passed in from the request parser
-        if (
-            isinstance(order_key, dict)
-            and order_key.get("type")
-            and order_key.get("subtype")
-        ):
+        if isinstance(order_key, dict) and order_key.get("type") and order_key.get("subtype"):
             val = order_key.get("value_for_sort", "indexable")
             if order_key.get("direction") == "descending":
                 queryset = queryset.annotate(
@@ -210,7 +173,7 @@ class IIIFSearchFilter(BaseFilterBackend):
                             subtype__iexact=order_key.get("subtype"),
                         ).values(val)[:1]
                     )
-                ).order_by(F("sortk").desc(nulls_last=True))
+                ).order_by("-sortk")
             else:
                 queryset = queryset.annotate(
                     sortk=Subquery(
@@ -220,7 +183,7 @@ class IIIFSearchFilter(BaseFilterBackend):
                             subtype__iexact=order_key.get("subtype"),
                         ).values(val)[:1]
                     )
-                ).order_by(F("sortk").asc(nulls_last=True))
+                ).order_by("sortk")
             return queryset
         # Otherwise, default to sorting by rank.
         return queryset.distinct().order_by("-rank")

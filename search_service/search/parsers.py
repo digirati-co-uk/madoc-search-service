@@ -253,13 +253,7 @@ class IIIFSearchParser(JSONParser):
             if iiif_identifiers:
                 prefilter_kwargs.append(Q(**{f"id__in": iiif_identifiers}))
             if search_string:
-                if search_type == "trigram": 
-                    logger.warning("trigram search")
-                    filter_kwargs["indexables__indexable__trigram_similar"] = search_string
-                elif search_type == "trigram_word": 
-                    logger.warning("trigram word search")
-                    filter_kwargs["indexables__indexable__trigram_word_similar"] = search_string
-                elif (non_latin_fulltext or is_latin(search_string)) and not search_multiple_fields:
+                if (non_latin_fulltext or is_latin(search_string)) and not search_multiple_fields:
                     # Search string is good candidate for fulltext query and we are not searching across multiple fields
                     if language:
                         filter_kwargs["indexables__search_vector"] = SearchQuery(

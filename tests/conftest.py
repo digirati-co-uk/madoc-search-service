@@ -43,14 +43,86 @@ def iiif3_manifest(tests_dir):
 
 
 @pytest.fixture
+def iiif_store_manifest(tests_dir):
+    return json.load(
+        (tests_dir / "fixtures/iiif3_store/iiif3_forager.json").open(encoding="utf-8")
+    )
+
+
+@pytest.fixture
+def tei_store_muya_structure_document(tests_dir):
+    xml_data = (
+        (tests_dir / "../muya_discovery/tei_store/data/muya_structure.xml")
+        .open(encoding="utf-8")
+        .read()
+    )
+    return {"original_id": "muya_structure", "xml": xml_data}
+
+
+@pytest.fixture
+def tei_store_document_1(tests_dir):
+    xml_data = (
+        (
+            tests_dir
+            / "fixtures/muya_tei/0029_Pouladi3/0029_Pouladi3_027r-038r_Y_09-11.xml"
+        )
+        .open(encoding="utf-8")
+        .read()
+    )
+    json_data = json.load(
+        (
+            tests_dir
+            / "fixtures/muya_tei/parsed_data/0029_Pouladi3_027r-038r_Y_09-11.json"
+        ).open(encoding="utf-8")
+    )
+    plaintext_data = (
+        (
+            tests_dir
+            / "fixtures/muya_tei/parsed_data/0029_Pouladi3_027r-038r_Y_09-11.txt"
+        )
+        .open(encoding="utf-8")
+        .read()
+    )
+    return {
+        "xml": xml_data,
+        "json": json_data,
+        "plaintext": plaintext_data.strip(),
+        "original_id": "test_tei_document_1",
+    }
+
+
+@pytest.fixture
+def tei_store_document_2(tests_dir):
+    xml_data = (
+        (tests_dir / "fixtures/muya_tei/0451_T54/0451_T54_037v-097v_Y_03-08.xml")
+        .open(encoding="utf-8")
+        .read()
+    )
+    return {"xml": xml_data, "original_id": "test_tei_document_2"}
+
+
+@pytest.fixture
+def tei_store_Y_10(tests_dir):
+    return json.load(
+        (tests_dir / "fixtures/muya_tei/parsed_data/Y_10.json").open(encoding="utf-8")
+    )
+
+
+@pytest.fixture
+def tei_store_P28r_29(tests_dir):
+    return json.load(
+        (tests_dir / "fixtures/muya_tei/parsed_data/P28r_29.json").open(
+            encoding="utf-8"
+        )
+    )
+
+
+@pytest.fixture
 def manifest_with_ranges(tests_dir):
     return json.load(
         (tests_dir / "fixtures/muya/manifest_ranges.json").open(encoding="utf-8")
     )
 
-@pytest.fixture
-def fuzzy_search_manifest_template(tests_dir):
-    return (tests_dir / "fixtures/ual/iiif3_search_template.json").open(encoding="utf-8").read()
 
 @pytest.fixture
 # Just returns the values as coded in the view, to check against in the test
