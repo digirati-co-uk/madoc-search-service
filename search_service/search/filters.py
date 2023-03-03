@@ -165,7 +165,7 @@ class IIIFSearchFilter(BaseFilterBackend):
             search_query = hits_filter_kwargs.get("search_vector", None)
             search_string = hits_filter_kwargs.get("search_string", None)
             search_type = hits_filter_kwargs.get("search_type")
-        else:
+        else: 
             search_type = None
 
         logger.warning(f"Search query {search_query}")
@@ -210,7 +210,7 @@ class IIIFSearchFilter(BaseFilterBackend):
                             subtype__iexact=order_key.get("subtype"),
                         ).values(val)[:1]
                     )
-                ).order_by(F("sortk").desc(nulls_last=True))
+                ).order_by("-sortk")
             else:
                 queryset = queryset.annotate(
                     sortk=Subquery(
@@ -220,7 +220,7 @@ class IIIFSearchFilter(BaseFilterBackend):
                             subtype__iexact=order_key.get("subtype"),
                         ).values(val)[:1]
                     )
-                ).order_by(F("sortk").asc(nulls_last=True))
+                ).order_by("sortk")
             return queryset
         # Otherwise, default to sorting by rank.
         return queryset.distinct().order_by("-rank")
