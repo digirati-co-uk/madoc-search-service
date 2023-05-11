@@ -148,6 +148,10 @@ class IIIFSearchFilter(BaseFilterBackend):
         if hits_filter_kwargs := request.data.get("hits_filter_kwargs"):
             # We have a dictionary of queries to use, so we use that
             search_query = hits_filter_kwargs.get("search_vector", None)
+            search_string = hits_filter_kwargs.get("search_string", None)
+            search_type = hits_filter_kwargs.get("search_type")
+        else:
+            search_type = None
         logger.warning(f"Search query {search_query}")
         if search_query:
             logger.debug(f"Search query for the ranking {search_query}")
