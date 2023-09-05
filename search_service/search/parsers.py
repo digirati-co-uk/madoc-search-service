@@ -374,12 +374,13 @@ class IIIFSearchParser(JSONParser):
 
             default_sort_order = {"direction": "descending"}
             sort_order = request_data.get("ordering", default_sort_order)
-            if search_string:
-                sort_order = default_sort_order
-            elif sort_order.get("random_sort"):
-                sort_order["random_seed"] = sort_order.get(
-                    "random_seed", random.random()
-                )
+            if sort_order.get("random_sort"):
+                if search_string:
+                    sort_order = default_sort_order
+                else:
+                    sort_order["random_seed"] = sort_order.get(
+                        "random_seed", random.random()
+                    )
             logger.info(f"Filter kwargs: {filter_kwargs}")
             return {
                 "prefilter_kwargs": prefilter_kwargs,
