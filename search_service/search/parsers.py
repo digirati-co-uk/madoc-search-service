@@ -5,6 +5,7 @@ from operator import or_, and_
 import pytz
 from dateutil import parser
 import logging
+import random
 import unicodedata
 
 
@@ -45,7 +46,10 @@ def date_query_value(q_key, value):
     if "date" in q_key:
         try:
             parsed_date = parser.parse(value)
-            if parsed_date.tzinfo is None or parsed_date.tzinfo.utcoffset(parsed_date) is None:
+            if (
+                parsed_date.tzinfo is None
+                or parsed_date.tzinfo.utcoffset(parsed_date) is None
+            ):
                 query_date = parsed_date.replace(tzinfo=pytz.utc)
             else:
                 query_date = parsed_date
@@ -70,7 +74,10 @@ def date_q(value, date_query_type=None):
     if value and date_query_type and date_query_type in date_types.keys():
         try:
             parsed_date = parser.parse(value)
-            if parsed_date.tzinfo is None or parsed_date.tzinfo.utcoffset(parsed_date) is None:
+            if (
+                parsed_date.tzinfo is None
+                or parsed_date.tzinfo.utcoffset(parsed_date) is None
+            ):
                 query_date = parsed_date.replace(tzinfo=pytz.utc)
             else:
                 query_date = parsed_date
@@ -108,7 +115,17 @@ def facet_operator(q_key, field_lookup):
         else:
             return "exact"
     elif q_key in ["indexable_date_range_start", "indexable_date_range_year"]:
-        if field_lookup in ["day", "month", "year", "iso_year", "gt", "gte", "lt", "lte", "exact"]:
+        if field_lookup in [
+            "day",
+            "month",
+            "year",
+            "iso_year",
+            "gt",
+            "gte",
+            "lt",
+            "lte",
+            "exact",
+        ]:
             return field_lookup
         else:
             return "exact"
@@ -127,7 +144,8 @@ def parse_facets(facet_queries):
         # e.g.
         # {"metadata|author": []}
         sorted_facets = {
-            "|".join([f.get("type", ""), f.get("subtype", "")]): [] for f in facet_queries
+            "|".join([f.get("type", ""), f.get("subtype", "")]): []
+            for f in facet_queries
         }
         # Copy the query into that lookup so we can get queries against the same
         # type/subtype
@@ -228,10 +246,14 @@ class IIIFSearchParser(JSONParser):
             madoc_identifiers = request_data.get("madoc_identifiers", None)
             iiif_identifiers = request_data.get("iiif_identifiers", None)
             facet_queries = request_data.get("facets", None)
-            facet_on_manifests = request_data.get("facet_on_manifests", global_facet_on_manifests)
+            facet_on_manifests = request_data.get(
+                "facet_on_manifests", global_facet_on_manifests
+            )
             facet_types = request_data.get("facet_types", global_facet_types)
             facet_languages = request_data.get("facet_languages")
-            non_latin_fulltext = request_data.get("non_latin_fulltext", global_non_latin_fulltext)
+            non_latin_fulltext = request_data.get(
+                "non_latin_fulltext", global_non_latin_fulltext
+            )
             search_multiple_fields = request_data.get(
                 "search_multiple_fields", global_search_multiple_fields
             )
@@ -253,13 +275,19 @@ class IIIFSearchParser(JSONParser):
             if iiif_identifiers:
                 prefilter_kwargs.append(Q(**{f"id__in": iiif_identifiers}))
             if search_string:
-                if search_type == "trigram": 
+                if search_type == "trigram":
                     logger.warning("trigram search")
-                    filter_kwargs["indexables__indexable__trigram_similar"] = search_string
-                elif search_type == "trigram_word": 
+                    filter_kwargs[
+                        "indexables__indexable__trigram_similar"
+                    ] = search_string
+                elif search_type == "trigram_word":
                     logger.warning("trigram word search")
-                    filter_kwargs["indexables__indexable__trigram_word_similar"] = search_string
-                elif (non_latin_fulltext or is_latin(search_string)) and not search_multiple_fields:
+                    filter_kwargs[
+                        "indexables__indexable__trigram_word_similar"
+                    ] = search_string
+                elif (
+                    non_latin_fulltext or is_latin(search_string)
+                ) and not search_multiple_fields:
                     # Search string is good candidate for fulltext query and we are not searching across multiple fields
                     if language:
                         filter_kwargs["indexables__search_vector"] = SearchQuery(
@@ -290,11 +318,19 @@ class IIIFSearchParser(JSONParser):
                     filter_kwargs[f"indexables__{p}__iexact"] = request_data[p]
             if query_raw and isinstance(query_raw, dict):
                 for raw_k, raw_v in query_raw.items():
-                    if raw_k.startswith(("indexables__", "type__", "madoc_id__", "id__")):
+                    if raw_k.startswith(
+                        ("indexables__", "type__", "madoc_id__", "id__")
+                    ):
                         filter_kwargs[raw_k] = raw_v
             if query_float:
                 if query_float.get("value"):
-                    if query_float.get("operator", "exact") in ["exact", "gt", "lt", "gte", "lte"]:
+                    if query_float.get("operator", "exact") in [
+                        "exact",
+                        "gt",
+                        "lt",
+                        "gte",
+                        "lte",
+                    ]:
                         filter_kwargs[
                             f"indexables__indexable_float__{query_float.get('operator', 'exact')}"
                         ] = query_float["value"]
@@ -335,7 +371,15 @@ class IIIFSearchParser(JSONParser):
                 hits_filter_kwargs["language"] = language
             if search_type:
                 hits_filter_kwargs["search_type"] = search_type
-            sort_order = request_data.get("ordering", {"ordering": "descending"})
+
+            default_sort_order = {"direction": "descending"}
+            sort_order = request_data.get("ordering", default_sort_order)
+            if search_string:
+                sort_order = default_sort_order
+            elif sort_order.get("random_sort"):
+                sort_order["random_seed"] = sort_order.get(
+                    "random_seed", random.random()
+                )
             logger.info(f"Filter kwargs: {filter_kwargs}")
             return {
                 "prefilter_kwargs": prefilter_kwargs,
@@ -391,7 +435,10 @@ def parse_and_configure_iiif_ingest(data, madoc_site_urn=None):
         if not _return["madoc_id"].startswith(f"{madoc_site_urn}|"):
             _return["madoc_id"] = f"{madoc_site_urn}|{_return['madoc_id']}"
     if (iiif_resource := data.get("resource")) is not None:
-        if iiif_resource.get("@context") == "http://iiif.io/api/presentation/2/context.json":
+        if (
+            iiif_resource.get("@context")
+            == "http://iiif.io/api/presentation/2/context.json"
+        ):
             iiif3 = upgrader.process_resource(iiif_resource, top=True)
             iiif3["@context"] = "http://iiif.io/api/presentation/3/context.json"
             _return["iiif3_resource"] = iiif3
@@ -422,7 +469,9 @@ class IIIFCreateUpdateParser(JSONParser):
             decoded_stream = codecs.getreader(encoding)(stream)
             request_data = json.loads(decoded_stream.read())
             logger.debug("We have JSON")
-            if (overridden := parser_context.get("kwargs").get("data_override")) is not None:
+            if (
+                overridden := parser_context.get("kwargs").get("data_override")
+            ) is not None:
                 logger.debug("Overridden")
                 return parse_and_configure_iiif_ingest(
                     data=overridden, madoc_site_urn=madoc_site_urn
