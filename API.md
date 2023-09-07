@@ -150,6 +150,7 @@ Ordering has the following format for sort by a specific indexable type/subtype:
 * __value_for_sort__: _Optional_ the field in the Indexables model which provided the value for sorting
 * __direction__: _Optional_ defaults to descending (choices are ascending or descending)
 
+
 Example:
 
 ```json
@@ -192,6 +193,8 @@ Example:
 ```
 
 n.b. Random ordering will be overriden and replaced with the default rank-descending sort if requested along with a __fulltext__ query. 
+
+Ordering is included as a property in the response, to allow for client side management of the `random_seed` and other information about the ordering used.  
 
 Facet queries have the following format:
 
