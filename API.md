@@ -143,7 +143,7 @@ The accepted fields are as follows:
 * __number_of_facets__: _Optional_ an integer which sets how many facets to return, defaults to 10. If effectively unlimited facets are required, provide an arbitrarily high integer.
 * __ordering__: _Optional_ an object which specifies how the objects are ordered in the results, if not provided, defaults to rank
 
-Ordering has the following format:
+Ordering has the following format for sort by a specific indexable type/subtype:
 
 * __type__: The indexed text type, e.g. "metadata" or "descriptive", etc
 * __subtype__: The subtype, e.g. "place of publication", "label", etc.
@@ -170,6 +170,28 @@ Example:
 }
 ```
 
+Alternatively, random ordering can be requested with the following ordering format: 
+
+* __random_sort__: `true` to request a random ordering of results. 
+* __random_seed__: _Optional_ A seed to allow for reproducably random results. This will be populated with a UUID4 when `random_sort` is requested without a `random_seed`, but this can be a str from another source (e.g. a timestamp).   
+
+Example:
+
+```json
+{
+    "ordering": {"random_sort": true}
+}
+```
+
+Example:
+
+```json
+{
+    "ordering": {"random_sort": true, "random_seed": "c969ae22-d94b-4a30-a06a-519bc5606935"}
+}
+```
+
+n.b. Random ordering will be overriden and replaced with the default rank-descending sort if requested along with a __fulltext__ query. 
 
 Facet queries have the following format:
 
