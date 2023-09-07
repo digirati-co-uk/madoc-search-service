@@ -1,5 +1,6 @@
 import codecs
 import json
+import uuid
 from functools import reduce
 from operator import or_, and_
 import pytz
@@ -379,7 +380,7 @@ class IIIFSearchParser(JSONParser):
                     sort_order = default_sort_order
                 else:
                     sort_order["random_seed"] = sort_order.get(
-                        "random_seed", random.random()
+                        "random_seed", uuid.uuid4()
                     )
             logger.info(f"Filter kwargs: {filter_kwargs}")
             return {
