@@ -57,11 +57,15 @@ logger = logging.getLogger(__name__)
 def api_root(request, format=None):
     return Response(
         {
-            "iiif": reverse("search.api.iiifresource_list", request=request, format=format),
+            "iiif": reverse(
+                "search.api.iiifresource_list", request=request, format=format
+            ),
             "indexable": reverse(
                 "search.api.indexables_list", request=request, format=format
             ),
-            "contexts": reverse("search.api.context_list", request=request, format=format),
+            "contexts": reverse(
+                "search.api.context_list", request=request, format=format
+            ),
             "search": reverse("search.api.search", request=request, format=format),
         }
     )
@@ -145,7 +149,9 @@ class ContextFilterSet(df_filters.FilterSet):
     "cont"
     """
 
-    cont = df_filters.filters.CharFilter(field_name="contexts__id", lookup_expr="iexact")
+    cont = df_filters.filters.CharFilter(
+        field_name="contexts__id", lookup_expr="iexact"
+    )
 
     class Meta:
         model = Context
@@ -281,7 +287,9 @@ class IIIFSearch(SearchBaseClass):
         #         .order_by("indexables__type", "indexables__subtype", "-n", "indexables__indexable")
         #     )
         facet_filter_args = [
-            models.Q(indexables__type__in=request.data.get("facet_types", ["metadata"])),
+            models.Q(
+                indexables__type__in=request.data.get("facet_types", ["metadata"])
+            ),
         ]
         if facet_fields := request.data.get("facet_fields"):
             facet_filter_args.append(models.Q(indexables__subtype__in=facet_fields))
@@ -295,15 +303,21 @@ class IIIFSearch(SearchBaseClass):
                 indexables__language_iso639_1__isnull=True
             ) & models.Q(indexables__language_iso639_2__isnull=True)
             if iso639_1_codes:
-                facet_language_filter |= models.Q(indexables__language_iso639_1__in=iso639_1_codes)
+                facet_language_filter |= models.Q(
+                    indexables__language_iso639_1__in=iso639_1_codes
+                )
             if iso639_2_codes:
-                facet_language_filter |= models.Q(indexables__language_iso639_2__in=iso639_2_codes)
+                facet_language_filter |= models.Q(
+                    indexables__language_iso639_2__in=iso639_2_codes
+                )
             facet_filter_args.append(facet_language_filter)
         facet_summary = (
             facetable_q.filter(*facet_filter_args)
             .values("indexables__type", "indexables__subtype", "indexables__indexable")
             .annotate(n=models.Count("pk", distinct=True))
-            .order_by("indexables__type", "indexables__subtype", "-n", "indexables__indexable")
+            .order_by(
+                "indexables__type", "indexables__subtype", "-n", "indexables__indexable"
+            )
         )
         grouped_facets = defaultdict(lambda: defaultdict(lambda: defaultdict(dict)))
         truncate_to = request.data.get("num_facets", 10)
@@ -316,12 +330,15 @@ class IIIFSearch(SearchBaseClass):
         # Take the deeply nested dict and truncate the leaves of the tree to just N keys.
         for facet_type, facet_subtypes in grouped_facets.items():
             for k, v in facet_subtypes.items():
-                truncated_facets[facet_type][k] = dict(itertools.islice(v.items(), truncate_to))
+                truncated_facets[facet_type][k] = dict(
+                    itertools.islice(v.items(), truncate_to)
+                )
         return truncated_facets
 
     def list(self, request, *args, **kwargs):
         resp = super().list(request, *args, **kwargs)
         resp.data.update({"facets": self.get_facets(request=request)})
+        resp.data.update({"ordering": request.data.get("sort_order")})
         reverse_sort = False
         if request.data.get("sort_order", None):
             if (direction := request.data["sort_order"].get("direction")) is not None:
@@ -409,6 +426,8 @@ class Autocomplete(SearchBaseClass):
             .order_by("-n")[:10]
         )
         return_data = {
-            "results": [{"id": x.get("indexable"), "text": x.get("indexable")} for x in raw_data]
+            "results": [
+                {"id": x.get("indexable"), "text": x.get("indexable")} for x in raw_data
+            ]
         }
         return Response(data=return_data)

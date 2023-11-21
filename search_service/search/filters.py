@@ -5,10 +5,22 @@ from django.contrib.postgres.search import (
     TrigramSimilarity,
     TrigramWordSimilarity,
 )
-from django.db.models import F
-from django.db.models import Max
-from django.db.models import OuterRef, Subquery
-from django.db.models import Q, Value, FloatField
+from django.db.models import (
+    F,
+    Max,
+    OuterRef,
+    Subquery,
+    QuerySet,
+    Q,
+    Func,
+    Value,
+    FloatField,
+    CharField,
+)
+from django.db.models.functions import (
+    Concat,
+    MD5,
+)
 from rest_framework.filters import BaseFilterBackend
 
 from .models import IIIFResource, Context, Indexables
@@ -194,7 +206,7 @@ class IIIFSearchFilter(BaseFilterBackend):
             queryset = queryset.distinct().annotate(
                 rank=Value(0.0, FloatField()),
             )
-        # Some ordering has been passed in from the request parser
+        # Ordering by a specific indexable type/subtype
         if (
             isinstance(order_key, dict)
             and order_key.get("type")
@@ -221,6 +233,22 @@ class IIIFSearchFilter(BaseFilterBackend):
                         ).values(val)[:1]
                     )
                 ).order_by(F("sortk").asc(nulls_last=True))
+            return queryset
+        # Random ordering
+        if (
+            isinstance(order_key, dict)
+            and order_key.get("random_sort")
+            and order_key.get("random_seed")
+        ):
+            queryset = queryset.annotate(
+                md5_order=MD5(
+                    Concat(
+                        F("madoc_id"),
+                        Value(order_key.get("random_seed")),
+                        output_field=CharField(),
+                    ),
+                )
+            ).order_by("md5_order")
             return queryset
         # Otherwise, default to sorting by rank.
         return queryset.distinct().order_by("-rank")
