@@ -103,7 +103,7 @@ class AutoCompleteFilter(BaseFilterBackend):
             )
         if request.data.get("autocomplete_query", None):
             queryset = queryset.filter(
-                indexable__istartswith=request.data["autocomplete_subtype"]
+                indexable__istartswith=request.data["autocomplete_query"]
             )
         return queryset.distinct()
 
