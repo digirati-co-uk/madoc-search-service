@@ -420,14 +420,14 @@ class Autocomplete(SearchBaseClass):
     def list(self, request, *args, **kwargs):
         facetable_queryset = self.filter_queryset(self.get_queryset().all())
         raw_data = (
-            facetable_queryset.values("indexable")
+            facetable_queryset.values("indexable", "type", "subtype")
             .distinct()
             .annotate(n=models.Count("pk", distinct=True))
-            .order_by("-n")[:10]
+            .order_by("-n")[:20]
         )
-        return_data = {
-            "results": [
-                {"id": x.get("indexable"), "text": x.get("indexable")} for x in raw_data
-            ]
-        }
-        return Response(data=return_data)
+        return Response(data=raw_data)
+
+
+class IIIFSearchFacets(IIIFSearch):
+    def list(self, request, *args, **kwargs):
+        return Response({"facets": self.get_facets(request=request)})
