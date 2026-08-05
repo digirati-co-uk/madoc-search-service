@@ -69,14 +69,14 @@ class AutoCompleteFilter(BaseFilterBackend):
                         is one of those
                         """
                         manifests = IIIFResource.objects.filter(
-                            contexts__associated_iiif__madoc_id__in=queryset,
+                            contexts__associated_iiif__madoc_id__in=queryset.values("pk"),
                             contexts__type__iexact="manifest",
                             type__iexact="manifest",
                         ).distinct()
                         for f in request.data["postfilter_kwargs"]:
                             manifests = manifests.filter(*(f,))
                         contexts_queryset = contexts_queryset.filter(
-                            **{"contexts__id__in": manifests}
+                            **{"contexts__id__in": manifests.values("pk")}
                         )
                     else:
                         logger.debug("Facet on manifests is False")
@@ -151,13 +151,13 @@ class IIIFSearchFilter(BaseFilterBackend):
                         is one of those
                         """
                         manifests = IIIFResource.objects.filter(
-                            contexts__associated_iiif__madoc_id__in=queryset,
+                            contexts__associated_iiif__madoc_id__in=queryset.values("pk"),
                             contexts__type__iexact="manifest",
                             type__iexact="manifest",
                         ).distinct()
                         for f in request.data.get("postfilter_kwargs"):
                             manifests = manifests.filter(*(f,))
-                        queryset = queryset.filter(**{"contexts__id__in": manifests})
+                        queryset = queryset.filter(**{"contexts__id__in": manifests.values("pk")})
                     else:
                         logger.debug("Facet on manifests is False")
                         for f in request.data.get("postfilter_kwargs"):

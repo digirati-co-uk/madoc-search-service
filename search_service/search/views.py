@@ -240,93 +240,108 @@ class IIIFSearch(SearchBaseClass):
 
     def get_facets(self, request):
         facet_summary = defaultdict(dict)
-        # If we haven't been provided a list of facet fields via a POST
-        # just generate the list by querying the unique list of metadata subtypes
-        # Make a copy of the query so we aren't running the get_queryset logic every time
         facetable_queryset = self.filter_queryset(queryset=self.get_queryset())
         if request.data.get("facet_on_manifests", None):
-            """
-            Facet on IIIF objects where:
-
-             1. They are associated (via the reverse relationship on `contexts`) with the queryset,
-                and where the associated context is a manifest
-             2. The object type is manifest
-
-             In other words, give me all the manifests where they are associated with a manifest context
-              that is related to the objects in the queryset. This manifest context should/will be
-              themselves as manifests are associated with themselves as context.
-            """
             facetable_q = self.queryset.filter(
-                contexts__associated_iiif__madoc_id__in=facetable_queryset,
+                contexts__associated_iiif__madoc_id__in=facetable_queryset.values("pk"),
                 contexts__type__iexact="manifest",
                 type__iexact="manifest",
             ).distinct()
         else:
-            """
-            Otherwise, just create the facets on the objects that are in the queryset, rather than their
-            containing manifest contexts.
-            """
             facetable_q = facetable_queryset
-        # if not request.data.get("facet_types", None):
-        #     request.data["facet_types"] = ["metadata"]
-        # if request.data.get("facet_fields"):
-        #     facet_summary = (
-        #         facetable_q.filter(
-        #             indexables__type__in=request.data["facet_types"],
-        #             indexables__subtype__in=request.data["facet_fields"],
-        #         )
-        #         .values("indexables__type", "indexables__subtype", "indexables__indexable")
-        #         .annotate(n=models.Count("pk", distinct=True))
-        #         .order_by("indexables__type", "indexables__subtype", "-n", "indexables__indexable")
-        #     )
-        # else:
-        #     facet_summary = (
-        #         facetable_q.filter(indexables__type__in=request.data["facet_types"])
-        #         .values("indexables__type", "indexables__subtype", "indexables__indexable")
-        #         .annotate(n=models.Count("pk", distinct=True))
-        #         .order_by("indexables__type", "indexables__subtype", "-n", "indexables__indexable")
-        #     )
-        facet_filter_args = [
-            models.Q(
-                indexables__type__in=request.data.get("facet_types", ["metadata"])
-            ),
-        ]
-        if facet_fields := request.data.get("facet_fields"):
-            facet_filter_args.append(models.Q(indexables__subtype__in=facet_fields))
-        if facet_languages := request.data.get("facet_languages"):
-            facet_language_codes = set(map(lambda x: x.split("-")[0], facet_languages))
-            iso639_1_codes = list(filter(lambda x: len(x) == 2, facet_language_codes))
-            iso639_2_codes = list(filter(lambda x: len(x) == 3, facet_language_codes))
-            # Always include indexables where no language is specified.
-            # This will be cases where there it has neither iso639 field set.
-            facet_language_filter = models.Q(
-                indexables__language_iso639_1__isnull=True
-            ) & models.Q(indexables__language_iso639_2__isnull=True)
-            if iso639_1_codes:
-                facet_language_filter |= models.Q(
-                    indexables__language_iso639_1__in=iso639_1_codes
-                )
-            if iso639_2_codes:
-                facet_language_filter |= models.Q(
-                    indexables__language_iso639_2__in=iso639_2_codes
-                )
-            facet_filter_args.append(facet_language_filter)
-        facet_summary = (
-            facetable_q.filter(*facet_filter_args)
-            .values("indexables__type", "indexables__subtype", "indexables__indexable")
-            .annotate(n=models.Count("pk", distinct=True))
-            .order_by(
-                "indexables__type", "indexables__subtype", "-n", "indexables__indexable"
-            )
-        )
-        grouped_facets = defaultdict(lambda: defaultdict(lambda: defaultdict(dict)))
+            
+        facet_types = request.data.get("facet_types", ["metadata"])
+        facet_fields = request.data.get("facet_fields")
+        facet_languages = request.data.get("facet_languages")
         truncate_to = request.data.get("num_facets", 10)
+        grouped_facets = defaultdict(lambda: defaultdict(lambda: defaultdict(dict)))
         truncated_facets = defaultdict(lambda: defaultdict(dict))
-        # Turn annotated list of results into a deeply nested dict
-        for facet in facet_summary:
-            grouped_facets[facet["indexables__type"]][facet["indexables__subtype"]][
-                facet["indexables__indexable"]
-            ] = facet["n"]
+
+        # Try Roaring Bitmaps Raw SQL first for maximum performance
+        try:
+            from django.db import connection
+            search_sql, search_params = facetable_q.values('internal_id').query.sql_with_params()
+            
+            type_placeholders = ', '.join(['%s'] * len(facet_types))
+            params = list(search_params) + facet_types
+            
+            subtype_clause = ""
+            if facet_fields:
+                subtype_placeholders = ', '.join(['%s'] * len(facet_fields))
+                subtype_clause = f"AND subtype IN ({subtype_placeholders})"
+                params.extend(facet_fields)
+
+            language_clause = ""
+            if facet_languages:
+                facet_language_codes = set(map(lambda x: x.split("-")[0], facet_languages))
+                iso639_1_codes = list(filter(lambda x: len(x) == 2, facet_language_codes))
+                iso639_2_codes = list(filter(lambda x: len(x) == 3, facet_language_codes))
+                
+                lang_conds = ["(language_iso639_1 IS NULL AND language_iso639_2 IS NULL)"]
+                if iso639_1_codes:
+                    lang_1_placeholders = ', '.join(['%s'] * len(iso639_1_codes))
+                    lang_conds.append(f"language_iso639_1 IN ({lang_1_placeholders})")
+                    params.extend(iso639_1_codes)
+                if iso639_2_codes:
+                    lang_2_placeholders = ', '.join(['%s'] * len(iso639_2_codes))
+                    lang_conds.append(f"language_iso639_2 IN ({lang_2_placeholders})")
+                    params.extend(iso639_2_codes)
+                
+                language_clause = "AND (" + " OR ".join(lang_conds) + ")"
+            
+            # Using GROUP BY to aggregate over languages if we split them up in the MV
+            raw_query = f"""
+                WITH search_results AS (
+                    SELECT rb_build_agg(internal_id::int4) as search_rb
+                    FROM ({search_sql}) as sq
+                )
+                SELECT 
+                    type, 
+                    subtype, 
+                    indexable, 
+                    rb_cardinality(rb_and(rb_or_agg(iiif_bitmap), (SELECT search_rb FROM search_results))) as count
+                FROM mv_facet_bitmaps
+                WHERE type IN ({type_placeholders}) {subtype_clause} {language_clause}
+                GROUP BY type, subtype, indexable
+                HAVING rb_cardinality(rb_and(rb_or_agg(iiif_bitmap), (SELECT search_rb FROM search_results))) > 0
+                ORDER BY type, subtype, count DESC;
+            """
+            
+            with connection.cursor() as cursor:
+                cursor.execute(raw_query, params)
+                results = cursor.fetchall()
+                
+            for facet_type, facet_subtype, indexable, count in results:
+                grouped_facets[facet_type][facet_subtype][indexable] = count
+                
+        except Exception as e:
+            logger.warning(f"Roaring Bitmap query failed, falling back to ORM: {e}")
+            # Fallback to ORM
+            facet_filter_args = [models.Q(type__in=facet_types)]
+            if facet_fields:
+                facet_filter_args.append(models.Q(subtype__in=facet_fields))
+            if facet_languages:
+                facet_language_codes = set(map(lambda x: x.split("-")[0], facet_languages))
+                iso639_1_codes = list(filter(lambda x: len(x) == 2, facet_language_codes))
+                iso639_2_codes = list(filter(lambda x: len(x) == 3, facet_language_codes))
+                facet_language_filter = models.Q(
+                    language_iso639_1__isnull=True
+                ) & models.Q(language_iso639_2__isnull=True)
+                if iso639_1_codes:
+                    facet_language_filter |= models.Q(language_iso639_1__in=iso639_1_codes)
+                if iso639_2_codes:
+                    facet_language_filter |= models.Q(language_iso639_2__in=iso639_2_codes)
+                facet_filter_args.append(facet_language_filter)
+                
+            facet_summary = (
+                Indexables.objects.filter(*facet_filter_args, iiif__in=facetable_q.values("pk"))
+                .values("type", "subtype", "indexable")
+                .annotate(n=models.Count("iiif", distinct=True))
+                .order_by("type", "subtype", "-n", "indexable")
+            )
+            for facet in facet_summary:
+                grouped_facets[facet["type"]][facet["subtype"]][facet["indexable"]] = facet["n"]
+
         # Take the deeply nested dict and truncate the leaves of the tree to just N keys.
         for facet_type, facet_subtypes in grouped_facets.items():
             for k, v in facet_subtypes.items():
@@ -379,7 +394,7 @@ class Facets(SearchBaseClass):
              should/will be themselves as manifests are associated with themselves as context.
             """
             facetable_q = IIIFResource.objects.filter(
-                contexts__associated_iiif__madoc_id__in=facetable_queryset,
+                contexts__associated_iiif__madoc_id__in=facetable_queryset.values("pk"),
                 contexts__type__iexact="manifest",
                 type__iexact="manifest",
             ).distinct()
@@ -394,8 +409,8 @@ class Facets(SearchBaseClass):
             request.data["facet_types"] = ["metadata"]
         for facet_type in request.data["facet_types"]:
             for t in (
-                facetable_q.filter(indexables__type__iexact=facet_type)
-                .values("indexables__subtype")
+                Indexables.objects.filter(type__iexact=facet_type, iiif__in=facetable_q.values("pk"))
+                .values("subtype")
                 .distinct()
             ):
                 for _, v in t.items():

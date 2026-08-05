@@ -39,6 +39,7 @@ class IIIFResource(TimeStampedModel):
     madoc_id = models.CharField(
         max_length=512, primary_key=True, verbose_name=_("Identifier (Madoc)")
     )
+    internal_id = models.BigAutoField(unique=True, db_index=True)
     madoc_thumbnail = models.URLField(blank=True, null=True)
     id = models.URLField(verbose_name=_("IIIF id"))
     slug = AutoSlugField(populate_from="madoc_id", max_length=512)
